@@ -17,13 +17,22 @@ const filters = ["Tous", "Formation", "Masterclass", "Accompagnement"] as const;
 
 function FavoriteButton({ id }: { id: string }) {
   const [saved, setSaved] = useState(false);
+  useEffect(() => {
+    try { setSaved((JSON.parse(localStorage.getItem("gm_formation_favorites") || "[]") as string[]).includes(id)); } catch {}
+  }, [id]);
+  const toggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      const prev: string[] = JSON.parse(localStorage.getItem("gm_formation_favorites") || "[]");
+      const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
+      localStorage.setItem("gm_formation_favorites", JSON.stringify(next));
+      setSaved(next.includes(id));
+    } catch {}
+  };
   return (
-    <button
-      aria-label={saved ? "Retirer des favoris" : "Ajouter aux favoris"}
-      onClick={(e) => { e.stopPropagation(); setSaved((v) => !v); }}
+    <button aria-label={saved ? "Retirer des favoris" : "Ajouter aux favoris"} onClick={toggle}
       className="flex h-8 w-8 items-center justify-center rounded-full transition-colors"
-      style={{ background: "rgba(255,255,255,0.07)" }}
-    >
+      style={{ background: "rgba(255,255,255,0.07)" }}>
       <svg viewBox="0 0 24 24" fill={saved ? "#F5C200" : "none"} stroke={saved ? "#F5C200" : "rgba(255,255,255,0.5)"} strokeWidth={1.8} className="h-4 w-4">
         <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
       </svg>

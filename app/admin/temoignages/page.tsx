@@ -3,19 +3,22 @@
 import { useState } from "react";
 import AdminHeader from "@/components/admin/AdminHeader";
 import ConfirmModal from "@/components/admin/ConfirmModal";
+import ImageUpload from "@/components/admin/ImageUpload";
 import { testimonials } from "@/lib/site-data";
 
-type Temoignage = { name: string; text: string };
+type Temoignage = { name: string; text: string; imageUrl?: string };
 
 const FC = "rounded-lg px-3 py-2 text-sm text-white outline-none w-full";
 const S = { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" };
+
+const EMPTY: Temoignage = { name: "", text: "", imageUrl: "" };
 
 export default function AdminTemoignagesPage() {
   const [items, setItems] = useState<Temoignage[]>(testimonials);
   const [deleteIdx, setDeleteIdx] = useState<number | null>(null);
   const [editing, setEditing] = useState<number | null>(null);
   const [adding, setAdding] = useState(false);
-  const [draft, setDraft] = useState<Temoignage>({ name: "", text: "" });
+  const [draft, setDraft] = useState<Temoignage>(EMPTY);
 
   const save = () => {
     if (editing !== null) {
@@ -25,11 +28,11 @@ export default function AdminTemoignagesPage() {
       setItems([...items, draft]);
       setAdding(false);
     }
-    setDraft({ name: "", text: "" });
+    setDraft(EMPTY);
   };
 
-  const startEdit = (i: number) => { setDraft({ ...items[i] }); setEditing(i); setAdding(false); };
-  const startAdd = () => { setDraft({ name: "", text: "" }); setAdding(true); setEditing(null); };
+  const startEdit = (i: number) => { setDraft({ ...EMPTY, ...items[i] }); setEditing(i); setAdding(false); };
+  const startAdd = () => { setDraft(EMPTY); setAdding(true); setEditing(null); };
 
   return (
     <div className="max-w-2xl">
@@ -51,6 +54,7 @@ export default function AdminTemoignagesPage() {
             <label className="block text-xs font-semibold mb-1.5" style={{ color: "rgba(255,255,255,0.6)" }}>Témoignage</label>
             <textarea className={FC} style={S} rows={3} value={draft.text} onChange={(e) => setDraft({ ...draft, text: e.target.value })} />
           </div>
+          <ImageUpload label="Photo (optionnel)" value={draft.imageUrl ?? ""} onChange={(v) => setDraft({ ...draft, imageUrl: v })} maxWidth={200} maxHeight={200} quality={0.8} aspectHint="1:1" />
           <div className="flex gap-2">
             <button onClick={save} className="rounded-lg px-4 py-2 text-xs font-semibold text-white" style={{ background: "linear-gradient(135deg, #7C3AED 0%, #A855F7 100%)" }}>Sauvegarder</button>
             <button onClick={() => { setAdding(false); setEditing(null); }} className="rounded-lg px-4 py-2 text-xs font-semibold" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)" }}>Annuler</button>
@@ -61,9 +65,13 @@ export default function AdminTemoignagesPage() {
       <div className="space-y-3">
         {items.map((t, i) => (
           <div key={i} className="flex items-start gap-4 rounded-2xl px-5 py-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white" style={{ background: "linear-gradient(135deg, #7C3AED 0%, #A855F7 100%)" }}>
-              {t.name[0]}
-            </div>
+            {t.imageUrl ? (
+              <img src={t.imageUrl} alt={t.name} className="h-9 w-9 shrink-0 rounded-full object-cover" />
+            ) : (
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white" style={{ background: "linear-gradient(135deg, #7C3AED 0%, #A855F7 100%)" }}>
+                {t.name[0]}
+              </div>
+            )}
             <div className="flex-1">
               <p className="font-semibold text-white text-sm">{t.name}</p>
               <p className="text-xs mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>&ldquo;{t.text}&rdquo;</p>

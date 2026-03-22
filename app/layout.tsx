@@ -20,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className={`${inter.variable} h-full`}>
+    <html lang="fr" className={`${inter.variable} h-full`} data-scroll-behavior="smooth">
       <body className="min-h-full bg-white text-black antialiased">
         <AppShell>{children}</AppShell>
       </body>

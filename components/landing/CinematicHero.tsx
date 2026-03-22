@@ -51,7 +51,7 @@ export default function CinematicHero() {
         }}
         className="pointer-events-none absolute right-0 top-0 hidden h-full lg:block"
         style={{ width: "50%" }}
-      >
+      >{/* 
         <Image
           src="/images/P2.PNG"
           alt=""
@@ -61,7 +61,7 @@ export default function CinematicHero() {
           priority
         />
 
-      </motion.div>
+       */}</motion.div>
 
       <div className="relative mx-auto w-full max-w-6xl px-6 py-24 lg:px-8">
         <div className="max-w-3xl">
@@ -118,8 +118,8 @@ export default function CinematicHero() {
           >
             <Link
               href="/diagnostic"
-              className="group inline-flex items-center gap-2 rounded-xl px-6 py-3.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02] active:scale-[0.98]"
-              style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}
+              className="group inline-flex items-center gap-2 rounded-xl px-6 py-3.5 text-sm font-semibold text-black transition-transform hover:scale-[1.02] active:scale-[0.98]"
+              style={{ background: "#F5C200" }}
             >
               Évaluer mon niveau
               <svg className="h-4 w-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

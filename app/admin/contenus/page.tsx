@@ -5,9 +5,10 @@ import Link from "next/link";
 import AdminHeader from "@/components/admin/AdminHeader";
 import ConfirmModal from "@/components/admin/ConfirmModal";
 import GradientPicker from "@/components/admin/GradientPicker";
+import ImageUpload from "@/components/admin/ImageUpload";
 
-type Post = { id: string; platform: string; description: string; coverGradient: string; postedAt: string; href: string; author?: string };
-type Profile = { id: string; name: string; domain: string; profileHref: string; avatarGradient: string; rating: number };
+type Post = { id: string; platform: string; description: string; coverGradient: string; imageUrl?: string; postedAt: string; href: string; author?: string };
+type Profile = { id: string; name: string; domain: string; profileHref: string; avatarGradient: string; imageUrl?: string; rating: number };
 
 const initPosts: Post[] = [
   { id: "fb-1", platform: "Facebook", description: "Tu veux lancer ton business digital mais tu ne sais pas par où commencer ? Voici la méthode en 3 étapes.", coverGradient: "linear-gradient(135deg, #1877F2 0%, #0D1B5E 100%)", postedAt: "2026-03-20", href: "https://facebook.com" },
@@ -30,6 +31,7 @@ function PostForm({ post, onSave, onCancel }: { post?: Partial<Post>; onSave: (p
     platform: post?.platform ?? "Facebook",
     description: post?.description ?? "",
     coverGradient: post?.coverGradient ?? "linear-gradient(135deg, #1877F2 0%, #0D1B5E 100%)",
+    imageUrl: post?.imageUrl ?? "",
     postedAt: post?.postedAt ?? new Date().toISOString().split("T")[0],
     href: post?.href ?? "",
     author: post?.author ?? "",
@@ -63,6 +65,7 @@ function PostForm({ post, onSave, onCancel }: { post?: Partial<Post>; onSave: (p
         <input className={fc} style={s} value={form.author} onChange={(e) => setForm({ ...form, author: e.target.value })} />
       </div>
       <GradientPicker value={form.coverGradient} onChange={(v) => setForm({ ...form, coverGradient: v })} />
+      <ImageUpload label="Image du post (optionnel)" value={form.imageUrl ?? ""} onChange={(v) => setForm({ ...form, imageUrl: v })} maxWidth={1200} maxHeight={800} quality={0.78} aspectHint="16:9" />
       <div className="flex gap-2 pt-1">
         <button onClick={() => onSave(form)} className="rounded-lg px-4 py-2 text-xs font-semibold text-white" style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}>Sauvegarder</button>
         <button onClick={onCancel} className="rounded-lg px-4 py-2 text-xs font-semibold" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)" }}>Annuler</button>
@@ -78,6 +81,7 @@ function ProfileForm({ profile, onSave, onCancel }: { profile?: Partial<Profile>
     domain: profile?.domain ?? "",
     profileHref: profile?.profileHref ?? "",
     avatarGradient: profile?.avatarGradient ?? "linear-gradient(135deg, #1A3FD8 0%, #6366F1 100%)",
+    imageUrl: profile?.imageUrl ?? "",
     rating: profile?.rating ?? 5,
   });
   const s = { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" };
@@ -102,7 +106,8 @@ function ProfileForm({ profile, onSave, onCancel }: { profile?: Partial<Profile>
           <input className={fc} style={s} type="number" min={1} max={5} value={form.rating} onChange={(e) => setForm({ ...form, rating: Number(e.target.value) })} />
         </div>
       </div>
-      <GradientPicker label="Gradient avatar" value={form.avatarGradient} onChange={(v) => setForm({ ...form, avatarGradient: v })} />
+      <GradientPicker label="Gradient avatar (si pas de photo)" value={form.avatarGradient} onChange={(v) => setForm({ ...form, avatarGradient: v })} />
+      <ImageUpload label="Photo de profil (optionnel)" value={form.imageUrl} onChange={(v) => setForm({ ...form, imageUrl: v })} maxWidth={200} maxHeight={200} quality={0.8} aspectHint="1:1" />
       <div className="flex gap-2 pt-1">
         <button onClick={() => onSave(form)} className="rounded-lg px-4 py-2 text-xs font-semibold text-white" style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}>Sauvegarder</button>
         <button onClick={onCancel} className="rounded-lg px-4 py-2 text-xs font-semibold" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)" }}>Annuler</button>
@@ -167,7 +172,9 @@ export default function AdminContenusPage() {
                   ? <PostForm post={p} onSave={savePost} onCancel={() => setEditPost(null)} />
                   : (
                     <div className="flex items-center gap-4 rounded-2xl px-5 py-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                      <div className="h-10 w-10 shrink-0 rounded-lg" style={{ background: p.coverGradient }} />
+                      <div className="h-10 w-10 shrink-0 rounded-lg overflow-hidden" style={{ background: p.coverGradient }}>
+                        {p.imageUrl && <img src={p.imageUrl} alt="" className="h-full w-full object-cover" />}
+                      </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ background: (platColor[p.platform] ?? "#60A5FA") + "22", color: platColor[p.platform] ?? "#60A5FA" }}>{p.platform}</span>
@@ -198,8 +205,11 @@ export default function AdminContenusPage() {
                   ? <ProfileForm profile={p} onSave={saveProfile} onCancel={() => setEditProfile(null)} />
                   : (
                     <div className="flex items-center gap-4 rounded-2xl px-5 py-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                      <div className="h-10 w-10 shrink-0 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ background: p.avatarGradient }}>
-                        {p.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
+                      <div className="h-10 w-10 shrink-0 rounded-full overflow-hidden flex items-center justify-center text-sm font-bold text-white" style={{ background: p.avatarGradient }}>
+                        {p.imageUrl
+                          // eslint-disable-next-line @next/next/no-img-element
+                          ? <img src={p.imageUrl} alt={p.name} className="h-full w-full object-cover" />
+                          : p.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
                       </div>
                       <div className="flex-1">
                         <p className="font-semibold text-white text-sm">{p.name}</p>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import AdminHeader from "@/components/admin/AdminHeader";
 import DynamicList from "@/components/admin/DynamicList";
 import GradientPicker from "@/components/admin/GradientPicker";
+import ImageUpload from "@/components/admin/ImageUpload";
 import type { Tool } from "@/lib/tools-data";
 
 const FIELD = "rounded-lg px-3 py-2.5 text-sm text-white outline-none w-full";
@@ -63,7 +64,7 @@ export default function OutilForm({ initial, title }: { initial?: Partial<Tool>;
           <div><label className={L} style={LS}>Prix (ex: Freemium — 8$/mois)</label><input className={FIELD} style={S} value={form.price} onChange={(e) => set("price", e.target.value)} /></div>
           <div><label className={L} style={LS}>URL officielle</label><input className={FIELD} style={S} value={form.officialUrl} onChange={(e) => set("officialUrl", e.target.value)} /></div>
           <GradientPicker label="Logo gradient" value={form.logoGradient} onChange={(v) => set("logoGradient", v)} />
-          <div><label className={L} style={LS}>Image URL (optionnel)</label><input className={FIELD} style={S} value={form.imageUrl} onChange={(e) => set("imageUrl", e.target.value)} /></div>
+          <ImageUpload label="Logo / Image (optionnel)" value={form.imageUrl} onChange={(v) => set("imageUrl", v)} maxWidth={400} maxHeight={400} quality={0.8} aspectHint="1:1" />
         </section>
 
         {/* Lists */}

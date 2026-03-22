@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import AdminHeader from "@/components/admin/AdminHeader";
 import DynamicList from "@/components/admin/DynamicList";
 import GradientPicker from "@/components/admin/GradientPicker";
+import ImageUpload from "@/components/admin/ImageUpload";
 import type { FormationCard, FormationModule } from "@/lib/site-data";
 
 const FIELD = "rounded-lg px-3 py-2.5 text-sm text-white outline-none w-full";
@@ -108,9 +109,7 @@ export default function FormationForm({ initial, title }: { initial?: Partial<Fo
             <input className={FIELD} style={FIELD_STYLE} value={form.href} onChange={(e) => setField("href", e.target.value)} />
           </Field>
           <GradientPicker label="Cover gradient" value={form.coverGradient} onChange={(v) => setField("coverGradient", v)} />
-          <Field label="Image URL (optionnel)">
-            <input className={FIELD} style={FIELD_STYLE} value={form.image} onChange={(e) => setField("image", e.target.value)} />
-          </Field>
+          <ImageUpload label="Image de couverture (optionnel)" value={form.image} onChange={(v) => setField("image", v)} maxWidth={1200} maxHeight={800} quality={0.78} aspectHint="16:9" />
         </section>
 
         {/* Avantages */}
