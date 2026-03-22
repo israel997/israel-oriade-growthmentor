@@ -113,13 +113,17 @@ export default function BenefitsSection() {
       {/* Halo bleu central */}
       <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse 70% 60% at 50% 40%, rgba(30,80,200,0.35) 0%, rgba(10,30,100,0.15) 50%, transparent 80%)" }} />
 
-      {/* Grille subtile */}
-      <div aria-hidden className="pointer-events-none absolute inset-0" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px)", backgroundSize: "160px 160px" }} />
-
-      {/* Formes abstraites */}
-      <div aria-hidden className="pointer-events-none absolute rounded-full" style={{ width: 240, height: 240, top: "-60px", right: "-60px", background: "rgba(30,80,220,0.1)", border: "1px solid rgba(255,255,255,0.05)", filter: "blur(2px)" }} />
-      <div aria-hidden className="pointer-events-none absolute" style={{ width: 120, height: 120, bottom: "10%", left: "5%", background: "transparent", border: "1px solid rgba(245,194,0,0.1)", transform: "rotate(45deg)", borderRadius: "12px" }} />
-      <div aria-hidden className="pointer-events-none absolute rounded-full" style={{ width: 180, height: 180, bottom: "-40px", right: "20%", background: "transparent", border: "1px solid rgba(255,255,255,0.04)" }} />
+      {/* Triangles décoratifs */}
+      {/* Triangle haut gauche */}
+      <div aria-hidden className="pointer-events-none absolute" style={{ width: 0, height: 0, top: "6%", left: "5%", borderLeft: "50px solid transparent", borderRight: "50px solid transparent", borderBottom: "86px solid rgba(245,194,0,0.07)" }} />
+      {/* Triangle haut droite (plus grand) */}
+      <div aria-hidden className="pointer-events-none absolute" style={{ width: 0, height: 0, top: "-20px", right: "8%", borderLeft: "80px solid transparent", borderRight: "80px solid transparent", borderBottom: "138px solid rgba(96,165,250,0.06)" }} />
+      {/* Triangle bas gauche (retourné) */}
+      <div aria-hidden className="pointer-events-none absolute" style={{ width: 0, height: 0, bottom: "8%", left: "12%", borderLeft: "60px solid transparent", borderRight: "60px solid transparent", borderTop: "104px solid rgba(245,194,0,0.05)" }} />
+      {/* Triangle milieu droite (retourné, grand) */}
+      <div aria-hidden className="pointer-events-none absolute" style={{ width: 0, height: 0, top: "40%", right: "3%", borderLeft: "45px solid transparent", borderRight: "45px solid transparent", borderBottom: "78px solid rgba(96,165,250,0.05)" }} />
+      {/* Petit triangle bas droite */}
+      <div aria-hidden className="pointer-events-none absolute" style={{ width: 0, height: 0, bottom: "12%", right: "18%", borderLeft: "30px solid transparent", borderRight: "30px solid transparent", borderTop: "52px solid rgba(245,194,0,0.06)" }} />
 
       <div className="relative mx-auto max-w-6xl px-6 lg:px-8">
         <motion.div

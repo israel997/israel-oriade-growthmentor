@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
 
@@ -14,6 +15,7 @@ const offers = [
     price: "79€",
     href: "/formations/lancement-digital-30j",
     points: ["Positionnement", "Offre simple", "Tunnel de vente", "Premiers prospects"],
+    image: "/images/P3.jpeg",
   },
   {
     tag: "Intermédiaire",
@@ -23,6 +25,7 @@ const offers = [
     href: "/formations/croissance-systeme",
     points: ["KPI & tracking", "Email automation", "Pages de conversion", "Meilleure marge"],
     featured: true,
+    image: "/images/P4.jpeg",
   },
   {
     tag: "Avancé",
@@ -31,6 +34,7 @@ const offers = [
     price: "390€",
     href: "/formations/mentorat-elite",
     points: ["Audit business", "Roadmap 90 jours", "Décisions data-driven", "Accélération du CA"],
+    image: "/images/P5.jpeg",
   },
 ];
 
@@ -50,19 +54,19 @@ export default function FeaturesCarousel() {
       <div className="relative mx-auto max-w-6xl px-6 lg:px-8">
         <FadeIn>
           <span className="inline-block rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-widest" style={{ background: "rgba(6,11,46,0.1)", color: "#060B2E" }}>
-            Mes offres
+            Top offres
           </span>
           <h2 className="mt-4 text-3xl font-bold tracking-tight text-[#111] sm:text-4xl">Choisis ton niveau, avance à ton rythme</h2>
-          <p className="mt-3 max-w-xl text-[#444]">Trois programmes conçus pour s'adapter à là où tu en es — et t'emmener là où tu veux aller.</p>
+          <p className="mt-3 max-w-xl text-[#444]">+10 offres conçues pour aider mes mentees à construire leur business et à gagner au moins 50 000 F chaque mois.<br /><br />Voici mes meilleures recommandations.</p>
         </FadeIn>
 
         <div className="mt-14 grid gap-6 sm:grid-cols-3">
           {offers.map((offer, i) => (
             <FadeIn key={offer.title} delay={i * 0.1}>
               <motion.div
-                whileHover={{ y: -6, boxShadow: "0 25px 35px -5px rgba(0,0,0,0.15)" }}
+                whileHover={{ y: -6, boxShadow: "inset 0 0 0 2px #1A3FD8, 0 25px 35px -5px rgba(26,63,216,0.2)" }}
                 transition={{ duration: 0.25 }}
-                className="relative flex h-full flex-col rounded-[24px] p-7"
+                className="relative flex h-full flex-col rounded-[24px] overflow-hidden"
                 style={{
                   background: offer.featured ? "rgba(255,255,255,0.65)" : "rgba(255,255,255,0.45)",
                   backdropFilter: "blur(16px)",
@@ -71,11 +75,24 @@ export default function FeaturesCarousel() {
                   boxShadow: offer.featured ? "0 0 0 1px #F5C200, 0 8px 32px rgba(0,0,0,0.1)" : "0 8px 24px rgba(0,0,0,0.08)",
                 }}
               >
+                {/* Image */}
+                <div className="relative w-full h-44 shrink-0">
+                  <Image
+                    src={offer.image}
+                    alt={offer.title}
+                    fill
+                    className="object-cover object-center"
+                    sizes="(max-width: 768px) 100vw, 400px"
+                  />
+                </div>
+
                 {offer.featured && (
-                  <span className="absolute -top-3 left-6 rounded-full px-3 py-1 text-xs font-bold text-black" style={{ background: "#F5C200" }}>
+                  <span className="absolute top-3 left-4 rounded-full px-3 py-1 text-xs font-bold text-black z-10" style={{ background: "#F5C200" }}>
                     Populaire
                   </span>
                 )}
+
+                <div className="flex flex-col flex-1 p-7">
                 <div>
                   <span className="inline-block rounded-full px-2.5 py-0.5 text-xs font-medium" style={{ background: "rgba(6,11,46,0.1)", color: "#060B2E" }}>
                     {offer.tag}
@@ -102,6 +119,7 @@ export default function FeaturesCarousel() {
                   >
                     Voir la formation
                   </Link>
+                </div>
                 </div>
               </motion.div>
             </FadeIn>

@@ -68,7 +68,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               <Link
                 key={href}
                 href={href}
-                className="nav-link rounded-lg px-4 py-2 text-sm font-medium transition-all"
+                className="nav-link rounded-lg px-4 py-2 text-sm font-medium transition-all border-b-2 border-transparent hover:border-[#F5C200]"
                 style={{
                   color: pathname === href ? "#F5C200" : "rgba(255,255,255,0.85)",
                   background: pathname === href ? "rgba(201,168,76,0.10)" : "transparent",

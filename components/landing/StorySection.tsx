@@ -113,10 +113,7 @@ export default function StorySection() {
         {/* Timeline */}
         <div className="relative mt-16">
           {/* Ligne verticale centrale */}
-          <div
-            className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2"
-            style={{ background: "linear-gradient(to bottom, transparent, rgba(255,255,255,0.15) 10%, rgba(255,255,255,0.15) 90%, transparent)" }}
-          />
+          <div className="absolute left-1/2 top-0 bottom-0 -translate-x-1/2" style={{ width: "2px", background: "linear-gradient(to bottom, transparent 0%, #F5C200 8%, #F5C200 92%, transparent 100%)" }} />
 
           <div className="space-y-10">
             {milestones.map((m, i) => (

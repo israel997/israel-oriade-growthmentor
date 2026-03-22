@@ -42,12 +42,12 @@ export default function CTASection() {
             <h2 className="mt-5 text-3xl font-bold leading-tight text-[#111] sm:text-4xl lg:text-5xl">
               Où en es-tu vraiment ?<br />
               <span style={{ background: "linear-gradient(90deg, #F5C200 0%, #F5C200 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                3 minutes pour le savoir.
+                2 minutes pour le savoir.
               </span>
             </h2>
 
             <p className="mx-auto mt-5 max-w-lg text-base text-[#555]">
-              Notre quiz intelligent analyse ton profil et te recommande le parcours exact adapté à ton niveau et tes objectifs.
+              Mon quiz intelligent analyse ton profil et te recommande le parcours exact adapté à ton niveau et tes objectifs.
             </p>
 
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">

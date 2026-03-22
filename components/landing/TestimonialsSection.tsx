@@ -1,81 +1,143 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import Image from "next/image";
+import { useCallback, useEffect, useState } from "react";
 
 const BG = "linear-gradient(135deg, #8C8C8C 0%, #D0D0D0 55%, #B8B8B8 100%)";
 
-const testimonials = [
-  { name: "Sarah M.", role: "Créatrice de contenu", text: "J'ai arrêté de tourner en rond. J'ai un plan clair et mes premières ventes en moins de 3 semaines.", stars: 5 },
-  { name: "Yanis B.", role: "Consultant freelance", text: "Le quiz m'a orienté vers la bonne offre dès le départ. Gain de temps énorme, résultats concrets.", stars: 5 },
-  { name: "Mireille K.", role: "Coach bien-être", text: "Le suivi est concret, humain et orienté résultats. Ce n'est pas du tout du coaching vague.", stars: 5 },
-  { name: "Thomas R.", role: "Développeur indie", text: "La méthode est claire, actionnable. J'ai structuré mon offre et doublé mon taux de conversion.", stars: 5 },
-  { name: "Aïda N.", role: "E-commerçante", text: "Enfin une formation qui va à l'essentiel. Pas de blabla, juste ce qui fonctionne vraiment.", stars: 5 },
-  { name: "Karim D.", role: "Formateur digital", text: "Le mentorat elite a transformé ma façon d'aborder mon business. ROI en moins d'un mois.", stars: 5 },
+const images = [
+  "/images/P3.jpeg",
+  "/images/P4.jpeg",
+  "/images/P5.jpeg",
+  "/images/P6.jpeg",
+  "/images/P7.jpeg",
+  "/images/P8.jpeg",
+  "/images/P9.jpeg",
+  "/images/P10.jpeg",
+  "/images/P11.jpeg",
 ];
 
-function Stars({ count }: { count: number }) {
-  return (
-    <div className="flex gap-0.5">
-      {Array.from({ length: count }).map((_, i) => (
-        <svg key={i} className="h-4 w-4" viewBox="0 0 20 20" fill="#F5C200">
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-        </svg>
-      ))}
-    </div>
-  );
-}
-
-function FadeIn({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
-  return (
-    <motion.div ref={ref} initial={{ opacity: 0, y: 24 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.55, delay, ease: "easeOut" }}>
-      {children}
-    </motion.div>
-  );
-}
-
 export default function TestimonialsSection() {
+  const [current, setCurrent] = useState(0);
+  const [direction, setDirection] = useState(1);
+
+  const goTo = useCallback((index: number, dir: number) => {
+    setDirection(dir);
+    setCurrent(index);
+  }, []);
+
+  const next = useCallback(() => {
+    goTo((current + 1) % images.length, 1);
+  }, [current, goTo]);
+
+  const prev = useCallback(() => {
+    goTo((current - 1 + images.length) % images.length, -1);
+  }, [current, goTo]);
+
+  useEffect(() => {
+    const t = setInterval(next, 4000);
+    return () => clearInterval(t);
+  }, [next]);
+
   return (
     <section className="relative overflow-hidden py-24" style={{ background: BG }}>
-      <div className="mx-auto max-w-6xl px-6 lg:px-8">
-        <FadeIn>
-          <span className="inline-block rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-widest" style={{ background: "rgba(6,11,46,0.1)", color: "#060B2E" }}>
+      <div className="mx-auto max-w-5xl px-6 lg:px-8">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.55, ease: "easeOut" }}
+        >
+          <span
+            className="inline-block rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-widest"
+            style={{ background: "rgba(6,11,46,0.1)", color: "#060B2E" }}
+          >
             Témoignages
           </span>
-          <h2 className="mt-4 text-3xl font-bold tracking-tight text-[#111] sm:text-4xl">Ils ont fait le saut. Et ça a marché.</h2>
-        </FadeIn>
+          <h2 className="mt-4 text-3xl font-bold tracking-tight text-[#111] sm:text-4xl">
+            Ils ont fait le saut. Et ça a marché.
+          </h2>
+        </motion.div>
 
-        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {testimonials.map((t, i) => (
-            <FadeIn key={t.name} delay={i * 0.08}>
+        {/* Carousel */}
+        <div className="relative mt-12">
+          <div
+            className="relative overflow-hidden rounded-3xl"
+            style={{
+              background: "rgba(255,255,255,0.35)",
+              backdropFilter: "blur(16px)",
+              WebkitBackdropFilter: "blur(16px)",
+              border: "1px solid rgba(255,255,255,0.6)",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
+              aspectRatio: "16/9",
+            }}
+          >
+            <AnimatePresence mode="wait" custom={direction}>
               <motion.div
-                whileHover={{ y: -4 }}
-                transition={{ duration: 0.22 }}
-                className="flex flex-col rounded-[24px] p-6"
-                style={{
-                  background: "rgba(255,255,255,0.45)",
-                  backdropFilter: "blur(12px)",
-                  WebkitBackdropFilter: "blur(12px)",
-                  border: "1px solid rgba(255,255,255,0.65)",
-                  boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
-                }}
+                key={current}
+                custom={direction}
+                initial={{ opacity: 0, x: direction > 0 ? 60 : -60 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: direction > 0 ? -60 : 60 }}
+                transition={{ duration: 0.4, ease: "easeInOut" }}
+                className="absolute inset-0"
               >
-                <Stars count={t.stars} />
-                <p className="mt-4 flex-1 text-sm leading-relaxed text-[#333]">"{t.text}"</p>
-                <div className="mt-6 flex items-center gap-3">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full text-xs font-bold text-black" style={{ background: "#F5C200" }}>
-                    {t.name[0]}
-                  </div>
-                  <div>
-                    <p className="text-sm font-semibold text-[#111]">{t.name}</p>
-                    <p className="text-xs text-[#777]">{t.role}</p>
-                  </div>
-                </div>
+                <Image
+                  src={images[current]}
+                  alt={`Témoignage ${current + 3}`}
+                  fill
+                  className="object-contain object-center"
+                  sizes="(max-width: 768px) 100vw, 900px"
+                />
               </motion.div>
-            </FadeIn>
-          ))}
+            </AnimatePresence>
+          </div>
+
+          {/* Flèche gauche */}
+          <button
+            type="button"
+            onClick={prev}
+            aria-label="Précédent"
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full transition-transform hover:scale-110"
+            style={{ background: "rgba(6,11,46,0.7)", backdropFilter: "blur(8px)" }}
+          >
+            <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+          </button>
+
+          {/* Flèche droite */}
+          <button
+            type="button"
+            onClick={next}
+            aria-label="Suivant"
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-10 flex h-10 w-10 items-center justify-center rounded-full transition-transform hover:scale-110"
+            style={{ background: "rgba(6,11,46,0.7)", backdropFilter: "blur(8px)" }}
+          >
+            <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+          </button>
+
+          {/* Indicateurs */}
+          <div className="mt-6 flex justify-center gap-2">
+            {images.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => goTo(i, i > current ? 1 : -1)}
+                aria-label={`Image ${i + 3}`}
+                className="rounded-full transition-all duration-300"
+                style={{
+                  width: current === i ? "2rem" : "0.5rem",
+                  height: "0.5rem",
+                  background: current === i ? "#F5C200" : "rgba(0,0,0,0.25)",
+                }}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>
