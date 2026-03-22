@@ -13,20 +13,12 @@ const sections = [
 ];
 
 export default function SectionSidebar() {
-  const [visible, setVisible] = useState(false);
   const [active, setActive] = useState("");
   const [hovered, setHovered] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const trigger = document.getElementById("section-carousel");
-    if (!trigger) return;
-
-    // Apparition de la sidebar
-    const observer = new IntersectionObserver(
-      ([entry]) => setVisible(entry.isIntersecting || window.scrollY > (trigger.offsetTop - 100)),
-      { threshold: 0 }
-    );
-    observer.observe(trigger);
+    setMounted(true);
 
     // Section active au scroll
     const sectionObserver = new IntersectionObserver(
@@ -42,30 +34,15 @@ export default function SectionSidebar() {
       if (el) sectionObserver.observe(el);
     });
 
-    // Scroll listener pour afficher la sidebar
-    const onScroll = () => {
-      if (trigger) setVisible(window.scrollY >= trigger.offsetTop - 80);
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-
-    return () => {
-      observer.disconnect();
-      sectionObserver.disconnect();
-      window.removeEventListener("scroll", onScroll);
-    };
+    return () => sectionObserver.disconnect();
   }, []);
 
-  const scrollTo = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
-  };
+  if (!mounted) return null;
 
   return (
     <div
-      className="fixed right-0 top-1/2 z-40 hidden -translate-y-1/2 md:flex flex-col items-end"
-      style={{
-        transform: `translate(${visible ? "0" : "100%"}, -50%)`,
-        transition: "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-      }}
+      className="fixed right-0 top-1/2 z-50 flex flex-col items-end"
+      style={{ transform: "translate(0, -50%)" }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -87,11 +64,10 @@ export default function SectionSidebar() {
           <button
             key={id}
             type="button"
-            onClick={() => scrollTo(id)}
+            onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" })}
             className="flex items-center gap-3 rounded-lg px-2 py-2 text-left transition-all w-full"
             style={{ minWidth: "164px" }}
           >
-            {/* Dot indicateur */}
             <span
               className="shrink-0 rounded-full transition-all duration-300"
               style={{
@@ -101,7 +77,6 @@ export default function SectionSidebar() {
                 boxShadow: active === id ? "0 0 8px rgba(245,194,0,0.6)" : "none",
               }}
             />
-            {/* Label */}
             <span
               className="text-xs font-medium whitespace-nowrap transition-all duration-300"
               style={{

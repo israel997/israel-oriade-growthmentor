@@ -56,6 +56,7 @@ export default function CinematicHero() {
           src="/images/P2.PNG"
           alt=""
           fill
+          sizes="50vw"
           className="object-cover object-top"
           priority
         />

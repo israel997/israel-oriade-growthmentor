@@ -4,7 +4,7 @@ import { motion, useInView } from "framer-motion";
 import Link from "next/link";
 import { useRef } from "react";
 
-const BG = "linear-gradient(135deg, #8C8C8C 0%, #D0D0D0 55%, #B8B8B8 100%)";
+const BG = "#05092A";
 
 export default function CTASection() {
   const ref = useRef(null);
@@ -12,6 +12,9 @@ export default function CTASection() {
 
   return (
     <section className="relative overflow-hidden py-24" style={{ background: BG }}>
+      {/* Halo bleu central */}
+      <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse 70% 50% at 50% 50%, rgba(30,80,200,0.3) 0%, transparent 70%)" }} />
+
       <div className="relative mx-auto max-w-6xl px-6 lg:px-8">
         <motion.div
           ref={ref}
@@ -20,11 +23,11 @@ export default function CTASection() {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="relative overflow-hidden rounded-[32px] px-8 py-16 text-center sm:px-16"
           style={{
-            background: "rgba(255,255,255,0.5)",
+            background: "rgba(255,255,255,0.04)",
             backdropFilter: "blur(20px)",
             WebkitBackdropFilter: "blur(20px)",
-            border: "1px solid rgba(255,255,255,0.7)",
-            boxShadow: "0 8px 40px rgba(0,0,0,0.1)",
+            border: "1px solid rgba(255,255,255,0.1)",
+            boxShadow: "0 8px 40px rgba(0,0,0,0.3)",
           }}
         >
           {/* Halo or */}
@@ -35,18 +38,18 @@ export default function CTASection() {
           />
 
           <div className="relative">
-            <span className="inline-block rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-widest" style={{ background: "rgba(6,11,46,0.1)", color: "#060B2E" }}>
+            <span className="inline-block rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-widest" style={{ background: "rgba(96,165,250,0.15)", color: "#60A5FA" }}>
               Évalue ton niveau
             </span>
 
-            <h2 className="mt-5 text-3xl font-bold leading-tight text-[#111] sm:text-4xl lg:text-5xl">
+            <h2 className="mt-5 text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
               Où en es-tu vraiment ?<br />
-              <span style={{ background: "linear-gradient(90deg, #F5C200 0%, #F5C200 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+              <span style={{ display: "inline-block", background: "linear-gradient(90deg, #1A3FD8 0%, #60A5FA 60%, #1A3FD8 100%)", WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                 2 minutes pour le savoir.
               </span>
             </h2>
 
-            <p className="mx-auto mt-5 max-w-lg text-base text-[#555]">
+            <p className="mx-auto mt-5 max-w-lg text-base text-white/50">
               Mon quiz intelligent analyse ton profil et te recommande le parcours exact adapté à ton niveau et tes objectifs.
             </p>
 
@@ -63,13 +66,13 @@ export default function CTASection() {
               </Link>
               <Link
                 href="/espace-membre"
-                className="inline-flex items-center gap-2 rounded-xl border border-black/15 px-8 py-4 text-sm font-semibold text-[#111] transition-all hover:bg-black/5"
+                className="inline-flex items-center gap-2 rounded-xl border border-white/20 px-8 py-4 text-sm font-semibold text-white transition-all hover:bg-white/5"
               >
                 Rejoindre l'espace membre
               </Link>
             </div>
 
-            <p className="mt-6 text-xs text-[#777]">Gratuit · 3 minutes · Résultat immédiat</p>
+            <p className="mt-6 text-xs text-white/40">Gratuit · 3 minutes · Résultat immédiat</p>
           </div>
         </motion.div>
       </div>

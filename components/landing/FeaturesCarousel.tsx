@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
 
-const BG = "linear-gradient(135deg, #8C8C8C 0%, #D0D0D0 55%, #B8B8B8 100%)";
+const BG = "#05092A";
 
 const offers = [
   {
@@ -51,13 +51,18 @@ function FadeIn({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
 export default function FeaturesCarousel() {
   return (
     <section className="relative overflow-hidden py-24" style={{ background: BG }}>
+      {/* Grille subtile */}
+      <div aria-hidden className="pointer-events-none absolute inset-0" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)", backgroundSize: "160px 160px" }} />
+      {/* Halo bleu central */}
+      <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse 70% 50% at 50% 30%, rgba(30,80,200,0.3) 0%, transparent 70%)" }} />
+
       <div className="relative mx-auto max-w-6xl px-6 lg:px-8">
         <FadeIn>
-          <span className="inline-block rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-widest" style={{ background: "rgba(6,11,46,0.1)", color: "#060B2E" }}>
+          <span className="inline-block rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-widest" style={{ background: "rgba(96,165,250,0.15)", color: "#60A5FA" }}>
             Top offres
           </span>
-          <h2 className="mt-4 text-3xl font-bold tracking-tight text-[#111] sm:text-4xl">Choisis ton niveau, avance à ton rythme</h2>
-          <p className="mt-3 max-w-xl text-[#444]">+10 offres conçues pour aider mes mentees à construire leur business et à gagner au moins 50 000 F chaque mois.<br /><br />Voici mes meilleures recommandations.</p>
+          <h2 className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">Choisis ton niveau, avance à ton rythme</h2>
+          <p className="mt-3 max-w-xl text-white/50">+10 offres conçues pour aider mes mentees à construire leur business et à gagner au moins 50 000 F chaque mois.<br /><br />Voici mes meilleures recommandations.</p>
         </FadeIn>
 
         <div className="mt-14 grid gap-6 sm:grid-cols-3">
@@ -68,11 +73,11 @@ export default function FeaturesCarousel() {
                 transition={{ duration: 0.25 }}
                 className="relative flex h-full flex-col rounded-[24px] overflow-hidden"
                 style={{
-                  background: offer.featured ? "rgba(255,255,255,0.65)" : "rgba(255,255,255,0.45)",
+                  background: offer.featured ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.04)",
                   backdropFilter: "blur(16px)",
                   WebkitBackdropFilter: "blur(16px)",
-                  border: offer.featured ? "1.5px solid #F5C200" : "1px solid rgba(255,255,255,0.7)",
-                  boxShadow: offer.featured ? "0 0 0 1px #F5C200, 0 8px 32px rgba(0,0,0,0.1)" : "0 8px 24px rgba(0,0,0,0.08)",
+                  border: offer.featured ? "1.5px solid #F5C200" : "1px solid rgba(255,255,255,0.1)",
+                  boxShadow: offer.featured ? "0 0 0 1px #F5C200, 0 8px 32px rgba(0,0,0,0.3)" : "0 8px 24px rgba(0,0,0,0.2)",
                 }}
               >
                 {/* Image */}
@@ -94,15 +99,15 @@ export default function FeaturesCarousel() {
 
                 <div className="flex flex-col flex-1 p-7">
                 <div>
-                  <span className="inline-block rounded-full px-2.5 py-0.5 text-xs font-medium" style={{ background: "rgba(6,11,46,0.1)", color: "#060B2E" }}>
+                  <span className="inline-block rounded-full px-2.5 py-0.5 text-xs font-medium" style={{ background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.7)" }}>
                     {offer.tag}
                   </span>
-                  <h3 className="mt-3 text-xl font-bold text-[#111]">{offer.title}</h3>
-                  <p className="mt-2 text-sm text-[#555] leading-relaxed">{offer.desc}</p>
+                  <h3 className="mt-3 text-xl font-bold text-white">{offer.title}</h3>
+                  <p className="mt-2 text-sm text-white/55 leading-relaxed">{offer.desc}</p>
                 </div>
                 <ul className="mt-6 space-y-2 flex-1">
                   {offer.points.map((p) => (
-                    <li key={p} className="flex items-center gap-2 text-sm text-[#333]">
+                    <li key={p} className="flex items-center gap-2 text-sm text-white/70">
                       <svg className="h-4 w-4 shrink-0" viewBox="0 0 20 20" fill="currentColor" style={{ color: "#F5C200" }}>
                         <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414L8.414 15 3.293 9.879a1 1 0 111.414-1.414L8.414 12.172l6.879-6.879a1 1 0 011.414 0z" clipRule="evenodd" />
                       </svg>
@@ -111,11 +116,11 @@ export default function FeaturesCarousel() {
                   ))}
                 </ul>
                 <div className="mt-8 flex items-center justify-between">
-                  <span className="text-2xl font-bold text-[#111]">{offer.price}</span>
+                  <span className="text-2xl font-bold text-white">{offer.price}</span>
                   <Link
                     href={offer.href}
                     className="rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02]"
-                    style={{ background: offer.featured ? "#F5C200" : "#1a1a1a" }}
+                    style={{ background: offer.featured ? "#F5C200" : "rgba(255,255,255,0.15)" }}
                   >
                     Voir la formation
                   </Link>

@@ -3,7 +3,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 
-const BG = "#05092A";
+const BG = "linear-gradient(135deg, #8C8C8C 0%, #D0D0D0 55%, #B8B8B8 100%)";
 
 const benefits = [
   {
@@ -85,11 +85,11 @@ function BenefitCard({ b, i }: { b: typeof benefits[0]; i: number }) {
         transition={{ duration: 0.22 }}
         className="flex h-full flex-col gap-4 rounded-2xl p-6"
         style={{
-          background: "rgba(255,255,255,0.04)",
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
-          border: "1.5px solid rgba(245,194,0,0.25)",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.2)",
+          background: "rgba(255,255,255,0.55)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+          border: "1.5px solid #1A3FD8",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
         }}
       >
         <div
@@ -99,8 +99,8 @@ function BenefitCard({ b, i }: { b: typeof benefits[0]; i: number }) {
           {b.icon}
         </div>
         <div>
-          <h3 className="text-base font-bold text-white">{b.title}</h3>
-          <p className="mt-1.5 text-sm text-white/55 leading-relaxed">{b.desc}</p>
+          <h3 className="text-base font-bold text-[#111]">{b.title}</h3>
+          <p className="mt-1.5 text-sm text-[#555] leading-relaxed">{b.desc}</p>
         </div>
       </motion.div>
     </motion.div>
@@ -132,13 +132,13 @@ export default function BenefitsSection() {
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.55, ease: "easeOut" }}
         >
-          <span className="inline-block rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-widest" style={{ background: "rgba(96,165,250,0.15)", color: "#60A5FA" }}>
+          <span className="inline-block rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-widest" style={{ background: "rgba(6,11,46,0.1)", color: "#060B2E" }}>
             La plateforme
           </span>
-          <h2 className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          <h2 className="mt-4 text-3xl font-bold tracking-tight text-[#111] sm:text-4xl">
             Ce dont tu vas <em>profiter ici</em>
           </h2>
-          <p className="mt-3 max-w-xl text-white/50">
+          <p className="mt-3 max-w-xl text-[#555]">
             Tout ce qu'il te faut pour lancer, structurer et faire croître ton business — au même endroit.
           </p>
         </motion.div>
