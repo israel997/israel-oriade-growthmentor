@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const typeFilters = ["Tous", "Gratuit", "Payant", "Ebook", "Template", "Checklist"];
 const topicFilters = ["Business", "Création de Contenu", "Vente", "Marketing", "Social Media", "Développement personnel", "Design", "Tech"];
@@ -390,6 +390,64 @@ function ResourceCard({ r, i, onDetail }: { r: typeof resources[0]; i: number; o
   );
 }
 
+function WaveGrid() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    let raf: number;
+    const COLS = 28;
+    const ROWS = 18;
+    const GAP = 52;
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    const draw = (t: number) => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const offsetX = (canvas.width - (COLS - 1) * GAP) / 2;
+      const offsetY = (canvas.height - (ROWS - 1) * GAP) / 2;
+
+      for (let row = 0; row < ROWS; row++) {
+        for (let col = 0; col < COLS; col++) {
+          const wave = Math.sin(col * 0.5 + row * 0.4 + t * 0.9) * 0.5 + 0.5;
+          const alpha = 0.06 + wave * 0.22;
+          const radius = 1.2 + wave * 1.4;
+
+          ctx.beginPath();
+          ctx.arc(offsetX + col * GAP, offsetY + row * GAP, radius, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(96,165,250,${alpha.toFixed(3)})`;
+          ctx.fill();
+        }
+      }
+      raf = requestAnimationFrame((ts) => draw(ts / 1000));
+    };
+
+    raf = requestAnimationFrame((ts) => draw(ts / 1000));
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", resize);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      aria-hidden
+      className="pointer-events-none fixed inset-0"
+      style={{ opacity: 0.9 }}
+    />
+  );
+}
+
 function FilterBtn({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
   const [hovered, setHovered] = useState(false);
   return (
@@ -428,30 +486,7 @@ export default function RessourcesPage() {
           <ResourceModal r={selectedResource} onClose={() => setSelectedResource(null)} />
         )}
       </AnimatePresence>
-      {/* Orbital bg */}
-      <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" style={{ width: "clamp(260px, 70vw, 600px)", height: "clamp(260px, 70vw, 600px)", background: "radial-gradient(circle, rgba(26,63,216,0.14) 0%, rgba(59,130,246,0.06) 40%, transparent 70%)", borderRadius: "50%" }} />
-        <motion.div animate={{ rotate: 360 }} transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
-          className="absolute" style={{ width: "clamp(220px, 48vw, 480px)", height: "clamp(220px, 48vw, 480px)", left: "clamp(-180px, -20vw, -90px)", top: "50%", translateY: "-50%" }}>
-          <svg viewBox="0 0 480 480" fill="none" style={{ width: "100%", height: "100%" }}>
-            <ellipse cx="240" cy="240" rx="230" ry="230" stroke="rgba(96,165,250,0.1)" strokeWidth="1.5" />
-            <circle cx="240" cy="10" r="5" fill="rgba(96,165,250,0.5)" />
-            <circle cx="470" cy="240" r="4" fill="rgba(139,92,246,0.45)" />
-            <circle cx="240" cy="470" r="5" fill="rgba(59,130,246,0.35)" />
-            <circle cx="10" cy="240" r="3" fill="rgba(96,165,250,0.3)" />
-          </svg>
-        </motion.div>
-        <motion.div animate={{ rotate: -360 }} transition={{ duration: 45, repeat: Infinity, ease: "linear" }}
-          className="absolute hidden sm:block" style={{ width: "clamp(320px, 58vw, 640px)", height: "clamp(320px, 58vw, 640px)", right: "clamp(-280px, -30vw, -140px)", top: "50%", translateY: "-50%" }}>
-          <svg viewBox="0 0 640 640" fill="none" style={{ width: "100%", height: "100%" }}>
-            <ellipse cx="320" cy="320" rx="310" ry="310" stroke="rgba(139,92,246,0.08)" strokeWidth="1.5" />
-            <circle cx="320" cy="10" r="6" fill="rgba(139,92,246,0.45)" />
-            <circle cx="630" cy="320" r="4" fill="rgba(96,165,250,0.35)" />
-            <circle cx="320" cy="630" r="5" fill="rgba(59,130,246,0.3)" />
-            <circle cx="10" cy="320" r="3" fill="rgba(139,92,246,0.25)" />
-          </svg>
-        </motion.div>
-      </div>
+      <WaveGrid />
 
       <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8">
 

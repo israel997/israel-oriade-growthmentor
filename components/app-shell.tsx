@@ -64,12 +64,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden items-center gap-1 md:flex">
+          <nav className="hidden items-center md:flex">
             {navLinks.map(([label, href]) => (
               <Link
                 key={href}
                 href={href}
-                className="px-4 py-2 text-sm font-medium transition-colors border-b-2 border-transparent hover:border-[#F5C200]"
+                className="px-2.5 py-2 text-sm font-medium transition-colors border-b-2 border-transparent hover:border-[#F5C200]"
                 style={{
                   color: pathname === href ? "#F5C200" : "rgba(255,255,255,0.85)",
                   background: "transparent",
