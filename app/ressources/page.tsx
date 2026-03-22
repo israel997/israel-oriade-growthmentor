@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import WaveGridBg from "@/components/wave-grid-bg";
 
 const typeFilters = ["Tous", "Gratuit", "Payant", "Ebook", "Template", "Checklist"];
 const topicFilters = ["Business", "Création de Contenu", "Vente", "Marketing", "Social Media", "Développement personnel", "Design", "Tech"];
@@ -390,79 +391,23 @@ function ResourceCard({ r, i, onDetail }: { r: typeof resources[0]; i: number; o
   );
 }
 
-function WaveGrid() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let raf: number;
-    const COLS = 28;
-    const ROWS = 18;
-    const GAP = 52;
-
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    resize();
-    window.addEventListener("resize", resize);
-
-    const draw = (t: number) => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const offsetX = (canvas.width - (COLS - 1) * GAP) / 2;
-      const offsetY = (canvas.height - (ROWS - 1) * GAP) / 2;
-
-      for (let row = 0; row < ROWS; row++) {
-        for (let col = 0; col < COLS; col++) {
-          const wave = Math.sin(col * 0.5 + row * 0.4 + t * 0.9) * 0.5 + 0.5;
-          const alpha = 0.06 + wave * 0.22;
-          const radius = 1.2 + wave * 1.4;
-
-          ctx.beginPath();
-          ctx.arc(offsetX + col * GAP, offsetY + row * GAP, radius, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(96,165,250,${alpha.toFixed(3)})`;
-          ctx.fill();
-        }
-      }
-      raf = requestAnimationFrame((ts) => draw(ts / 1000));
-    };
-
-    raf = requestAnimationFrame((ts) => draw(ts / 1000));
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("resize", resize);
-    };
-  }, []);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      aria-hidden
-      className="pointer-events-none fixed inset-0"
-      style={{ opacity: 0.9 }}
-    />
-  );
-}
 
 function FilterBtn({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
-  const [hovered, setHovered] = useState(false);
   return (
     <button
       onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className="rounded-xl px-5 py-2.5 text-sm font-medium transition-all"
-      style={{
-        background: "transparent",
-        color: active ? "#fff" : hovered ? "#60A5FA" : "rgba(255,255,255,0.4)",
-        border: "none",
-      }}
+      className="relative px-4 py-2 text-sm font-medium transition-colors"
+      style={{ color: active ? "#60A5FA" : "rgba(255,255,255,0.50)" }}
     >
       {label}
+      {active && (
+        <motion.span
+          layoutId="ressources-filter-bar"
+          className="absolute bottom-0 left-0 right-0 h-0.5 rounded-full"
+          style={{ background: "#3B82F6" }}
+          transition={{ duration: 0.22 }}
+        />
+      )}
     </button>
   );
 }
@@ -486,7 +431,7 @@ export default function RessourcesPage() {
           <ResourceModal r={selectedResource} onClose={() => setSelectedResource(null)} />
         )}
       </AnimatePresence>
-      <WaveGrid />
+      <WaveGridBg />
 
       <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 lg:px-8">
 
@@ -506,10 +451,12 @@ export default function RessourcesPage() {
 
         {/* Filter bar */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.15 }}
-          className="mt-10 flex items-center justify-center gap-2">
-          {["Tous", "Gratuit", "Payant"].map((f) => (
-            <FilterBtn key={f} label={f} active={activeType === f} onClick={() => setActiveType(f)} />
-          ))}
+          className="mt-10 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-1">
+            {["Tous", "Gratuit", "Payant"].map((f) => (
+              <FilterBtn key={f} label={f} active={activeType === f} onClick={() => setActiveType(f)} />
+            ))}
+          </div>
 
           {/* Filter icon */}
           <button

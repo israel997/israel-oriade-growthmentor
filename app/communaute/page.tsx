@@ -2,6 +2,105 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+
+// ── Hex Grid bg ─────────────────────────────────────────────────────────────
+function HexGrid() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d", { alpha: false });
+    if (!ctx) return;
+
+    let rafId: number;
+    let lastTs = 0;
+    const FRAME_MS = 1000 / 30;
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      lastTs = 0;
+    };
+    resize();
+    window.addEventListener("resize", resize, { passive: true });
+
+    const hexagons = Array.from({ length: 18 }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      baseR: 24 + Math.random() * 90,
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.3 + Math.random() * 0.5,
+      deformSpeed: 0.8 + Math.random() * 0.7,
+      baseAlpha: 0.04 + Math.random() * 0.09,
+      color: ["96,165,250", "99,102,241", "59,130,246", "139,92,246"][
+        Math.floor(Math.random() * 4)
+      ],
+    }));
+
+    const drawHex = (
+      x: number, y: number, baseR: number,
+      phase: number, t: number,
+      deformSpeed: number, alpha: number, color: string
+    ) => {
+      ctx.beginPath();
+      for (let v = 0; v < 6; v++) {
+        const angle = (Math.PI / 3) * v - Math.PI / 6;
+        const deform = 1 + 0.18 * Math.sin(t * deformSpeed + phase + v * 1.05);
+        const r = baseR * deform;
+        const vx = x + r * Math.cos(angle);
+        const vy = y + r * Math.sin(angle);
+        v === 0 ? ctx.moveTo(vx, vy) : ctx.lineTo(vx, vy);
+      }
+      ctx.closePath();
+      ctx.strokeStyle = `rgba(${color},${alpha})`;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    };
+
+    const draw = (t: number) => {
+      ctx.fillStyle = "#03071A";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      for (const h of hexagons) {
+        const alpha = h.baseAlpha * (0.45 + 0.55 * Math.sin(t * h.speed + h.phase));
+        drawHex(h.x, h.y, h.baseR, h.phase, t, h.deformSpeed, alpha, h.color);
+      }
+    };
+
+    const loop = (ts: number) => {
+      rafId = requestAnimationFrame(loop);
+      if (ts - lastTs < FRAME_MS) return;
+      lastTs = ts;
+      draw(ts / 1000);
+    };
+    rafId = requestAnimationFrame(loop);
+
+    const onVisibility = () => {
+      if (document.hidden) {
+        cancelAnimationFrame(rafId);
+      } else {
+        lastTs = 0;
+        rafId = requestAnimationFrame(loop);
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("resize", resize);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="pointer-events-none fixed inset-0 z-0"
+      aria-hidden
+    />
+  );
+}
 
 // ── Fade-in helper ──────────────────────────────────────────────────────────
 function FadeIn({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
@@ -124,35 +223,65 @@ const testimonials = [
   },
 ];
 
+// ── Network Card ────────────────────────────────────────────────────────────
+function NetworkCard({ n, i }: { n: typeof networks[0]; i: number }) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <FadeIn delay={i * 0.08}>
+      <motion.div
+        onHoverStart={() => setHovered(true)}
+        onHoverEnd={() => setHovered(false)}
+        animate={{ y: hovered ? -6 : 0 }}
+        transition={{ duration: 0.25 }}
+        className="relative flex flex-col items-center gap-5 overflow-hidden rounded-3xl p-7 text-center"
+        style={{
+          background: "rgba(255,255,255,0.04)",
+          border: `1px solid ${hovered ? n.color + "70" : "rgba(255,255,255,0.08)"}`,
+          backdropFilter: "blur(16px)",
+          boxShadow: hovered
+            ? `0 0 32px ${n.color}35, 0 8px 40px ${n.color}18`
+            : "none",
+          transition: "box-shadow 0.35s ease, border-color 0.35s ease",
+        }}
+      >
+        {/* Radial glow overlay en haut de la card */}
+        <motion.div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 rounded-3xl"
+          animate={{ opacity: hovered ? 1 : 0 }}
+          transition={{ duration: 0.35 }}
+          style={{
+            background: `radial-gradient(ellipse 80% 60% at 50% -10%, ${n.color}28 0%, transparent 70%)`,
+          }}
+        />
+
+        <span style={{ color: n.color }}>{n.icon}</span>
+        <div>
+          <p className="text-3xl font-bold text-white">{n.stat}</p>
+          <p className="text-xs text-white/40 mt-0.5">{n.label}</p>
+          <p className="text-sm font-semibold text-white/70 mt-1">{n.name}</p>
+        </div>
+        <Link
+          href={n.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="relative z-10 w-full rounded-xl py-2.5 text-sm font-semibold text-white transition-all hover:opacity-90 hover:scale-[1.02]"
+          style={{ background: n.color }}
+        >
+          {n.action}
+        </Link>
+      </motion.div>
+    </FadeIn>
+  );
+}
+
 // ── Page ────────────────────────────────────────────────────────────────────
 export default function CommunautePage() {
   return (
     <div className="min-h-screen" style={{ background: "#03071A" }}>
 
-      {/* ── Breath glow bg ── */}
-      <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
-        {/* Glow centre — respiration principale */}
-        <motion.div
-          animate={{ scale: [1, 1.18, 1], opacity: [0.18, 0.32, 0.18] }}
-          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
-          style={{ width: "clamp(320px, 60vw, 700px)", height: "clamp(320px, 60vw, 700px)", background: "radial-gradient(circle, rgba(26,63,216,1) 0%, rgba(59,130,246,0.5) 35%, transparent 70%)", filter: "blur(40px)" }}
-        />
-        {/* Glow haut gauche — décalé */}
-        <motion.div
-          animate={{ scale: [1, 1.22, 1], opacity: [0.1, 0.2, 0.1] }}
-          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
-          className="absolute rounded-full"
-          style={{ width: "clamp(200px, 40vw, 480px)", height: "clamp(200px, 40vw, 480px)", top: "-5%", left: "-5%", background: "radial-gradient(circle, rgba(99,102,241,1) 0%, rgba(139,92,246,0.4) 40%, transparent 70%)", filter: "blur(50px)" }}
-        />
-        {/* Glow bas droite */}
-        <motion.div
-          animate={{ scale: [1, 1.15, 1], opacity: [0.1, 0.22, 0.1] }}
-          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 3 }}
-          className="absolute rounded-full"
-          style={{ width: "clamp(180px, 35vw, 420px)", height: "clamp(180px, 35vw, 420px)", bottom: "0%", right: "-5%", background: "radial-gradient(circle, rgba(59,130,246,1) 0%, rgba(26,63,216,0.4) 40%, transparent 70%)", filter: "blur(45px)" }}
-        />
-      </div>
+      <HexGrid />
 
       {/* ── HERO ── */}
       <section className="relative mx-auto max-w-4xl px-6 py-24 text-center">
@@ -186,34 +315,7 @@ export default function CommunautePage() {
         </FadeIn>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {networks.map((n, i) => (
-            <FadeIn key={n.name} delay={i * 0.08}>
-              <motion.div
-                whileHover={{ y: -6 }}
-                transition={{ duration: 0.25 }}
-                className="flex flex-col items-center gap-5 rounded-3xl p-7 text-center"
-                style={{
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                  backdropFilter: "blur(16px)",
-                }}
-              >
-                <span style={{ color: n.color }}>{n.icon}</span>
-                <div>
-                  <p className="text-3xl font-bold text-white">{n.stat}</p>
-                  <p className="text-xs text-white/40 mt-0.5">{n.label}</p>
-                  <p className="text-sm font-semibold text-white/70 mt-1">{n.name}</p>
-                </div>
-                <Link
-                  href={n.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full rounded-xl py-2.5 text-sm font-semibold text-white transition-all hover:opacity-90 hover:scale-[1.02]"
-                  style={{ background: n.color }}
-                >
-                  {n.action}
-                </Link>
-              </motion.div>
-            </FadeIn>
+            <NetworkCard key={n.name} n={n} i={i} />
           ))}
         </div>
       </section>

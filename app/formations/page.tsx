@@ -4,63 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { formationCards, type FormationCard } from "@/lib/site-data";
-
-// ─── Wave Grid Canvas ────────────────────────────────────────────────────────
-const COLS = 28;
-const ROWS = 18;
-const GAP = 38;
-
-function WaveGrid() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    let rafId: number;
-
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    resize();
-    window.addEventListener("resize", resize);
-
-    const draw = (t: number) => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const offsetX = (canvas.width - (COLS - 1) * GAP) / 2;
-      const offsetY = (canvas.height - (ROWS - 1) * GAP) / 2;
-      for (let row = 0; row < ROWS; row++) {
-        for (let col = 0; col < COLS; col++) {
-          const wave = Math.sin(col * 0.5 + row * 0.4 + t * 0.9) * 0.5 + 0.5;
-          const alpha = 0.06 + wave * 0.22;
-          const radius = 1.2 + wave * 1.4;
-          ctx.beginPath();
-          ctx.arc(offsetX + col * GAP, offsetY + row * GAP, radius, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(96,165,250,${alpha})`;
-          ctx.fill();
-        }
-      }
-      rafId = requestAnimationFrame((ts) => draw(ts / 1000));
-    };
-    rafId = requestAnimationFrame((ts) => draw(ts / 1000));
-
-    return () => {
-      cancelAnimationFrame(rafId);
-      window.removeEventListener("resize", resize);
-    };
-  }, []);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      className="pointer-events-none fixed inset-0 z-0"
-      aria-hidden
-    />
-  );
-}
+import WaveGridBg from "@/components/wave-grid-bg";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 const typeColor: Record<FormationCard["type"], string> = {
@@ -578,8 +522,8 @@ export default function FormationsPage() {
   })();
 
   return (
-    <div className="relative min-h-screen" style={{ background: "#060B2E" }}>
-      <WaveGrid />
+    <div className="relative min-h-screen" style={{ background: "#03071A" }}>
+      <WaveGridBg />
 
       <div className="relative z-10 mx-auto max-w-6xl px-6 py-20 lg:px-8">
 
@@ -588,7 +532,7 @@ export default function FormationsPage() {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.55, ease: "easeOut" }}
-          className="mb-14"
+          className="mb-14 text-center"
         >
           <span
             className="inline-block rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-widest"
@@ -599,7 +543,7 @@ export default function FormationsPage() {
           <h1 className="mt-4 text-4xl font-bold tracking-tight text-white sm:text-5xl">
             Choisis ton programme
           </h1>
-          <p className="mt-3 max-w-xl text-white/50">
+          <p className="mt-3 mx-auto max-w-xl text-white/50">
             Formations, masterclasses et accompagnements pour lancer et scaler ton business digital.
           </p>
         </motion.div>
