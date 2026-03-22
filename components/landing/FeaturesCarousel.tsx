@@ -126,7 +126,7 @@ export default function FeaturesCarousel() {
                   <Link
                     href={offer.href}
                     className="rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02]"
-                    style={{ background: offer.featured ? "#F5C200" : "rgba(255,255,255,0.15)" }}
+                    style={{ background: offer.featured ? "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" : "rgba(255,255,255,0.15)" }}
                   >
                     Voir la formation
                   </Link>

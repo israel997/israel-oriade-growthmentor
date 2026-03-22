@@ -135,8 +135,8 @@ export default function OnboardingModal({ onSaved }: { onSaved: (name: string) =
                   disabled={!canProceedName}
                   className="mt-4 w-full rounded-xl py-3.5 text-sm font-semibold text-black transition-all"
                   style={{
-                    background: canProceedName ? "#F5C200" : "rgba(255,255,255,0.08)",
-                    color: canProceedName ? "#000" : "rgba(255,255,255,0.25)",
+                    background: canProceedName ? "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" : "rgba(255,255,255,0.08)",
+                    color: canProceedName ? "#fff" : "rgba(255,255,255,0.25)",
                   }}
                 >
                   Continuer

@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 
-const BG = "linear-gradient(135deg, #8C8C8C 0%, #D0D0D0 55%, #B8B8B8 100%)";
+const BG = "#060B2E";
 
 const images = [
   "/images/P3.jpeg",
@@ -52,11 +52,11 @@ export default function TestimonialsSection() {
         >
           <span
             className="inline-block rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-widest"
-            style={{ background: "rgba(6,11,46,0.1)", color: "#060B2E" }}
+            style={{ background: "rgba(96,165,250,0.15)", color: "#60A5FA" }}
           >
             Témoignages
           </span>
-          <h2 className="mt-4 text-3xl font-bold tracking-tight text-[#111] sm:text-4xl">
+          <h2 className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
             Ils ont fait le saut. Et ça a marché.
           </h2>
         </motion.div>

@@ -49,12 +49,12 @@ export default function SectionSidebar() {
       <div
         className="flex flex-col gap-1 py-3 px-2 rounded-l-2xl"
         style={{
-          background: "rgba(6,11,46,0.92)",
+          background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)",
           backdropFilter: "blur(16px)",
           WebkitBackdropFilter: "blur(16px)",
-          border: "1px solid rgba(255,255,255,0.08)",
+          border: "none",
           borderRight: "none",
-          boxShadow: "-4px 0 24px rgba(0,0,0,0.3)",
+          boxShadow: "-4px 0 24px rgba(26,63,216,0.4)",
           width: hovered ? "180px" : "40px",
           transition: "width 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
           overflow: "hidden",

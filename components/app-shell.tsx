@@ -93,8 +93,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
             <Link
               href="/espace-membre"
-              className="hidden items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-black transition-transform hover:scale-[1.02] md:inline-flex"
-              style={{ background: "#F5C200" }}
+              className="hidden items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white transition-transform hover:scale-[1.02] md:inline-flex"
+              style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
@@ -138,10 +138,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               ))}
             </nav>
             <div className="mt-3 grid gap-2">
-              <Link href="/diagnostic" className="rounded-lg border border-black/15 px-3 py-2.5 text-center text-sm font-semibold text-[#111]">
+              <Link href="/diagnostic" className="rounded-lg border border-white/20 px-3 py-2.5 text-center text-sm font-semibold text-white">
                 Évaluer mon niveau
               </Link>
-              <Link href="/espace-membre" className="rounded-lg px-3 py-2.5 text-center text-sm font-semibold text-black" style={{ background: "#F5C200" }}>
+              <Link href="/espace-membre" className="rounded-lg px-3 py-2.5 text-center text-sm font-semibold text-white" style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}>
                 Mon espace
               </Link>
             </div>
@@ -151,14 +151,14 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
       <main className="w-full">{children}</main>
 
-      <footer className="relative overflow-hidden border-t border-black/10 px-6 py-10" style={{ background: "linear-gradient(135deg, #8C8C8C 0%, #D0D0D0 55%, #B8B8B8 100%)" }}>
+      <footer className="relative overflow-hidden border-t border-white/10 px-6 py-10" style={{ background: "#060B2E" }}>
         <div className="relative mx-auto max-w-6xl flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
-          <p className="text-sm font-semibold" style={{ color: "#070F3C" }}>Israël Oriadé</p>
-          <p className="text-xs text-[#666]">© 2026 GrowthMentor · Plateforme d'accompagnement personnalisée</p>
-          <div className="flex gap-4 text-xs text-[#666]">
-            <Link href="/blog" className="hover:text-black transition-colors">Blog</Link>
-            <Link href="/formations" className="hover:text-black transition-colors">Formations</Link>
-            <Link href="/discussion" className="hover:text-black transition-colors">Contact</Link>
+          <p className="text-sm font-semibold text-white">Israël Oriadé</p>
+          <p className="text-xs text-white/40">© 2026 GrowthMentor · Plateforme d'accompagnement personnalisée</p>
+          <div className="flex gap-4 text-xs text-white/40">
+            <Link href="/blog" className="hover:text-white transition-colors">Blog</Link>
+            <Link href="/formations" className="hover:text-white transition-colors">Formations</Link>
+            <Link href="/discussion" className="hover:text-white transition-colors">Contact</Link>
           </div>
         </div>
       </footer>

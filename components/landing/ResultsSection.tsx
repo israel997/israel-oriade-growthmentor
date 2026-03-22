@@ -108,9 +108,9 @@ function StatCard({ s, delay }: { s: typeof stats[0]; delay: number }) {
         transition={{ duration: 0.22 }}
         className="flex h-full flex-col rounded-2xl p-8"
         style={{
-          background: "linear-gradient(135deg, #05092A 0%, #0D1B5E 60%, #07103A 100%)",
+          background: "rgba(255,255,255,0.04)",
           border: "1px solid rgba(255,255,255,0.08)",
-          boxShadow: "0 4px 24px rgba(0,0,0,0.4)",
+          boxShadow: "0 4px 24px rgba(0,0,0,0.2)",
         }}
       >
         <div className="flex items-center gap-3">
@@ -153,7 +153,7 @@ export default function ResultsSection() {
   return (
     <section
       className="relative overflow-hidden py-24"
-      style={{ background: "linear-gradient(135deg, #2E2E2E 0%, #424242 55%, #383838 100%)" }}
+      style={{ background: "#060B2E" }}
     >
       {/* Motif dots bleu */}
       <div

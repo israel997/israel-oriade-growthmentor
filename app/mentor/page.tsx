@@ -101,7 +101,7 @@ export default function MentorPage() {
             </motion.p>
 
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.38 }} className="mt-10 flex flex-wrap gap-4">
-              <Link href="/diagnostic" className="group inline-flex items-center gap-2 rounded-xl px-6 py-3.5 text-sm font-semibold text-black transition-transform hover:scale-[1.02]" style={{ background: "#F5C200" }}>
+              <Link href="/diagnostic" className="group inline-flex items-center gap-2 rounded-xl px-6 py-3.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02]" style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}>
                 Évaluer mon niveau
                 <svg className="h-4 w-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
               </Link>
@@ -222,7 +222,7 @@ export default function MentorPage() {
               Commence par évaluer ton niveau. Je t'indiquerai le chemin le plus direct pour atteindre tes objectifs.
             </p>
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <Link href="/diagnostic" className="group inline-flex items-center gap-2 rounded-xl px-7 py-4 text-sm font-semibold text-black transition-transform hover:scale-[1.02]" style={{ background: "#F5C200" }}>
+              <Link href="/diagnostic" className="group inline-flex items-center gap-2 rounded-xl px-7 py-4 text-sm font-semibold text-white transition-transform hover:scale-[1.02]" style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}>
                 Faire mon diagnostic gratuit
                 <svg className="h-4 w-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg>
               </Link>

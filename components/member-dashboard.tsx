@@ -122,8 +122,8 @@ export default function MemberDashboard() {
                     onClick={() => setAuthTab(tab)}
                     className="flex-1 rounded-lg py-2.5 text-sm font-semibold transition-all"
                     style={{
-                      background: authTab === tab ? "#F5C200" : "transparent",
-                      color: authTab === tab ? "#000" : "rgba(255,255,255,0.5)",
+                      background: authTab === tab ? "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" : "transparent",
+                      color: authTab === tab ? "#fff" : "rgba(255,255,255,0.5)",
                     }}
                   >
                     {tab === "login" ? "Se connecter" : "Créer un compte"}
@@ -171,8 +171,8 @@ export default function MemberDashboard() {
 
                 <button
                   onClick={login}
-                  className="mt-2 w-full rounded-xl py-3.5 text-sm font-semibold text-black transition-transform hover:scale-[1.02]"
-                  style={{ background: "#F5C200" }}
+                  className="mt-2 w-full rounded-xl py-3.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02]"
+                  style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}
                 >
                   {authTab === "login" ? "Se connecter" : "Créer mon compte"}
                 </button>

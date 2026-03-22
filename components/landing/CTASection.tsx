@@ -56,8 +56,8 @@ export default function CTASection() {
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
                 href="/diagnostic"
-                className="group inline-flex items-center gap-2 rounded-xl px-8 py-4 text-sm font-semibold text-black transition-transform hover:scale-[1.03] active:scale-[0.98]"
-                style={{ background: "#F5C200" }}
+                className="group inline-flex items-center gap-2 rounded-xl px-8 py-4 text-sm font-semibold text-white transition-transform hover:scale-[1.03] active:scale-[0.98]"
+                style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}
               >
                 Faire le quiz maintenant
                 <svg className="h-4 w-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

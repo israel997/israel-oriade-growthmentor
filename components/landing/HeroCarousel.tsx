@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
-const BG = "linear-gradient(135deg, #8C8C8C 0%, #D0D0D0 55%, #B8B8B8 100%)";
+const BG = "linear-gradient(135deg, #0D1B5E 0%, #1A3FD8 50%, #0A1240 100%)";
 
 const slides = [
   {
@@ -53,10 +53,10 @@ export default function HeroCarousel() {
         <div
           className="overflow-hidden rounded-3xl p-8 sm:p-12"
           style={{
-            background: "rgba(255,255,255,0.35)",
+            background: "rgba(5,9,42,0.75)",
             backdropFilter: "blur(16px)",
             WebkitBackdropFilter: "blur(16px)",
-            border: "1px solid rgba(255,255,255,0.6)",
+            border: "1px solid rgba(255,255,255,0.1)",
             boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
           }}
         >
@@ -71,18 +71,18 @@ export default function HeroCarousel() {
             >
               <span
                 className="inline-block rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-widest"
-                style={{ background: "rgba(6,11,46,0.1)", color: "#060B2E" }}
+                style={{ background: "rgba(96,165,250,0.15)", color: "#60A5FA" }}
               >
                 {slide.tag}
               </span>
-              <h2 className="mt-4 whitespace-pre-line text-3xl font-bold leading-tight tracking-tight text-[#111] sm:text-4xl lg:text-5xl">
+              <h2 className="mt-4 whitespace-pre-line text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl lg:text-5xl">
                 {slide.title}
               </h2>
-              <p className="mt-4 max-w-lg text-base text-[#444] sm:text-lg">{slide.desc}</p>
+              <p className="mt-4 max-w-lg text-base text-white/60 sm:text-lg">{slide.desc}</p>
               <Link
                 href={slide.cta.href}
-                className="mt-8 inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-black transition-transform hover:scale-[1.02]"
-                style={{ background: "#F5C200" }}
+                className="mt-8 inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-white transition-transform hover:scale-[1.02]"
+                style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}
               >
                 {slide.cta.label}
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -102,7 +102,7 @@ export default function HeroCarousel() {
                 className="h-2 rounded-full transition-all duration-300"
                 style={{
                   width: current === i ? "2.5rem" : "0.5rem",
-                  background: current === i ? "#F5C200" : "rgba(0,0,0,0.2)",
+                  background: current === i ? "#3B82F6" : "rgba(0,0,0,0.2)",
                 }}
               />
             ))}

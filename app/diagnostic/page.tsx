@@ -333,8 +333,8 @@ function HowItWorks({ onClose }: { onClose: () => void }) {
         </div>
         <button
           onClick={onClose}
-          className="mt-8 w-full rounded-xl py-3 text-sm font-semibold text-black"
-          style={{ background: "#F5C200" }}
+          className="mt-8 w-full rounded-xl py-3 text-sm font-semibold text-white"
+          style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}
         >
           J'ai compris, je commence
         </button>
@@ -391,18 +391,15 @@ export default function QuizPage() {
   const profile = computeProfile(finalScores, answers);
 
   return (
-    <div className="min-h-screen" style={{ background: "#05092A" }}>
-      {/* Grain */}
-      <div
-        aria-hidden
-        className="pointer-events-none fixed inset-0 opacity-[0.3]"
-        style={{
-          backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E\")",
-          backgroundRepeat: "repeat",
-          backgroundSize: "300px 300px",
-        }}
-      />
-      <div aria-hidden className="pointer-events-none fixed inset-0" style={{ background: "radial-gradient(ellipse 80% 60% at 50% 20%, rgba(30,80,200,0.25) 0%, transparent 70%)" }} />
+    <div className="min-h-screen" style={{ background: "#03071A" }}>
+      {/* Vagues fluides — couche 1 bas gauche */}
+      <div aria-hidden className="pointer-events-none fixed inset-0" style={{ background: "radial-gradient(ellipse 140% 70% at -10% 110%, rgba(26,63,216,0.55) 0%, transparent 55%)" }} />
+      {/* Vagues fluides — couche 2 haut droite */}
+      <div aria-hidden className="pointer-events-none fixed inset-0" style={{ background: "radial-gradient(ellipse 100% 60% at 110% -10%, rgba(30,80,200,0.45) 0%, transparent 55%)" }} />
+      {/* Vagues fluides — couche 3 centre */}
+      <div aria-hidden className="pointer-events-none fixed inset-0" style={{ background: "radial-gradient(ellipse 80% 40% at 50% 60%, rgba(13,27,94,0.6) 0%, transparent 65%)" }} />
+      {/* Vagues fluides — couche 4 milieu gauche */}
+      <div aria-hidden className="pointer-events-none fixed inset-0" style={{ background: "radial-gradient(ellipse 60% 50% at 15% 45%, rgba(59,130,246,0.2) 0%, transparent 60%)" }} />
 
       <AnimatePresence mode="wait">
         {showHow && <HowItWorks key="how" onClose={() => setShowHow(false)} />}
@@ -434,8 +431,8 @@ export default function QuizPage() {
               <div className="mt-10 flex flex-col items-center gap-4">
                 <button
                   onClick={() => setPhase("quiz")}
-                  className="group inline-flex items-center gap-2 rounded-xl px-8 py-4 text-base font-semibold text-black transition-transform hover:scale-[1.02]"
-                  style={{ background: "#F5C200" }}
+                  className="group inline-flex items-center gap-2 rounded-xl px-8 py-4 text-base font-semibold text-white transition-transform hover:scale-[1.02]"
+                  style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}
                 >
                   Commencer l'évaluation
                   <svg className="h-5 w-5 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -572,8 +569,8 @@ export default function QuizPage() {
                       whileTap={hasAnswered ? { scale: 0.97 } : {}}
                       className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold transition-all"
                       style={{
-                        background: hasAnswered ? "#F5C200" : "rgba(255,255,255,0.06)",
-                        color: hasAnswered ? "#000" : "rgba(255,255,255,0.25)",
+                        background: hasAnswered ? "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" : "rgba(255,255,255,0.06)",
+                        color: hasAnswered ? "#fff" : "rgba(255,255,255,0.25)",
                         cursor: hasAnswered ? "pointer" : "not-allowed",
                       }}
                     >
@@ -596,6 +593,99 @@ export default function QuizPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
             >
+              {/* Orbital ring decorations */}
+              <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
+                {/* Left orbit ring inner */}
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
+                  className="absolute"
+                  style={{
+                    width: "clamp(200px, 45vw, 420px)",
+                    height: "clamp(200px, 45vw, 420px)",
+                    left: "clamp(-160px, -18vw, -80px)",
+                    top: "50%",
+                    translateY: "-50%",
+                  }}
+                >
+                  <svg viewBox="0 0 420 420" fill="none" style={{ width: "100%", height: "100%" }}>
+                    <ellipse cx="210" cy="210" rx="200" ry="200" stroke="rgba(96,165,250,0.13)" strokeWidth="1.5" />
+                    <circle cx="210" cy="10" r="6" fill="rgba(96,165,250,0.55)" />
+                    <circle cx="410" cy="210" r="4" fill="rgba(139,92,246,0.5)" />
+                    <circle cx="210" cy="410" r="5" fill="rgba(59,130,246,0.4)" />
+                    <circle cx="10" cy="210" r="4" fill="rgba(96,165,250,0.35)" />
+                  </svg>
+                </motion.div>
+                {/* Left orbit ring outer — hidden on small screens */}
+                <motion.div
+                  animate={{ rotate: -360 }}
+                  transition={{ duration: 42, repeat: Infinity, ease: "linear" }}
+                  className="absolute hidden sm:block"
+                  style={{
+                    width: "clamp(300px, 55vw, 600px)",
+                    height: "clamp(300px, 55vw, 600px)",
+                    left: "clamp(-260px, -28vw, -140px)",
+                    top: "50%",
+                    translateY: "-50%",
+                  }}
+                >
+                  <svg viewBox="0 0 600 600" fill="none" style={{ width: "100%", height: "100%" }}>
+                    <ellipse cx="300" cy="300" rx="290" ry="290" stroke="rgba(59,130,246,0.07)" strokeWidth="1" />
+                    <circle cx="300" cy="10" r="5" fill="rgba(59,130,246,0.3)" />
+                    <circle cx="590" cy="300" r="3" fill="rgba(96,165,250,0.25)" />
+                  </svg>
+                </motion.div>
+                {/* Right orbit ring inner */}
+                <motion.div
+                  animate={{ rotate: -360 }}
+                  transition={{ duration: 32, repeat: Infinity, ease: "linear" }}
+                  className="absolute"
+                  style={{
+                    width: "clamp(200px, 48vw, 460px)",
+                    height: "clamp(200px, 48vw, 460px)",
+                    right: "clamp(-180px, -20vw, -80px)",
+                    top: "50%",
+                    translateY: "-50%",
+                  }}
+                >
+                  <svg viewBox="0 0 460 460" fill="none" style={{ width: "100%", height: "100%" }}>
+                    <ellipse cx="230" cy="230" rx="220" ry="220" stroke="rgba(139,92,246,0.12)" strokeWidth="1.5" />
+                    <circle cx="230" cy="10" r="6" fill="rgba(139,92,246,0.55)" />
+                    <circle cx="450" cy="230" r="4" fill="rgba(96,165,250,0.4)" />
+                    <circle cx="230" cy="450" r="5" fill="rgba(139,92,246,0.35)" />
+                    <circle cx="10" cy="230" r="4" fill="rgba(59,130,246,0.3)" />
+                  </svg>
+                </motion.div>
+                {/* Right orbit ring outer — hidden on small screens */}
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+                  className="absolute hidden sm:block"
+                  style={{
+                    width: "clamp(380px, 60vw, 650px)",
+                    height: "clamp(380px, 60vw, 650px)",
+                    right: "clamp(-310px, -34vw, -160px)",
+                    top: "50%",
+                    translateY: "-50%",
+                  }}
+                >
+                  <svg viewBox="0 0 650 650" fill="none" style={{ width: "100%", height: "100%" }}>
+                    <ellipse cx="325" cy="325" rx="315" ry="315" stroke="rgba(96,165,250,0.05)" strokeWidth="1" />
+                    <circle cx="325" cy="10" r="4" fill="rgba(96,165,250,0.2)" />
+                    <circle cx="640" cy="325" r="3" fill="rgba(139,92,246,0.2)" />
+                  </svg>
+                </motion.div>
+                {/* Center glow orb */}
+                <div
+                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                  style={{
+                    width: "clamp(180px, 60vw, 320px)",
+                    height: "clamp(180px, 60vw, 320px)",
+                    background: "radial-gradient(circle, rgba(59,130,246,0.1) 0%, rgba(139,92,246,0.05) 40%, transparent 70%)",
+                    borderRadius: "50%",
+                  }}
+                />
+              </div>
               {/* Badge niveau */}
               <div className="text-center mb-10">
                 <motion.div
@@ -680,8 +770,8 @@ export default function QuizPage() {
                     </div>
                     <Link
                       href={profile.formationHref}
-                      className="rounded-xl px-5 py-2.5 text-sm font-semibold text-black transition-transform hover:scale-[1.02]"
-                      style={{ background: "#F5C200" }}
+                      className="rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02]"
+                      style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}
                     >
                       Voir la formation
                     </Link>
@@ -693,8 +783,8 @@ export default function QuizPage() {
                   <div className="grid grid-cols-2 gap-3">
                     <Link
                       href="/espace-membre"
-                      className="inline-flex items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold text-black transition-transform hover:scale-[1.02]"
-                      style={{ background: "#F5C200" }}
+                      className="inline-flex items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02]"
+                      style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}
                     >
                       <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
