@@ -1,0 +1,228 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import AdminHeader from "@/components/admin/AdminHeader";
+import ConfirmModal from "@/components/admin/ConfirmModal";
+import GradientPicker from "@/components/admin/GradientPicker";
+
+type Post = { id: string; platform: string; description: string; coverGradient: string; postedAt: string; href: string; author?: string };
+type Profile = { id: string; name: string; domain: string; profileHref: string; avatarGradient: string; rating: number };
+
+const initPosts: Post[] = [
+  { id: "fb-1", platform: "Facebook", description: "Tu veux lancer ton business digital mais tu ne sais pas par où commencer ? Voici la méthode en 3 étapes.", coverGradient: "linear-gradient(135deg, #1877F2 0%, #0D1B5E 100%)", postedAt: "2026-03-20", href: "https://facebook.com" },
+  { id: "li-1", platform: "LinkedIn", description: "J'ai analysé 200 offres digitales qui se vendent bien. Voici les 5 caractéristiques communes.", coverGradient: "linear-gradient(135deg, #0A66C2 0%, #0D1B5E 100%)", postedAt: "2026-03-21", href: "https://linkedin.com" },
+  { id: "yt-1", platform: "YouTube", description: "Comment créer un tunnel de vente qui convertit à froid — Étude de cas complète.", coverGradient: "linear-gradient(135deg, #FF0000 0%, #7C0000 100%)", postedAt: "2026-03-19", href: "https://youtube.com" },
+  { id: "ac-1", platform: "Autres Créateurs", description: "Un article de Alex Hormozi sur la structure d'une offre irrésistible.", coverGradient: "linear-gradient(135deg, #7C3AED 0%, #0D1B5E 100%)", postedAt: "2026-03-22", href: "https://acquisition.com", author: "Alex Hormozi" },
+];
+
+const initProfiles: Profile[] = [
+  { id: "p1", name: "Marie Dupont", domain: "E-commerce & Dropshipping", profileHref: "#", avatarGradient: "linear-gradient(135deg, #1877F2 0%, #6366F1 100%)", rating: 5 },
+  { id: "p2", name: "Jean Konan", domain: "Marketing Digital & SEO", profileHref: "#", avatarGradient: "linear-gradient(135deg, #10B981 0%, #0D9488 100%)", rating: 4 },
+  { id: "p3", name: "Sophie Martin", domain: "Coaching Business & Mindset", profileHref: "#", avatarGradient: "linear-gradient(135deg, #F59E0B 0%, #EF4444 100%)", rating: 4 },
+];
+
+const platColor: Record<string, string> = { Facebook: "#1877F2", LinkedIn: "#0A66C2", YouTube: "#FF0000", "Autres Créateurs": "#8B5CF6" };
+
+function PostForm({ post, onSave, onCancel }: { post?: Partial<Post>; onSave: (p: Post) => void; onCancel: () => void }) {
+  const [form, setForm] = useState<Post>({
+    id: post?.id ?? "post-" + Date.now(),
+    platform: post?.platform ?? "Facebook",
+    description: post?.description ?? "",
+    coverGradient: post?.coverGradient ?? "linear-gradient(135deg, #1877F2 0%, #0D1B5E 100%)",
+    postedAt: post?.postedAt ?? new Date().toISOString().split("T")[0],
+    href: post?.href ?? "",
+    author: post?.author ?? "",
+  });
+  const s = { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" };
+  const fc = "rounded-lg px-3 py-2 text-sm text-white outline-none w-full";
+  return (
+    <div className="rounded-2xl p-5 space-y-3 mb-4" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(59,130,246,0.2)" }}>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(255,255,255,0.5)" }}>Plateforme</label>
+          <select className={fc} style={s} value={form.platform} onChange={(e) => setForm({ ...form, platform: e.target.value })}>
+            <option>Facebook</option><option>LinkedIn</option><option>YouTube</option><option>Autres Créateurs</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(255,255,255,0.5)" }}>Date (YYYY-MM-DD)</label>
+          <input className={fc} style={s} value={form.postedAt} onChange={(e) => setForm({ ...form, postedAt: e.target.value })} />
+        </div>
+      </div>
+      <div>
+        <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(255,255,255,0.5)" }}>Description</label>
+        <textarea className={fc} style={s} rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+      </div>
+      <div>
+        <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(255,255,255,0.5)" }}>Lien externe</label>
+        <input className={fc} style={s} value={form.href} onChange={(e) => setForm({ ...form, href: e.target.value })} />
+      </div>
+      <div>
+        <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(255,255,255,0.5)" }}>Auteur (si Autres Créateurs)</label>
+        <input className={fc} style={s} value={form.author} onChange={(e) => setForm({ ...form, author: e.target.value })} />
+      </div>
+      <GradientPicker value={form.coverGradient} onChange={(v) => setForm({ ...form, coverGradient: v })} />
+      <div className="flex gap-2 pt-1">
+        <button onClick={() => onSave(form)} className="rounded-lg px-4 py-2 text-xs font-semibold text-white" style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}>Sauvegarder</button>
+        <button onClick={onCancel} className="rounded-lg px-4 py-2 text-xs font-semibold" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)" }}>Annuler</button>
+      </div>
+    </div>
+  );
+}
+
+function ProfileForm({ profile, onSave, onCancel }: { profile?: Partial<Profile>; onSave: (p: Profile) => void; onCancel: () => void }) {
+  const [form, setForm] = useState<Profile>({
+    id: profile?.id ?? "p-" + Date.now(),
+    name: profile?.name ?? "",
+    domain: profile?.domain ?? "",
+    profileHref: profile?.profileHref ?? "",
+    avatarGradient: profile?.avatarGradient ?? "linear-gradient(135deg, #1A3FD8 0%, #6366F1 100%)",
+    rating: profile?.rating ?? 5,
+  });
+  const s = { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" };
+  const fc = "rounded-lg px-3 py-2 text-sm text-white outline-none w-full";
+  return (
+    <div className="rounded-2xl p-5 space-y-3 mb-4" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(59,130,246,0.2)" }}>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(255,255,255,0.5)" }}>Nom complet</label>
+          <input className={fc} style={s} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(255,255,255,0.5)" }}>Domaine</label>
+          <input className={fc} style={s} value={form.domain} onChange={(e) => setForm({ ...form, domain: e.target.value })} />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(255,255,255,0.5)" }}>Lien profil</label>
+          <input className={fc} style={s} value={form.profileHref} onChange={(e) => setForm({ ...form, profileHref: e.target.value })} />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(255,255,255,0.5)" }}>Note (1–5)</label>
+          <input className={fc} style={s} type="number" min={1} max={5} value={form.rating} onChange={(e) => setForm({ ...form, rating: Number(e.target.value) })} />
+        </div>
+      </div>
+      <GradientPicker label="Gradient avatar" value={form.avatarGradient} onChange={(v) => setForm({ ...form, avatarGradient: v })} />
+      <div className="flex gap-2 pt-1">
+        <button onClick={() => onSave(form)} className="rounded-lg px-4 py-2 text-xs font-semibold text-white" style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}>Sauvegarder</button>
+        <button onClick={onCancel} className="rounded-lg px-4 py-2 text-xs font-semibold" style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.6)" }}>Annuler</button>
+      </div>
+    </div>
+  );
+}
+
+export default function AdminContenusPage() {
+  const [tab, setTab] = useState<"posts" | "profils">("posts");
+  const [posts, setPosts] = useState(initPosts);
+  const [profiles, setProfiles] = useState(initProfiles);
+  const [deletePost, setDeletePost] = useState<string | null>(null);
+  const [deleteProfile, setDeleteProfile] = useState<string | null>(null);
+  const [editPost, setEditPost] = useState<Partial<Post> | null>(null);
+  const [editProfile, setEditProfile] = useState<Partial<Profile> | null>(null);
+  const [addingPost, setAddingPost] = useState(false);
+  const [addingProfile, setAddingProfile] = useState(false);
+
+  const savePost = (p: Post) => {
+    setPosts((prev) => prev.some((x) => x.id === p.id) ? prev.map((x) => x.id === p.id ? p : x) : [...prev, p]);
+    setAddingPost(false); setEditPost(null);
+  };
+  const saveProfile = (p: Profile) => {
+    setProfiles((prev) => prev.some((x) => x.id === p.id) ? prev.map((x) => x.id === p.id ? p : x) : [...prev, p]);
+    setAddingProfile(false); setEditProfile(null);
+  };
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-8">
+        <AdminHeader title="Contenus" subtitle="Posts & Profils Business" />
+        <button
+          onClick={() => tab === "posts" ? setAddingPost(true) : setAddingProfile(true)}
+          className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white"
+          style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}
+        >
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          {tab === "posts" ? "Nouveau post" : "Nouveau profil"}
+        </button>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-1 mb-6">
+        {(["posts", "profils"] as const).map((t) => (
+          <button key={t} onClick={() => setTab(t)} className="px-4 py-2 rounded-lg text-sm font-medium capitalize transition-colors"
+            style={{ background: tab === t ? "rgba(59,130,246,0.15)" : "transparent", color: tab === t ? "#60A5FA" : "rgba(255,255,255,0.4)", border: tab === t ? "1px solid rgba(59,130,246,0.25)" : "1px solid transparent" }}>
+            {t === "posts" ? `Posts (${posts.length})` : `Profils Business (${profiles.length})`}
+          </button>
+        ))}
+      </div>
+
+      {tab === "posts" && (
+        <>
+          {addingPost && <PostForm onSave={savePost} onCancel={() => setAddingPost(false)} />}
+          <div className="space-y-3">
+            {posts.map((p) => (
+              <div key={p.id}>
+                {editPost?.id === p.id
+                  ? <PostForm post={p} onSave={savePost} onCancel={() => setEditPost(null)} />
+                  : (
+                    <div className="flex items-center gap-4 rounded-2xl px-5 py-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                      <div className="h-10 w-10 shrink-0 rounded-lg" style={{ background: p.coverGradient }} />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ background: (platColor[p.platform] ?? "#60A5FA") + "22", color: platColor[p.platform] ?? "#60A5FA" }}>{p.platform}</span>
+                          <span className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>{p.postedAt}</span>
+                          {p.author && <span className="text-xs italic" style={{ color: "rgba(255,255,255,0.35)" }}>par {p.author}</span>}
+                        </div>
+                        <p className="text-sm text-white truncate mt-0.5">{p.description}</p>
+                      </div>
+                      <div className="flex gap-2 shrink-0">
+                        <button onClick={() => setEditPost(p)} className="rounded-lg px-3 py-1.5 text-xs font-medium" style={{ background: "rgba(59,130,246,0.12)", color: "#60A5FA", border: "1px solid rgba(59,130,246,0.2)" }}>Éditer</button>
+                        <button onClick={() => setDeletePost(p.id)} className="rounded-lg px-3 py-1.5 text-xs font-medium" style={{ background: "rgba(239,68,68,0.1)", color: "#F87171", border: "1px solid rgba(239,68,68,0.2)" }}>Supprimer</button>
+                      </div>
+                    </div>
+                  )}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {tab === "profils" && (
+        <>
+          {addingProfile && <ProfileForm onSave={saveProfile} onCancel={() => setAddingProfile(false)} />}
+          <div className="space-y-3">
+            {profiles.map((p) => (
+              <div key={p.id}>
+                {editProfile?.id === p.id
+                  ? <ProfileForm profile={p} onSave={saveProfile} onCancel={() => setEditProfile(null)} />
+                  : (
+                    <div className="flex items-center gap-4 rounded-2xl px-5 py-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                      <div className="h-10 w-10 shrink-0 rounded-full flex items-center justify-center text-sm font-bold text-white" style={{ background: p.avatarGradient }}>
+                        {p.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-semibold text-white text-sm">{p.name}</p>
+                        <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>{p.domain} · ★ {p.rating}/5</p>
+                      </div>
+                      <div className="flex gap-2 shrink-0">
+                        <button onClick={() => setEditProfile(p)} className="rounded-lg px-3 py-1.5 text-xs font-medium" style={{ background: "rgba(59,130,246,0.12)", color: "#60A5FA", border: "1px solid rgba(59,130,246,0.2)" }}>Éditer</button>
+                        <button onClick={() => setDeleteProfile(p.id)} className="rounded-lg px-3 py-1.5 text-xs font-medium" style={{ background: "rgba(239,68,68,0.1)", color: "#F87171", border: "1px solid rgba(239,68,68,0.2)" }}>Supprimer</button>
+                      </div>
+                    </div>
+                  )}
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      <ConfirmModal open={!!deletePost} message="Le post sera supprimé définitivement."
+        onConfirm={() => { setPosts(posts.filter((p) => p.id !== deletePost)); setDeletePost(null); }}
+        onCancel={() => setDeletePost(null)} />
+      <ConfirmModal open={!!deleteProfile} message="Le profil sera supprimé définitivement."
+        onConfirm={() => { setProfiles(profiles.filter((p) => p.id !== deleteProfile)); setDeleteProfile(null); }}
+        onCancel={() => setDeleteProfile(null)} />
+    </div>
+  );
+}

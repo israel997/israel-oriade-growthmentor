@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, notFound } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, CheckCircle2, XCircle, Lightbulb, Rocket, Heart, ExternalLink, DollarSign, Tag } from "lucide-react";
+import { ArrowLeft, CheckCircle2, XCircle, Lightbulb, Rocket, ExternalLink, DollarSign, Tag } from "lucide-react";
 import Link from "next/link";
 import { tools } from "@/lib/tools-data";
 
@@ -207,7 +207,9 @@ export default function ToolDetailPage() {
                 onClick={toggleFav}
                 className="flex items-center gap-2 rounded-lg border border-white/10 hover:border-white/25 transition-colors px-4 py-2.5 text-sm text-slate-300"
               >
-                <Heart size={14} fill={isFav ? "#f43f5e" : "none"} stroke={isFav ? "#f43f5e" : "currentColor"} />
+                <svg viewBox="0 0 24 24" fill={isFav ? "#F5C200" : "none"} stroke={isFav ? "#F5C200" : "currentColor"} strokeWidth={1.8} className="h-4 w-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
+                </svg>
                 {isFav ? "Sauvegardé" : "Favoris"}
               </button>
             </div>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, ExternalLink } from "lucide-react";
+import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { tools } from "@/lib/tools-data";
 import TrackView from "@/components/track-view";
@@ -243,14 +243,12 @@ export default function TestesPage() {
                   {/* Favorite button */}
                   <button
                     onClick={() => toggleFavorite(tool.slug)}
-                    className="absolute top-3 right-3 p-1.5 rounded-full bg-black/30 backdrop-blur-sm border border-white/10 transition-transform hover:scale-110"
+                    className="absolute top-3 right-3 flex h-8 w-8 items-center justify-center rounded-full bg-black/30 backdrop-blur-sm border border-white/10 transition-transform hover:scale-110"
                     aria-label="Ajouter aux favoris"
                   >
-                    <Heart
-                      size={14}
-                      fill={isFav ? "#f43f5e" : "none"}
-                      stroke={isFav ? "#f43f5e" : "rgba(255,255,255,0.7)"}
-                    />
+                    <svg viewBox="0 0 24 24" fill={isFav ? "#F5C200" : "none"} stroke={isFav ? "#F5C200" : "rgba(255,255,255,0.7)"} strokeWidth={1.8} className="h-4 w-4">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0z" />
+                    </svg>
                   </button>
                 </div>
 
