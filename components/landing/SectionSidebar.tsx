@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 const sections = [
   { id: "section-carousel", label: "A la UNE" },
   { id: "section-results", label: "Mes Résultats" },
-  { id: "section-story", label: "Mon Parcours" },
+  { id: "section-story", label: "Certifications" },
   { id: "section-benefits", label: "Ce dont tu profites" },
   { id: "section-features", label: "Mes Offres" },
   { id: "section-testimonials", label: "Témoignages" },

@@ -53,6 +53,8 @@ export default function FeaturesCarousel() {
     <section className="relative overflow-hidden py-24" style={{ background: BG }}>
       {/* Halo bleu central */}
       <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse 70% 50% at 50% 30%, rgba(30,80,200,0.3) 0%, transparent 70%)" }} />
+      {/* Grille subtile */}
+      <div aria-hidden className="pointer-events-none absolute inset-0" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)", backgroundSize: "160px 160px" }} />
       {/* Triangles décoratifs */}
       <div aria-hidden className="pointer-events-none absolute" style={{ width: 0, height: 0, top: "-20px", left: "6%", borderLeft: "70px solid transparent", borderRight: "70px solid transparent", borderBottom: "120px solid rgba(96,165,250,0.06)" }} />
       <div aria-hidden className="pointer-events-none absolute" style={{ width: 0, height: 0, top: "8%", right: "5%", borderLeft: "90px solid transparent", borderRight: "90px solid transparent", borderBottom: "155px solid rgba(245,194,0,0.05)" }} />

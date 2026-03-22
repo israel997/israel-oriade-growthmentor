@@ -11,6 +11,7 @@ const OnboardingModal = dynamic(() => import("@/components/onboarding-modal"), {
 
 const navLinks = [
   ["Accueil", "/"],
+  ["Mentor", "/mentor"],
   ["Formations", "/formations"],
   ["Ressources", "/ressources"],
   ["Outils Testés", "/testes"],
