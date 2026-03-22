@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function CinematicHero() {
@@ -39,6 +40,27 @@ export default function CinematicHero() {
             "radial-gradient(ellipse 90% 80% at 50% 50%, transparent 25%, rgba(4,8,22,0.70) 100%)",
         }}
       />
+
+      {/* Image — absolue à droite, fondue dans le bg */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1, y: [0, -10, 0] }}
+        transition={{
+          opacity: { duration: 1, delay: 0.4 },
+          y: { duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1.2 },
+        }}
+        aria-hidden
+        className="pointer-events-none absolute right-0 top-0 hidden h-full lg:block"
+        style={{ width: "50%" }}
+      >
+        <Image
+          src="/images/P2.PNG"
+          alt=""
+          fill
+          className="object-cover object-top"
+          priority
+        />
+      </motion.div>
 
       <div className="relative mx-auto w-full max-w-6xl px-6 py-24 lg:px-8">
         <div className="max-w-3xl">
