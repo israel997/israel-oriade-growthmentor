@@ -1,11 +1,111 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import WaveGridBg from "@/components/wave-grid-bg";
+// ── Floating Particles bg ─────────────────────────────────────────────────────
+function FloatingParticles() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d", { alpha: false });
+    if (!ctx) return;
+
+    let rafId: number;
+    let lastTs = 0;
+    const FRAME_MS = 1000 / 30;
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      lastTs = 0;
+    };
+    resize();
+    window.addEventListener("resize", resize, { passive: true });
+
+    // Each particle drifts in a slow, slightly curved path
+    const particles = Array.from({ length: 80 }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      radius: 0.8 + Math.random() * 2.8,
+      alpha: 0.08 + Math.random() * 0.35,
+      // Drift velocity — very slow
+      vx: (Math.random() - 0.5) * 0.25,
+      vy: -0.05 - Math.random() * 0.2, // bias upward like rising dust
+      // Sinusoidal horizontal wobble
+      wobbleAmp: 0.2 + Math.random() * 0.5,
+      wobbleFreq: 0.3 + Math.random() * 0.5,
+      wobbleOffset: Math.random() * Math.PI * 2,
+      // Pulse opacity
+      pulseFreq: 0.2 + Math.random() * 0.4,
+      pulseOffset: Math.random() * Math.PI * 2,
+      baseAlpha: 0.08 + Math.random() * 0.3,
+    }));
+
+    const draw = (t: number) => {
+      ctx.fillStyle = "#03071A";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const H = canvas.height;
+      const W = canvas.width;
+
+      for (const p of particles) {
+        // Drift
+        p.x += p.vx + Math.sin(t * p.wobbleFreq + p.wobbleOffset) * p.wobbleAmp;
+        p.y += p.vy;
+
+        // Wrap around edges
+        if (p.y < -10) p.y = H + 10;
+        if (p.x < -10) p.x = W + 10;
+        if (p.x > W + 10) p.x = -10;
+
+        // Pulsing opacity
+        const alpha = p.baseAlpha * (0.5 + 0.5 * Math.sin(t * p.pulseFreq + p.pulseOffset));
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(96,165,250,${alpha.toFixed(2)})`;
+        ctx.fill();
+      }
+    };
+
+    const loop = (ts: number) => {
+      rafId = requestAnimationFrame(loop);
+      if (ts - lastTs < FRAME_MS) return;
+      lastTs = ts;
+      draw(ts / 1000);
+    };
+    rafId = requestAnimationFrame(loop);
+
+    const onVisibility = () => {
+      if (document.hidden) cancelAnimationFrame(rafId);
+      else { lastTs = 0; rafId = requestAnimationFrame(loop); }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("resize", resize);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, []);
+
+  return <canvas ref={canvasRef} className="pointer-events-none fixed inset-0 z-0" aria-hidden />;
+}
 
 // ── Types ─────────────────────────────────────────────────────────────────────
-type Platform = "Facebook" | "LinkedIn" | "YouTube" | "Autres Créateurs";
+type Platform = "Facebook" | "LinkedIn" | "YouTube" | "Autres Créateurs" | "Profils Business";
+
+type BusinessProfile = {
+  id: string;
+  name: string;
+  domain: string;
+  profileHref: string;
+  avatarGradient: string;
+  imageUrl?: string;
+  rating: number; // 1–5
+};
 
 type Post = {
   id: string;
@@ -44,6 +144,15 @@ const platformConfig: Record<Platform, { color: string; icon: React.ReactNode; l
     icon: (
       <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
         <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+      </svg>
+    ),
+  },
+  "Profils Business": {
+    color: "#F5C200",
+    label: "Profils Business",
+    icon: (
+      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" />
       </svg>
     ),
   },
@@ -371,8 +480,150 @@ function PostCard({ post, onRead, isFav, onToggleFav }: {
 }
 
 
+// ── Business Profiles data ────────────────────────────────────────────────────
+const businessProfiles: BusinessProfile[] = [
+  {
+    id: "bp-1",
+    name: "Alex Hormozi",
+    domain: "Acquisition & Offres Premium",
+    profileHref: "https://www.facebook.com/AlexHormozi",
+    avatarGradient: "linear-gradient(135deg, #C2410C 0%, #F5C200 100%)",
+    imageUrl: "https://ui-avatars.com/api/?name=Alex+Hormozi&size=128&background=C2410C&color=fff&bold=true",
+    rating: 5,
+  },
+  {
+    id: "bp-2",
+    name: "Dan Koe",
+    domain: "Solopreneuriat & Business Digital",
+    profileHref: "https://www.facebook.com/thedankoe",
+    avatarGradient: "linear-gradient(135deg, #1A3FD8 0%, #8B5CF6 100%)",
+    imageUrl: "https://ui-avatars.com/api/?name=Dan+Koe&size=128&background=1A3FD8&color=fff&bold=true",
+    rating: 4,
+  },
+  {
+    id: "bp-3",
+    name: "Maxime Lombard",
+    domain: "Marketing & Tunnel de Vente",
+    profileHref: "https://www.facebook.com",
+    avatarGradient: "linear-gradient(135deg, #0D9488 0%, #1A3FD8 100%)",
+    imageUrl: "https://ui-avatars.com/api/?name=Maxime+Lombard&size=128&background=0D9488&color=fff&bold=true",
+    rating: 3,
+  },
+  {
+    id: "bp-4",
+    name: "Simon Squibb",
+    domain: "Entrepreneuriat & Investissement",
+    profileHref: "https://www.facebook.com/simonsquibb",
+    avatarGradient: "linear-gradient(135deg, #7C3AED 0%, #0A66C2 100%)",
+    imageUrl: "https://ui-avatars.com/api/?name=Simon+Squibb&size=128&background=7C3AED&color=fff&bold=true",
+    rating: 2,
+  },
+  {
+    id: "bp-5",
+    name: "Rudy Viard",
+    domain: "SEO & Acquisition Organique",
+    profileHref: "https://www.facebook.com",
+    avatarGradient: "linear-gradient(135deg, #15803D 0%, #0D9488 100%)",
+    imageUrl: "https://ui-avatars.com/api/?name=Rudy+Viard&size=128&background=15803D&color=fff&bold=true",
+    rating: 4,
+  },
+  {
+    id: "bp-6",
+    name: "Nicolas Caron",
+    domain: "Vente & Closing",
+    profileHref: "https://www.facebook.com",
+    avatarGradient: "linear-gradient(135deg, #B45309 0%, #C2410C 100%)",
+    imageUrl: "https://ui-avatars.com/api/?name=Nicolas+Caron&size=128&background=B45309&color=fff&bold=true",
+    rating: 3,
+  },
+];
+
+// ── Stars ─────────────────────────────────────────────────────────────────────
+function Stars({ rating }: { rating: number }) {
+  return (
+    <div className="flex items-center gap-0.5">
+      {Array.from({ length: 5 }, (_, i) => (
+        <svg
+          key={i}
+          className="h-4 w-4"
+          viewBox="0 0 24 24"
+          fill={i < rating ? "#F5C200" : "none"}
+          stroke={i < rating ? "#F5C200" : "rgba(255,255,255,0.2)"}
+          strokeWidth={1.5}
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+        </svg>
+      ))}
+    </div>
+  );
+}
+
+// ── Business Profile Card ─────────────────────────────────────────────────────
+function BusinessProfileCard({ profile }: { profile: BusinessProfile }) {
+  const initials = profile.name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase();
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.45, ease: "easeOut" }}
+    >
+      <motion.div
+        whileHover={{ y: -4, boxShadow: "0 20px 48px rgba(0,0,0,0.45)" }}
+        transition={{ duration: 0.22 }}
+        className="flex flex-col items-center gap-4 rounded-2xl p-6 text-center"
+        style={{
+          background: "rgba(255,255,255,0.04)",
+          backdropFilter: "blur(16px)",
+          border: "1px solid rgba(255,255,255,0.08)",
+        }}
+      >
+        {/* Avatar photo */}
+        <div className="relative h-20 w-20 shrink-0">
+          {profile.imageUrl ? (
+            <img
+              src={profile.imageUrl}
+              alt={profile.name}
+              className="h-full w-full rounded-full object-cover"
+              style={{ border: "2px solid rgba(255,255,255,0.12)" }}
+            />
+          ) : (
+            <div
+              className="flex h-full w-full items-center justify-center rounded-full text-xl font-bold text-white"
+              style={{ background: profile.avatarGradient, border: "2px solid rgba(255,255,255,0.12)" }}
+            >
+              {initials}
+            </div>
+          )}
+        </div>
+
+        {/* Info */}
+        <div>
+          <p className="font-bold text-white">{profile.name}</p>
+          <p className="mt-1 text-xs text-white/45 leading-relaxed">{profile.domain}</p>
+          <div className="mt-2 flex justify-center">
+            <Stars rating={profile.rating} />
+          </div>
+        </div>
+
+        {/* Facebook CTA */}
+        <a
+          href={profile.profileHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-sm font-semibold transition-transform hover:scale-[1.02]"
+          style={{ background: "#1877F222", border: "1px solid #1877F244", color: "#93C5FD" }}
+        >
+          Découvrir
+        </a>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
-const platformOrder: Platform[] = ["Facebook", "LinkedIn", "YouTube", "Autres Créateurs"];
+const platformOrder: Platform[] = ["Facebook", "LinkedIn", "YouTube", "Autres Créateurs", "Profils Business"];
 
 export default function ContenusPage() {
   const [activeTab, setActiveTab] = useState<Platform>("Facebook");
@@ -391,7 +642,7 @@ export default function ContenusPage() {
 
   return (
     <div className="relative min-h-screen" style={{ background: "#03071A" }}>
-      <WaveGridBg />
+      <FloatingParticles />
 
       <div className="relative z-10 mx-auto max-w-7xl px-6 py-20 lg:px-8">
 
@@ -467,21 +718,31 @@ export default function ContenusPage() {
                 {config.icon}
               </div>
               <span className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.4)" }}>
-                {activePosts.length} post{activePosts.length > 1 ? "s" : ""}
+                {activeTab === "Profils Business"
+                  ? `${businessProfiles.length} profil${businessProfiles.length > 1 ? "s" : ""}`
+                  : `${activePosts.length} post${activePosts.length > 1 ? "s" : ""}`}
               </span>
             </div>
 
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {activePosts.map((post) => (
-                <PostCard
-                  key={post.id}
-                  post={post}
-                  onRead={() => setRedirectPost(post)}
-                  isFav={favorites.includes(post.id)}
-                  onToggleFav={() => toggle(post.id)}
-                />
-              ))}
-            </div>
+            {activeTab === "Profils Business" ? (
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {businessProfiles.map((profile) => (
+                  <BusinessProfileCard key={profile.id} profile={profile} />
+                ))}
+              </div>
+            ) : (
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {activePosts.map((post) => (
+                  <PostCard
+                    key={post.id}
+                    post={post}
+                    onRead={() => setRedirectPost(post)}
+                    isFav={favorites.includes(post.id)}
+                    onToggleFav={() => toggle(post.id)}
+                  />
+                ))}
+              </div>
+            )}
           </motion.div>
         </AnimatePresence>
       </div>
