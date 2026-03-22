@@ -392,14 +392,67 @@ export default function QuizPage() {
 
   return (
     <div className="min-h-screen" style={{ background: "#03071A" }}>
-      {/* Vagues fluides — couche 1 bas gauche */}
-      <div aria-hidden className="pointer-events-none fixed inset-0" style={{ background: "radial-gradient(ellipse 140% 70% at -10% 110%, rgba(26,63,216,0.55) 0%, transparent 55%)" }} />
-      {/* Vagues fluides — couche 2 haut droite */}
-      <div aria-hidden className="pointer-events-none fixed inset-0" style={{ background: "radial-gradient(ellipse 100% 60% at 110% -10%, rgba(30,80,200,0.45) 0%, transparent 55%)" }} />
-      {/* Vagues fluides — couche 3 centre */}
-      <div aria-hidden className="pointer-events-none fixed inset-0" style={{ background: "radial-gradient(ellipse 80% 40% at 50% 60%, rgba(13,27,94,0.6) 0%, transparent 65%)" }} />
-      {/* Vagues fluides — couche 4 milieu gauche */}
-      <div aria-hidden className="pointer-events-none fixed inset-0" style={{ background: "radial-gradient(ellipse 60% 50% at 15% 45%, rgba(59,130,246,0.2) 0%, transparent 60%)" }} />
+      {/* ── Orbital bg — toute la page ── */}
+      <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
+        {/* Glow central */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2" style={{ width: "clamp(260px, 70vw, 500px)", height: "clamp(260px, 70vw, 500px)", background: "radial-gradient(circle, rgba(26,63,216,0.18) 0%, rgba(59,130,246,0.08) 40%, transparent 70%)", borderRadius: "50%" }} />
+        {/* Left inner ring */}
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 28, repeat: Infinity, ease: "linear" }}
+          className="absolute"
+          style={{ width: "clamp(200px, 45vw, 420px)", height: "clamp(200px, 45vw, 420px)", left: "clamp(-160px, -18vw, -80px)", top: "50%", translateY: "-50%" }}
+        >
+          <svg viewBox="0 0 420 420" fill="none" style={{ width: "100%", height: "100%" }}>
+            <ellipse cx="210" cy="210" rx="200" ry="200" stroke="rgba(96,165,250,0.13)" strokeWidth="1.5" />
+            <circle cx="210" cy="10" r="6" fill="rgba(96,165,250,0.55)" />
+            <circle cx="410" cy="210" r="4" fill="rgba(139,92,246,0.5)" />
+            <circle cx="210" cy="410" r="5" fill="rgba(59,130,246,0.4)" />
+            <circle cx="10" cy="210" r="4" fill="rgba(96,165,250,0.35)" />
+          </svg>
+        </motion.div>
+        {/* Left outer ring */}
+        <motion.div
+          animate={{ rotate: -360 }}
+          transition={{ duration: 42, repeat: Infinity, ease: "linear" }}
+          className="absolute hidden sm:block"
+          style={{ width: "clamp(300px, 55vw, 600px)", height: "clamp(300px, 55vw, 600px)", left: "clamp(-260px, -28vw, -140px)", top: "50%", translateY: "-50%" }}
+        >
+          <svg viewBox="0 0 600 600" fill="none" style={{ width: "100%", height: "100%" }}>
+            <ellipse cx="300" cy="300" rx="290" ry="290" stroke="rgba(59,130,246,0.07)" strokeWidth="1" />
+            <circle cx="300" cy="10" r="5" fill="rgba(59,130,246,0.3)" />
+            <circle cx="590" cy="300" r="3" fill="rgba(96,165,250,0.25)" />
+          </svg>
+        </motion.div>
+        {/* Right inner ring */}
+        <motion.div
+          animate={{ rotate: -360 }}
+          transition={{ duration: 32, repeat: Infinity, ease: "linear" }}
+          className="absolute"
+          style={{ width: "clamp(200px, 48vw, 460px)", height: "clamp(200px, 48vw, 460px)", right: "clamp(-180px, -20vw, -80px)", top: "50%", translateY: "-50%" }}
+        >
+          <svg viewBox="0 0 460 460" fill="none" style={{ width: "100%", height: "100%" }}>
+            <ellipse cx="230" cy="230" rx="220" ry="220" stroke="rgba(139,92,246,0.12)" strokeWidth="1.5" />
+            <circle cx="230" cy="10" r="6" fill="rgba(139,92,246,0.55)" />
+            <circle cx="450" cy="230" r="4" fill="rgba(96,165,250,0.4)" />
+            <circle cx="230" cy="450" r="5" fill="rgba(139,92,246,0.35)" />
+            <circle cx="10" cy="230" r="4" fill="rgba(59,130,246,0.3)" />
+          </svg>
+        </motion.div>
+        {/* Right outer ring */}
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+          className="absolute hidden sm:block"
+          style={{ width: "clamp(380px, 60vw, 650px)", height: "clamp(380px, 60vw, 650px)", right: "clamp(-310px, -34vw, -160px)", top: "50%", translateY: "-50%" }}
+        >
+          <svg viewBox="0 0 650 650" fill="none" style={{ width: "100%", height: "100%" }}>
+            <ellipse cx="325" cy="325" rx="315" ry="315" stroke="rgba(96,165,250,0.05)" strokeWidth="1" />
+            <circle cx="325" cy="10" r="4" fill="rgba(96,165,250,0.2)" />
+            <circle cx="640" cy="325" r="3" fill="rgba(139,92,246,0.2)" />
+          </svg>
+        </motion.div>
+      </div>
 
       <AnimatePresence mode="wait">
         {showHow && <HowItWorks key="how" onClose={() => setShowHow(false)} />}
