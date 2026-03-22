@@ -1,12 +1,13 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const stats = [
   {
-    value: "+180",
-    label: "Membres accompagnés",
+    prefix: "+", num: 180, suffix: "", value: "+180",
+    sub: "apprenants",
+    label: "Formés au business 3.0 et à l'IA",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-6 w-6">
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 14c3.314 0 6 1.343 6 3v1H6v-1c0-1.657 2.686-3 6-3zm0 0a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm6 0c1.657 0 3 1.343 3 3v1h-3m-9 0H3v-1c0-1.657 1.343-3 3-3" />
@@ -15,8 +16,9 @@ const stats = [
     iconBg: "linear-gradient(135deg, #6B21E8 0%, #9333EA 100%)",
   },
   {
-    value: "87%",
-    label: "De résultats en < 8 sem.",
+    prefix: "", num: 90, suffix: "%", value: "90%",
+    sub: "de résultats",
+    label: "En moins de 17 jours",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-6 w-6">
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
@@ -25,53 +27,119 @@ const stats = [
     iconBg: "linear-gradient(135deg, #0D9488 0%, #14B8A6 100%)",
   },
   {
-    value: "×2.4",
-    label: "Taux de conversion moyen",
+    prefix: "", num: 8, suffix: " ans", value: "8 ans",
+    sub: "d'expérience",
+    label: "En business management",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-6 w-6">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008z" />
       </svg>
     ),
     iconBg: "linear-gradient(135deg, #15803D 0%, #22C55E 100%)",
   },
   {
-    value: "14j",
-    label: "Pour le 1er revenu en ligne",
+    prefix: "+", num: 20, suffix: "", value: "+20",
+    sub: "formations",
+    label: "Et accompagnements offerts",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-6 w-6">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
       </svg>
     ),
     iconBg: "linear-gradient(135deg, #B45309 0%, #F5C200 100%)",
   },
   {
-    value: "4.9★",
-    label: "Note moyenne des membres",
+    prefix: "", num: 10, suffix: "+", value: "10+",
+    sub: "pays",
+    label: "Touchés en organique",
     icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-6 w-6">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-      </svg>
-    ),
-    iconBg: "linear-gradient(135deg, #C2410C 0%, #FB923C 100%)",
-  },
-  {
-    value: "3×",
-    label: "ROI moyen à 90 jours",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-6 w-6">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 0c-1.657 2.686-2 5.657-2 10s.343 7.314 2 10m0-20c1.657 2.686 2 5.657 2 10s-.343 7.314-2 10M2 12h20" />
       </svg>
     ),
     iconBg: "linear-gradient(135deg, #1D4ED8 0%, #60A5FA 100%)",
   },
+  {
+    prefix: "+", num: 30, suffix: "", value: "+30",
+    sub: "TPE/PME",
+    label: "Accompagnées en croissance sur 8 ans",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-6 w-6">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
+      </svg>
+    ),
+    iconBg: "linear-gradient(135deg, #C2410C 0%, #FB923C 100%)",
+  },
 ];
 
-function FadeIn({ children, delay = 0 }: { children: React.ReactNode; delay?: number }) {
+function CountUp({ prefix = "", num, suffix = "", inView }: { prefix?: string; num: number; suffix?: string; inView: boolean }) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!inView) return;
+    const duration = 1600;
+    const start = performance.now();
+    const tick = (now: number) => {
+      const progress = Math.min((now - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.round(ease * num));
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }, [inView, num]);
+
+  return <>{prefix}{count}{suffix}</>;
+}
+
+function StatCard({ s, delay }: { s: typeof stats[0]; delay: number }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-60px" });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 24 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.55, delay, ease: "easeOut" }}
+      className="h-full"
+    >
+      <motion.div
+        whileHover={{ y: -4, boxShadow: "0 20px 40px rgba(0,0,0,0.4)" }}
+        transition={{ duration: 0.22 }}
+        className="flex h-full flex-col rounded-2xl p-8"
+        style={{
+          background: "linear-gradient(135deg, #05092A 0%, #0D1B5E 60%, #07103A 100%)",
+          border: "1px solid rgba(255,255,255,0.07)",
+          boxShadow: "0 4px 24px rgba(0,0,0,0.5)",
+        }}
+      >
+        <div className="flex items-center gap-3">
+          <div
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white"
+            style={{ background: s.iconBg }}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className="h-4 w-4">
+              {s.icon.props.children}
+            </svg>
+          </div>
+          <p className="text-2xl font-extrabold text-white leading-none">
+            <CountUp prefix={s.prefix} num={s.num} suffix={s.suffix} inView={inView} />
+            {" "}<span className="text-2xl font-extrabold text-white/80">{s.sub}</span>
+          </p>
+        </div>
+        <p className="mt-3 text-sm text-white/45">{s.label}</p>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function FadeIn({ children, delay = 0, className }: { children: React.ReactNode; delay?: number; className?: string }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
   return (
     <motion.div
       ref={ref}
+      className={className}
       initial={{ opacity: 0, y: 24 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.55, delay, ease: "easeOut" }}
@@ -105,7 +173,7 @@ export default function ResultsSection() {
               Mes résultats
             </span>
             <h2 className="mt-4 text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
-              Des chiffres,{" "}
+              Un mentor,{" "}
               <span
                 className="italic"
                 style={{
@@ -114,45 +182,31 @@ export default function ResultsSection() {
                   WebkitTextFillColor: "transparent",
                 }}
               >
-                pas des promesses
+                avec une vraie expérience
               </span>
               .
             </h2>
             <p className="mt-5 max-w-xl text-base text-white/50">
-              Depuis le lancement de GrowthMentor, j'ai accompagné des centaines de personnes à lancer leur activité et à générer leurs premiers revenus en ligne. Voici ce que ça donne.
+              Un jour j'étais comme toi. Et avec le temps, j'ai fait mes preuves :
+            </p>
+            <ul className="mt-3 space-y-2 max-w-xl">
+              {["Des résultats concrets", "Des clients satisfaits", "Des formations reconnues", "Une communauté qui grandit chaque jour"].map((item) => (
+                <li key={item} className="flex items-center gap-2 text-sm text-white/60">
+                  <span style={{ color: "#F5C200" }}>→</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-4 max-w-xl text-base text-white/50">
+              Voici ce que j'ai accompli ; et ce que je peux t'aider à accomplir aussi.
             </p>
           </div>
         </FadeIn>
 
         {/* 6 cards — 3 colonnes × 2 rangées */}
-        <div className="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 items-stretch">
           {stats.map((s, i) => (
-            <FadeIn key={s.label} delay={i * 0.1}>
-              <motion.div
-                whileHover={{ y: -4, boxShadow: "0 20px 40px rgba(0,0,0,0.4)" }}
-                transition={{ duration: 0.22 }}
-                className="flex flex-col items-start rounded-2xl p-6"
-                style={{
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(255,255,255,0.07)",
-                  boxShadow: "0 4px 20px rgba(0,0,0,0.25)",
-                }}
-              >
-                {/* Icône */}
-                <div
-                  className="flex h-12 w-12 items-center justify-center rounded-full text-white"
-                  style={{ background: s.iconBg }}
-                >
-                  {s.icon}
-                </div>
-
-                {/* Valeur */}
-                <p className="mt-5 text-4xl font-extrabold text-white">{s.value}</p>
-
-                {/* Label */}
-                <p className="mt-2 text-sm text-white/50">{s.label}</p>
-              </motion.div>
-            </FadeIn>
+            <StatCard key={s.label} s={s} delay={i * 0.1} />
           ))}
         </div>
       </div>

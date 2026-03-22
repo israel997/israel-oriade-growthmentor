@@ -39,26 +39,19 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     <>
       <header
         className="sticky top-0 z-30 transition-all duration-300"
-        style={
-          scrolled || !isHome
-            ? {
-                background: "rgba(185,185,185,0.80)",
-                backdropFilter: "blur(18px)",
-                WebkitBackdropFilter: "blur(18px)",
-                borderBottom: "1px solid rgba(255,255,255,0.5)",
-                boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
-              }
-            : {
-                background: "transparent",
-                borderBottom: "1px solid transparent",
-              }
-        }
+        style={{
+          background: "rgba(6,11,46,0.95)",
+          backdropFilter: "blur(18px)",
+          WebkitBackdropFilter: "blur(18px)",
+          borderBottom: "1px solid rgba(255,255,255,0.08)",
+          boxShadow: "0 4px 24px rgba(0,0,0,0.3)",
+        }}
       >
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
           <Link
             href="/"
             className="flex items-center gap-2 text-lg font-bold tracking-tight sm:text-xl"
-            style={{ color: isHome && !scrolled ? "#ffffff" : "#070F3C" }}
+            style={{ color: "#ffffff" }}
           >
             <span
               className="inline-flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold"
@@ -77,12 +70,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 href={href}
                 className="nav-link rounded-lg px-4 py-2 text-sm font-medium transition-all"
                 style={{
-                  color:
-                    pathname === href
-                      ? "#F5C200"
-                      : isHome && !scrolled
-                      ? "rgba(255,255,255,0.85)"
-                      : "#333",
+                  color: pathname === href ? "#F5C200" : "rgba(255,255,255,0.85)",
                   background: pathname === href ? "rgba(201,168,76,0.10)" : "transparent",
                 }}
               >
@@ -96,9 +84,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               href="/quiz"
               className="nav-btn hidden rounded-xl border px-4 py-2 text-sm font-semibold transition-all md:inline-flex"
               style={
-                isHome && !scrolled
-                  ? { borderColor: "rgba(255,255,255,0.3)", color: "#fff" }
-                  : { borderColor: "rgba(0,0,0,0.15)", color: "#111" }
+                { borderColor: "rgba(255,255,255,0.3)", color: "#fff" }
               }
             >
               Évaluer mon niveau
@@ -118,9 +104,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               aria-label="Menu"
               className="inline-flex rounded-lg border p-2 md:hidden"
               style={
-                isHome && !scrolled
-                  ? { borderColor: "rgba(255,255,255,0.2)", color: "#fff" }
-                  : { borderColor: "rgba(0,0,0,0.15)", color: "#111" }
+                { borderColor: "rgba(255,255,255,0.2)", color: "#fff" }
               }
               onClick={() => setMobileOpen((v) => !v)}
             >
@@ -133,7 +117,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
         {/* Mobile menu */}
         {mobileOpen && (
-          <div className="border-t border-black/10 px-4 pb-4 pt-3 md:hidden" style={{ background: "rgba(185,185,185,0.92)", backdropFilter: "blur(18px)" }}>
+          <div className="border-t border-white/10 px-4 pb-4 pt-3 md:hidden" style={{ background: "rgba(6,11,46,0.97)", backdropFilter: "blur(18px)" }}>
             <nav className="space-y-1">
               {navLinks.map(([label, href]) => (
                 <Link
@@ -141,7 +125,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                   href={href}
                   className="block rounded-lg px-3 py-2 text-sm font-medium"
                   style={{
-                    color: pathname === href ? "#C49A00" : "#333",
+                    color: pathname === href ? "#F5C200" : "rgba(255,255,255,0.85)",
                     background: pathname === href ? "rgba(201,168,76,0.10)" : "transparent",
                   }}
                 >

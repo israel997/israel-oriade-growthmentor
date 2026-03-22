@@ -41,7 +41,7 @@ export default function CinematicHero() {
         }}
       />
 
-      {/* Image — absolue à droite, fondue dans le bg */}
+      {/* Image + badges flottants */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1, y: [0, -10, 0] }}
@@ -49,7 +49,6 @@ export default function CinematicHero() {
           opacity: { duration: 1, delay: 0.4 },
           y: { duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1.2 },
         }}
-        aria-hidden
         className="pointer-events-none absolute right-0 top-0 hidden h-full lg:block"
         style={{ width: "50%" }}
       >
@@ -60,6 +59,7 @@ export default function CinematicHero() {
           className="object-cover object-top"
           priority
         />
+
       </motion.div>
 
       <div className="relative mx-auto w-full max-w-6xl px-6 py-24 lg:px-8">
@@ -75,7 +75,7 @@ export default function CinematicHero() {
               style={{ borderColor: "rgba(245,194,0,0.5)", color: "#F5C200", background: "rgba(245,194,0,0.1)" }}
             >
               <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: "#F5C200" }} />
-              Mentor Business Digital
+              The Growth Mentor
             </span>
           </motion.div>
 
@@ -133,22 +133,7 @@ export default function CinematicHero() {
             </Link>
           </motion.div>
 
-          {/* Social proof */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.65 }}
-            className="mt-14 flex flex-wrap gap-3"
-          >
-            {["+180 membres", "87% de résultats < 8 semaines", "×2.4 de conversion"].map((item) => (
-              <span
-                key={item}
-                className="rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-xs text-blue-100"
-              >
-                {item}
-              </span>
-            ))}
-          </motion.div>
+
         </div>
       </div>
 

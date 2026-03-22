@@ -21,7 +21,7 @@ const slides = [
   },
   {
     tag: "Communauté",
-    title: "Rejoins +180 membres\nqui avancent",
+    title: "Rejoins +500 membres\nqui avancent",
     desc: "Une communauté active, des retours concrets et un accompagnement humain.",
     cta: { label: "Notre communauté", href: "/contenus" },
   },
