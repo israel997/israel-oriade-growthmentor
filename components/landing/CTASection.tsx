@@ -55,7 +55,7 @@ export default function CTASection() {
 
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
-                href="/quiz"
+                href="/diagnostic"
                 className="group inline-flex items-center gap-2 rounded-xl px-8 py-4 text-sm font-semibold text-black transition-transform hover:scale-[1.03] active:scale-[0.98]"
                 style={{ background: "#F5C200" }}
               >

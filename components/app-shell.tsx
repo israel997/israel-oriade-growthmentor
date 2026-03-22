@@ -68,10 +68,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               <Link
                 key={href}
                 href={href}
-                className="nav-link rounded-lg px-4 py-2 text-sm font-medium transition-all border-b-2 border-transparent hover:border-[#F5C200]"
+                className="px-4 py-2 text-sm font-medium transition-colors border-b-2 border-transparent hover:border-[#F5C200]"
                 style={{
                   color: pathname === href ? "#F5C200" : "rgba(255,255,255,0.85)",
-                  background: pathname === href ? "rgba(201,168,76,0.10)" : "transparent",
+                  background: "transparent",
                 }}
               >
                 {label}
@@ -81,7 +81,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
           <div className="flex items-center gap-2 md:gap-3">
             <Link
-              href="/quiz"
+              href="/diagnostic"
               className="nav-btn hidden rounded-xl border px-4 py-2 text-sm font-semibold transition-all md:inline-flex"
               style={
                 { borderColor: "rgba(255,255,255,0.3)", color: "#fff" }
@@ -137,7 +137,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               ))}
             </nav>
             <div className="mt-3 grid gap-2">
-              <Link href="/quiz" className="rounded-lg border border-black/15 px-3 py-2.5 text-center text-sm font-semibold text-[#111]">
+              <Link href="/diagnostic" className="rounded-lg border border-black/15 px-3 py-2.5 text-center text-sm font-semibold text-[#111]">
                 Évaluer mon niveau
               </Link>
               <Link href="/espace-membre" className="rounded-lg px-3 py-2.5 text-center text-sm font-semibold text-black" style={{ background: "#F5C200" }}>

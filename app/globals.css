@@ -27,6 +27,10 @@
   box-sizing: border-box;
 }
 
+button, a, [role="button"], label[for], select {
+  cursor: pointer;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -41,11 +45,14 @@ body {
 }
 
 /* Navbar hover */
-.nav-link:hover,
+.nav-link:hover {
+  background: transparent !important;
+  border-bottom-color: #F5C200 !important;
+}
+
 .nav-btn:hover {
-  background: #070F3C !important;
-  color: #ffffff !important;
-  border-color: #070F3C !important;
+  background: transparent !important;
+  border-color: rgba(255,255,255,0.5) !important;
 }
 
 /* Scrollbar subtile */

@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // ── SVG Icons ──────────────────────────────────────────────────────────────
 function IconTarget() {
@@ -369,6 +369,15 @@ export default function QuizPage() {
     }
   };
 
+  useEffect(() => {
+    if (phase !== "quiz") return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Enter") handleNext();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [phase, hasAnswered, currentQ]);
+
   const handleBack = () => {
     if (currentQ === 0) {
       setPhase("intro");
@@ -681,23 +690,40 @@ export default function QuizPage() {
 
                 {/* CTAs */}
                 <div className="flex flex-col gap-3 pt-2">
+                  <div className="grid grid-cols-2 gap-3">
+                    <Link
+                      href="/espace-membre"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold text-black transition-transform hover:scale-[1.02]"
+                      style={{ background: "#F5C200" }}
+                    >
+                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                      </svg>
+                      Sauvegarder
+                    </Link>
+                    <button
+                      onClick={() => { setPhase("intro"); setCurrentQ(0); setAnswers({}); }}
+                      className="rounded-xl border py-3.5 text-sm font-semibold text-white/60 transition-all hover:text-[#F5C200] hover:border-[#F5C200]/40"
+                      style={{ borderColor: "rgba(255,255,255,0.12)" }}
+                    >
+                      Recommencer
+                    </button>
+                  </div>
+                  <motion.div
+                    animate={{ y: [0, -6, 0] }}
+                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                  >
                   <Link
-                    href="/espace-membre"
-                    className="group inline-flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold text-black transition-transform hover:scale-[1.02]"
-                    style={{ background: "#F5C200" }}
+                    href="/ressources"
+                    className="inline-flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold transition-all hover:border-[#60A5FA]/50 hover:text-[#60A5FA]"
+                    style={{ border: "1px solid rgba(96,165,250,0.2)", color: "#60A5FA" }}
                   >
                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
                     </svg>
-                    Sauvegarder mon profil
+                    Trouver des ressources gratuites
                   </Link>
-                  <button
-                    onClick={() => { setPhase("intro"); setCurrentQ(0); setAnswers({}); }}
-                    className="w-full rounded-xl border py-3 text-sm font-semibold text-white/60 transition-all hover:text-white hover:border-white/30"
-                    style={{ borderColor: "rgba(255,255,255,0.12)" }}
-                  >
-                    Recommencer l'évaluation
-                  </button>
+                  </motion.div>
                 </div>
               </div>
             </motion.div>

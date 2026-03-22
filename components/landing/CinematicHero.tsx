@@ -117,7 +117,7 @@ export default function CinematicHero() {
             className="mt-10 flex flex-wrap items-center gap-4"
           >
             <Link
-              href="/quiz"
+              href="/diagnostic"
               className="group inline-flex items-center gap-2 rounded-xl px-6 py-3.5 text-sm font-semibold text-black transition-transform hover:scale-[1.02] active:scale-[0.98]"
               style={{ background: "#F5C200" }}
             >
