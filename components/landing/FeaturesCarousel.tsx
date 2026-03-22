@@ -51,10 +51,14 @@ function FadeIn({ children, delay = 0 }: { children: React.ReactNode; delay?: nu
 export default function FeaturesCarousel() {
   return (
     <section className="relative overflow-hidden py-24" style={{ background: BG }}>
-      {/* Grille subtile */}
-      <div aria-hidden className="pointer-events-none absolute inset-0" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px)", backgroundSize: "160px 160px" }} />
       {/* Halo bleu central */}
       <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse 70% 50% at 50% 30%, rgba(30,80,200,0.3) 0%, transparent 70%)" }} />
+      {/* Triangles décoratifs */}
+      <div aria-hidden className="pointer-events-none absolute" style={{ width: 0, height: 0, top: "-20px", left: "6%", borderLeft: "70px solid transparent", borderRight: "70px solid transparent", borderBottom: "120px solid rgba(96,165,250,0.06)" }} />
+      <div aria-hidden className="pointer-events-none absolute" style={{ width: 0, height: 0, top: "8%", right: "5%", borderLeft: "90px solid transparent", borderRight: "90px solid transparent", borderBottom: "155px solid rgba(245,194,0,0.05)" }} />
+      <div aria-hidden className="pointer-events-none absolute" style={{ width: 0, height: 0, bottom: "6%", left: "3%", borderLeft: "55px solid transparent", borderRight: "55px solid transparent", borderTop: "95px solid rgba(96,165,250,0.05)" }} />
+      <div aria-hidden className="pointer-events-none absolute" style={{ width: 0, height: 0, top: "45%", right: "10%", borderLeft: "40px solid transparent", borderRight: "40px solid transparent", borderBottom: "70px solid rgba(245,194,0,0.04)" }} />
+      <div aria-hidden className="pointer-events-none absolute" style={{ width: 0, height: 0, bottom: "15%", right: "25%", borderLeft: "30px solid transparent", borderRight: "30px solid transparent", borderTop: "52px solid rgba(96,165,250,0.04)" }} />
 
       <div className="relative mx-auto max-w-6xl px-6 lg:px-8">
         <FadeIn>
