@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 
-const BG = "#060B2E";
+const BG = "#05092A";
 
 const images = [
   "/images/P3.jpeg",
@@ -42,7 +42,10 @@ export default function TestimonialsSection() {
 
   return (
     <section className="relative overflow-hidden py-24" style={{ background: BG }}>
-      <div className="mx-auto max-w-5xl px-6 lg:px-8">
+      {/* Halo bleu central — même style que CTASection */}
+      <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse 70% 50% at 50% 50%, rgba(30,80,200,0.3) 0%, transparent 70%)" }} />
+
+      <div className="relative mx-auto max-w-5xl px-6 lg:px-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}

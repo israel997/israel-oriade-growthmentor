@@ -109,7 +109,9 @@ function StatCard({ s, delay }: { s: typeof stats[0]; delay: number }) {
         className="flex h-full flex-col rounded-2xl p-8"
         style={{
           background: "rgba(255,255,255,0.04)",
-          border: "1px solid rgba(255,255,255,0.08)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+          border: "1px solid rgba(255,255,255,0.1)",
           boxShadow: "0 4px 24px rgba(0,0,0,0.2)",
         }}
       >
