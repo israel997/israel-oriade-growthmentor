@@ -21,10 +21,6 @@ const navLinks = [
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-
-  if (pathname.startsWith("/admin")) return <>{children}</>;
-  if (pathname.startsWith("/espace-membre")) return <>{children}</>;
-
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -37,6 +33,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  if (pathname.startsWith("/admin")) return <>{children}</>;
+  if (pathname.startsWith("/espace-membre")) return <>{children}</>;
 
   const isHome = pathname === "/";
 

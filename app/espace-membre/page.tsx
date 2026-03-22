@@ -6,6 +6,23 @@ import Link from "next/link";
 type Session = { name: string; email: string; method?: string };
 type DiagResult = { date: string; score: number; badge: string };
 
+const BADGE_CROWNS: Record<string, number> = {
+  "Apprenti": 1, "En croissance": 2, "Confirmé": 3, "Expert": 4, "Elite": 5,
+};
+
+function Crowns({ badge, color }: { badge: string; color: string }) {
+  const count = BADGE_CROWNS[badge] ?? 1;
+  return (
+    <span className="inline-flex items-center gap-px">
+      {Array.from({ length: count }).map((_, i) => (
+        <svg key={i} width={9} height={9} viewBox="0 0 24 24" fill={color} stroke={color} strokeWidth={1.2} strokeLinejoin="round">
+          <path d="M2 19h20v2H2zM2 17l4-10 6 6 4-8 4 8-18 4z" />
+        </svg>
+      ))}
+    </span>
+  );
+}
+
 const BADGE_CONFIG: Record<string, { color: string; bg: string }> = {
   "Apprenti":      { color: "#94A3B8", bg: "rgba(148,163,184,0.12)" },
   "En croissance": { color: "#34D399", bg: "rgba(52,211,153,0.12)" },
@@ -78,8 +95,8 @@ export default function EspaceMembreDashboard() {
         <div className="flex flex-col items-end gap-2">
           <span className="flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-bold"
             style={{ background: badgeStyle.bg, color: badgeStyle.color, border: `1px solid ${badgeStyle.color}40` }}>
-            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" /></svg>
             {badge}
+            <Crowns badge={badge} color={badgeStyle.color} />
           </span>
           {lastResult && (
             <span className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
@@ -97,7 +114,7 @@ export default function EspaceMembreDashboard() {
             <Link key={l.href} href={l.href}
               className="rounded-2xl p-4 flex flex-col gap-3 transition-all hover:scale-[1.02]"
               style={{ background: "rgba(255,255,255,0.04)", backdropFilter: "blur(16px)", border: `1px solid ${l.color}25` }}>
-              <span style={{ color: l.color }}>{l.icon}</span>
+              <span style={{ color: "#F5C200" }}>{l.icon}</span>
               <span className="text-sm font-semibold" style={{ color: l.color }}>{l.label}</span>
             </Link>
           ))}

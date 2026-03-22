@@ -96,8 +96,8 @@ export default function NotificationsPage() {
                 border: `1px solid ${n.read ? "rgba(96,165,250,0.08)" : tc.color + "25"}`,
                 opacity: n.read ? 0.7 : 1,
               }}>
-              <div className="h-9 w-9 shrink-0 rounded-full flex items-center justify-center text-sm"
-                style={{ background: tc.color + "15" }}>
+              <div className="h-9 w-9 shrink-0 rounded-full flex items-center justify-center"
+                style={{ background: "rgba(245,194,0,0.12)", color: "#F5C200" }}>
                 {tc.icon}
               </div>
               <div className="flex-1 min-w-0">
