@@ -210,7 +210,7 @@ function Stars({ rating }: { rating: number }) {
   );
 }
 
-function ResourceModal({ r, onClose }: { r: typeof resources[0]; onClose: () => void }) {
+function ResourceModal({ r, onClose, onDownload }: { r: typeof resources[0]; onClose: () => void; onDownload: (href: string) => void }) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -289,8 +289,8 @@ function ResourceModal({ r, onClose }: { r: typeof resources[0]; onClose: () => 
           </div>
 
           {/* CTA */}
-          <Link
-            href={r.downloadHref}
+          <button
+            onClick={() => { onDownload(r.downloadHref); onClose(); }}
             className="flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold text-white transition-transform hover:scale-[1.01]"
             style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}
           >
@@ -298,7 +298,7 @@ function ResourceModal({ r, onClose }: { r: typeof resources[0]; onClose: () => 
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
             </svg>
-          </Link>
+          </button>
         </div>
       </motion.div>
     </motion.div>
@@ -324,7 +324,7 @@ function HeartButton({ id }: { id: string }) {
   );
 }
 
-function ResourceCard({ r, i, onDetail }: { r: typeof resources[0]; i: number; onDetail: () => void }) {
+function ResourceCard({ r, i, onDetail, onDownload }: { r: typeof resources[0]; i: number; onDetail: () => void; onDownload: (href: string) => void }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 28 }}
@@ -376,13 +376,13 @@ function ResourceCard({ r, i, onDetail }: { r: typeof resources[0]; i: number; o
             >
               Voir les détails
             </button>
-            <Link
-              href={r.downloadHref}
+            <button
+              onClick={() => onDownload(r.downloadHref)}
               className="flex-1 rounded-xl py-2.5 text-center text-xs font-semibold text-white transition-transform hover:scale-[1.02]"
               style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}
             >
               {"price" in r && r.price ? "Acheter" : "Télécharger"}
-            </Link>
+            </button>
             <HeartButton id={r.id} />
           </div>
         </div>
@@ -412,11 +412,98 @@ function FilterBtn({ label, active, onClick }: { label: string; active: boolean;
   );
 }
 
+// ── Login Required Modal ─────────────────────────────────────────────────────
+function LoginRequiredModal({ onClose }: { onClose: () => void }) {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-60 flex items-center justify-center p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
+      <div className="absolute inset-0" style={{ background: "rgba(2,5,22,0.85)", backdropFilter: "blur(12px)" }} />
+      <motion.div
+        className="relative w-full max-w-sm overflow-hidden rounded-2xl p-7 text-center"
+        style={{
+          background: "#08123A",
+          border: "1px solid rgba(96,165,250,0.18)",
+          boxShadow: "0 32px 80px rgba(0,0,0,0.6)",
+        }}
+        initial={{ opacity: 0, y: 32, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 16, scale: 0.97 }}
+        transition={{ duration: 0.26, ease: "easeOut" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full text-white/30 transition-colors hover:text-white/70"
+          aria-label="Fermer"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4">
+            <path d="M6 6l12 12M18 6l-12 12" />
+          </svg>
+        </button>
+
+        {/* Icon */}
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl"
+          style={{ background: "rgba(96,165,250,0.1)", border: "1px solid rgba(96,165,250,0.2)" }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#60A5FA" strokeWidth={1.8} className="h-7 w-7">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 0 1 21.75 8.25Z" />
+          </svg>
+        </div>
+
+        <h2 className="mt-4 text-lg font-bold text-white">Connexion requise</h2>
+        <p className="mt-2 text-sm text-white/50 leading-relaxed">
+          Tu dois être connecté à ton compte pour télécharger ou acheter des ressources.
+        </p>
+
+        <Link
+          href="/espace-membre"
+          onClick={onClose}
+          className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold text-white transition-transform hover:scale-[1.02]"
+          style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}
+        >
+          Se connecter
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+          </svg>
+        </Link>
+
+        <button onClick={onClose} className="mt-3 text-xs text-white/30 hover:text-white/50 transition-colors">
+          Continuer sans connexion
+        </button>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 export default function RessourcesPage() {
   const [activeType, setActiveType] = useState("Tous");
   const [activeTopic, setActiveTopic] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedResource, setSelectedResource] = useState<typeof resources[0] | null>(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    setIsLoggedIn(Boolean(localStorage.getItem("gm_member_session")));
+  }, []);
+
+  const handleDownload = (href: string) => {
+    if (!isLoggedIn) {
+      setShowAuthModal(true);
+      return;
+    }
+    window.location.href = href;
+  };
 
   const filtered = resources.filter((r) => {
     const typeMatch = activeType === "Tous" || r.category === activeType || r.type === activeType;
@@ -428,8 +515,11 @@ export default function RessourcesPage() {
     <div className="min-h-screen" style={{ background: "#03071A" }}>
       <AnimatePresence>
         {selectedResource && (
-          <ResourceModal r={selectedResource} onClose={() => setSelectedResource(null)} />
+          <ResourceModal r={selectedResource} onClose={() => setSelectedResource(null)} onDownload={handleDownload} />
         )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {showAuthModal && <LoginRequiredModal onClose={() => setShowAuthModal(false)} />}
       </AnimatePresence>
       <WaveGridBg />
 
@@ -516,7 +606,7 @@ export default function RessourcesPage() {
             className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
           >
             {filtered.map((r, i) => (
-              <ResourceCard key={r.id} r={r} i={i} onDetail={() => setSelectedResource(r)} />
+              <ResourceCard key={r.id} r={r} i={i} onDetail={() => setSelectedResource(r)} onDownload={handleDownload} />
             ))}
           </motion.div>
         </AnimatePresence>

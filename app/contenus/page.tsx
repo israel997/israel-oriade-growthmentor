@@ -1,25 +1,501 @@
-import Link from "next/link";
-import TrackView from "@/components/track-view";
-import { contentLinks } from "@/lib/site-data";
+"use client";
+
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import WaveGridBg from "@/components/wave-grid-bg";
+
+// ── Types ─────────────────────────────────────────────────────────────────────
+type Platform = "Facebook" | "LinkedIn" | "YouTube" | "Autres Créateurs";
+
+type Post = {
+  id: string;
+  platform: Platform;
+  description: string;
+  coverGradient: string;
+  imageUrl?: string;
+  postedAt: string; // ISO date
+  href: string;
+  author?: string; // pour Autres Créateurs
+};
+
+// ── Platform config ───────────────────────────────────────────────────────────
+const platformConfig: Record<Platform, { color: string; icon: React.ReactNode; label: string }> = {
+  Facebook: {
+    color: "#1877F2",
+    label: "Facebook",
+    icon: (
+      <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M24 12.073C24 5.406 18.627 0 12 0S0 5.406 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073Z" />
+      </svg>
+    ),
+  },
+  LinkedIn: {
+    color: "#0A66C2",
+    label: "LinkedIn",
+    icon: (
+      <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+      </svg>
+    ),
+  },
+  YouTube: {
+    color: "#FF0000",
+    label: "YouTube",
+    icon: (
+      <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+      </svg>
+    ),
+  },
+  "Autres Créateurs": {
+    color: "#8B5CF6",
+    label: "Autres Créateurs",
+    icon: (
+      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+      </svg>
+    ),
+  },
+};
+
+// ── Posts data ────────────────────────────────────────────────────────────────
+const posts: Post[] = [
+  // Facebook
+  {
+    id: "fb-1",
+    platform: "Facebook",
+    description: "🚀 Tu veux lancer ton business digital mais tu ne sais pas par où commencer ? Voici la méthode en 3 étapes que j'ai utilisée pour passer de 0 à mes premières ventes en 30 jours.",
+    coverGradient: "linear-gradient(135deg, #1877F2 0%, #0D1B5E 100%)",
+    postedAt: "2026-03-20T10:00:00Z",
+    href: "https://www.facebook.com/profile.php?id=100005386759461",
+  },
+  {
+    id: "fb-2",
+    platform: "Facebook",
+    description: "💡 L'erreur #1 que font 90% des entrepreneurs débutants : vouloir tout faire en même temps. La clarté, c'est ton meilleur actif. Thread complet ici 👇",
+    coverGradient: "linear-gradient(135deg, #0D1B5E 0%, #1877F2 100%)",
+    postedAt: "2026-03-17T14:30:00Z",
+    href: "https://www.facebook.com/profile.php?id=100005386759461",
+  },
+  {
+    id: "fb-3",
+    platform: "Facebook",
+    description: "📈 Résultats de mars : +47% de conversions sur mon tunnel en appliquant UNE seule modification. Je t'explique laquelle dans ce post.",
+    coverGradient: "linear-gradient(135deg, #1877F2 0%, #6366F1 100%)",
+    postedAt: "2026-03-14T09:15:00Z",
+    href: "https://www.facebook.com/profile.php?id=100005386759461",
+  },
+  {
+    id: "fb-4",
+    platform: "Facebook",
+    description: "🎯 Live ce soir à 20h : je réponds à toutes tes questions sur le lancement digital. Pose ta question en commentaire avant 19h30.",
+    coverGradient: "linear-gradient(135deg, #1A3FD8 0%, #1877F2 100%)",
+    postedAt: "2026-03-10T08:00:00Z",
+    href: "https://www.facebook.com/profile.php?id=100005386759461",
+  },
+
+  // LinkedIn
+  {
+    id: "li-1",
+    platform: "LinkedIn",
+    description: "J'ai analysé 200 offres digitales qui se vendent bien. Voici les 5 caractéristiques communes que j'ai trouvées. Ça m'a pris 3 semaines à compiler.",
+    coverGradient: "linear-gradient(135deg, #0A66C2 0%, #0D1B5E 100%)",
+    postedAt: "2026-03-21T08:00:00Z",
+    href: "https://www.linkedin.com/in/isra%C3%ABl-oriad%C3%A9/",
+  },
+  {
+    id: "li-2",
+    platform: "LinkedIn",
+    description: "Mon bilan après 2 ans en tant que solopreneur digital : ce que j'ai appris, ce que j'aurais fait différemment, et les chiffres que je n'avais jamais partagés.",
+    coverGradient: "linear-gradient(135deg, #0D1B5E 0%, #0A66C2 100%)",
+    postedAt: "2026-03-18T11:00:00Z",
+    href: "https://www.linkedin.com/in/isra%C3%ABl-oriad%C3%A9/",
+  },
+  {
+    id: "li-3",
+    platform: "LinkedIn",
+    description: "Le pricing est souvent sous-estimé. Voici comment j'ai triplé la valeur perçue de mon accompagnement sans changer le contenu — juste en repositionnant l'offre.",
+    coverGradient: "linear-gradient(135deg, #0A66C2 0%, #1A3FD8 100%)",
+    postedAt: "2026-03-12T09:30:00Z",
+    href: "https://www.linkedin.com/in/isra%C3%ABl-oriad%C3%A9/",
+  },
+
+  // YouTube
+  {
+    id: "yt-1",
+    platform: "YouTube",
+    description: "🎬 Comment créer un tunnel de vente qui convertit à froid — Étude de cas complète sur mon tunnel qui génère des ventes automatiquement.",
+    coverGradient: "linear-gradient(135deg, #FF0000 0%, #7C0000 100%)",
+    postedAt: "2026-03-19T16:00:00Z",
+    href: "https://www.youtube.com",
+  },
+  {
+    id: "yt-2",
+    platform: "YouTube",
+    description: "🎬 Mes 5 outils indispensables pour gérer un business digital solo — revue honnête, avantages et inconvénients de chacun.",
+    coverGradient: "linear-gradient(135deg, #7C0000 0%, #FF0000 100%)",
+    postedAt: "2026-03-13T15:00:00Z",
+    href: "https://www.youtube.com",
+  },
+  {
+    id: "yt-3",
+    platform: "YouTube",
+    description: "🎬 De 0 à 1 000€/mois en digital : le plan semaine par semaine que j'aurais aimé avoir au départ. Tutoriel complet de 45 minutes.",
+    coverGradient: "linear-gradient(135deg, #FF0000 0%, #C2410C 100%)",
+    postedAt: "2026-03-06T14:00:00Z",
+    href: "https://www.youtube.com",
+  },
+
+  // Autres Créateurs
+  {
+    id: "ac-1",
+    platform: "Autres Créateurs",
+    description: "📌 Un article de Alex Hormozi sur la structure d'une offre irrésistible. L'un des meilleurs que j'ai lu sur le sujet — à lire absolument si tu veux vendre plus.",
+    coverGradient: "linear-gradient(135deg, #7C3AED 0%, #0D1B5E 100%)",
+    postedAt: "2026-03-22T07:00:00Z",
+    href: "https://www.acquisition.com",
+    author: "Alex Hormozi",
+  },
+  {
+    id: "ac-2",
+    platform: "Autres Créateurs",
+    description: "📌 Thread de Dan Koe sur le modèle 1-personne business. Si tu es solo, ce thread va changer ta vision du business digital pour toujours.",
+    coverGradient: "linear-gradient(135deg, #0D1B5E 0%, #8B5CF6 100%)",
+    postedAt: "2026-03-16T10:00:00Z",
+    href: "https://twitter.com",
+    author: "Dan Koe",
+  },
+];
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const minutes = Math.floor(diff / 60000);
+  const hours = Math.floor(diff / 3600000);
+  const days = Math.floor(diff / 86400000);
+  const months = Math.floor(days / 30);
+  if (months > 0) return `il y a ${months} mois`;
+  if (days > 0) return `il y a ${days} jour${days > 1 ? "s" : ""}`;
+  if (hours > 0) return `il y a ${hours}h`;
+  return `il y a ${minutes}min`;
+}
+
+// ── Redirect Modal ────────────────────────────────────────────────────────────
+function RedirectModal({ post, onConfirm, onCancel }: { post: Post; onConfirm: () => void; onCancel: () => void }) {
+  const config = platformConfig[post.platform];
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onCancel();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [onCancel]);
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onCancel}
+    >
+      <div className="absolute inset-0" style={{ background: "rgba(2,5,22,0.85)", backdropFilter: "blur(12px)" }} />
+      <motion.div
+        className="relative w-full max-w-sm overflow-hidden rounded-2xl p-7 text-center"
+        style={{
+          background: "#08123A",
+          border: "1px solid rgba(96,165,250,0.18)",
+          boxShadow: "0 32px 80px rgba(0,0,0,0.6)",
+        }}
+        initial={{ opacity: 0, y: 28, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 16, scale: 0.97 }}
+        transition={{ duration: 0.26, ease: "easeOut" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Platform icon */}
+        <div
+          className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl text-white"
+          style={{ background: config.color + "22", border: `1px solid ${config.color}44`, color: config.color }}
+        >
+          {config.icon}
+        </div>
+
+        <h2 className="mt-4 text-base font-bold text-white">Redirection vers {config.label}</h2>
+        <p className="mt-2 text-sm text-white/50 leading-relaxed">
+          Tu vas quitter GrowthMentor et être redirigé vers{" "}
+          <span className="font-semibold" style={{ color: config.color }}>{config.label}</span>.
+          Veux-tu continuer ?
+        </p>
+
+        <div className="mt-6 flex gap-3">
+          <button
+            onClick={onCancel}
+            className="flex-1 rounded-xl py-2.5 text-sm font-semibold transition-colors"
+            style={{
+              background: "rgba(255,255,255,0.06)",
+              border: "1px solid rgba(255,255,255,0.12)",
+              color: "rgba(255,255,255,0.7)",
+            }}
+          >
+            Non, revenir
+          </button>
+          <button
+            onClick={onConfirm}
+            className="flex-1 rounded-xl py-2.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02]"
+            style={{ background: config.color }}
+          >
+            Oui, continuer
+          </button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+// ── Favorite hook ─────────────────────────────────────────────────────────────
+function useFavorites() {
+  const [favorites, setFavorites] = useState<string[]>([]);
+
+  useEffect(() => {
+    setFavorites(JSON.parse(localStorage.getItem("gm_content_favorites") || "[]"));
+  }, []);
+
+  const toggle = (id: string) => {
+    setFavorites((prev) => {
+      const next = prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id];
+      localStorage.setItem("gm_content_favorites", JSON.stringify(next));
+      return next;
+    });
+  };
+
+  return { favorites, toggle };
+}
+
+// ── Post Card ─────────────────────────────────────────────────────────────────
+function PostCard({ post, onRead, isFav, onToggleFav }: {
+  post: Post;
+  onRead: () => void;
+  isFav: boolean;
+  onToggleFav: () => void;
+}) {
+  const config = platformConfig[post.platform];
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.45, ease: "easeOut" }}
+    >
+      <motion.div
+        whileHover={{ y: -4, boxShadow: "0 20px 48px rgba(0,0,0,0.45)" }}
+        transition={{ duration: 0.22 }}
+        className="flex flex-col rounded-2xl overflow-hidden h-full"
+        style={{
+          background: "rgba(255,255,255,0.04)",
+          backdropFilter: "blur(16px)",
+          border: "1px solid rgba(255,255,255,0.08)",
+        }}
+      >
+        {/* Cover */}
+        <div
+          className="relative h-36 w-full shrink-0 flex items-center justify-center"
+          style={{ background: post.imageUrl ? undefined : post.coverGradient }}
+        >
+          {post.imageUrl
+            ? <img src={post.imageUrl} alt="" className="h-full w-full object-cover" />
+            : <span className="opacity-20" style={{ color: "#fff", transform: "scale(2.5)" }}>{config.icon}</span>
+          }
+          <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(6,11,46,0.6) 0%, transparent 60%)" }} />
+
+          {/* Time badge */}
+          <span
+            className="absolute bottom-2 left-3 rounded-full px-2 py-0.5 text-xs text-white/70"
+            style={{ background: "rgba(0,0,0,0.45)", backdropFilter: "blur(6px)" }}
+          >
+            {timeAgo(post.postedAt)}
+          </span>
+
+          {/* Author badge for Autres Créateurs */}
+          {post.author && (
+            <span
+              className="absolute top-2 left-3 rounded-full px-2 py-0.5 text-xs font-medium"
+              style={{ background: "rgba(0,0,0,0.5)", color: "#C4B5FD", backdropFilter: "blur(6px)" }}
+            >
+              {post.author}
+            </span>
+          )}
+        </div>
+
+        {/* Body */}
+        <div className="flex flex-1 flex-col gap-4 p-4">
+          <p className="text-sm text-white/70 leading-relaxed flex-1 line-clamp-3">{post.description}</p>
+
+          {/* Actions */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onRead}
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-xl py-2 text-sm font-semibold text-white transition-transform hover:scale-[1.02]"
+              style={{ background: config.color }}
+            >
+              Lire
+              <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            </button>
+
+            <button
+              onClick={onToggleFav}
+              aria-label={isFav ? "Retirer des favoris" : "Ajouter aux favoris"}
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl transition-all"
+              style={{
+                background: isFav ? "rgba(245,194,0,0.12)" : "rgba(255,255,255,0.06)",
+                border: isFav ? "1px solid rgba(245,194,0,0.3)" : "1px solid rgba(255,255,255,0.1)",
+              }}
+            >
+              <svg
+                className="h-4 w-4 transition-all"
+                fill={isFav ? "#F5C200" : "none"}
+                viewBox="0 0 24 24"
+                stroke={isFav ? "#F5C200" : "rgba(255,255,255,0.45)"}
+                strokeWidth={2}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+
+// ── Page ──────────────────────────────────────────────────────────────────────
+const platformOrder: Platform[] = ["Facebook", "LinkedIn", "YouTube", "Autres Créateurs"];
 
 export default function ContenusPage() {
-  return (
-    <section className="space-y-6">
-      <TrackView label="Contenus" />
-      <h1 className="text-2xl font-bold text-white">Contenus</h1>
-      <p className="text-sm text-slate-300">Retrouve tous les contenus par plateforme.</p>
+  const [activeTab, setActiveTab] = useState<Platform>("Facebook");
+  const [redirectPost, setRedirectPost] = useState<Post | null>(null);
+  const { favorites, toggle } = useFavorites();
 
-      <div className="grid gap-4 md:grid-cols-3">
-        {contentLinks.map((content) => (
-          <article key={content.platform} className="rounded-xl border border-slate-700 bg-slate-900 p-4">
-            <h2 className="font-semibold text-white">{content.platform}</h2>
-            <p className="mt-2 text-sm text-slate-300">{content.description}</p>
-            <Link href={content.url} target="_blank" className="mt-4 inline-block rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-slate-950">
-              Ouvrir
-            </Link>
-          </article>
-        ))}
+  const activePosts = posts.filter((p) => p.platform === activeTab);
+  const config = platformConfig[activeTab];
+
+  const handleConfirmRedirect = () => {
+    if (redirectPost) {
+      window.open(redirectPost.href, "_blank", "noopener,noreferrer");
+      setRedirectPost(null);
+    }
+  };
+
+  return (
+    <div className="relative min-h-screen" style={{ background: "#03071A" }}>
+      <WaveGridBg />
+
+      <div className="relative z-10 mx-auto max-w-7xl px-6 py-20 lg:px-8">
+
+        {/* Hero */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, ease: "easeOut" }}
+          className="mb-12 text-center"
+        >
+          <span
+            className="inline-block rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-widest"
+            style={{ background: "rgba(96,165,250,0.15)", color: "#60A5FA" }}
+          >
+            Contenus
+          </span>
+          <h1 className="mt-4 text-4xl font-bold tracking-tight text-white sm:text-5xl">
+            Mes derniers contenus
+          </h1>
+          <p className="mt-3 mx-auto max-w-xl text-white/50">
+            Retrouve tous mes posts, vidéos et partages classés par plateforme. Sauvegarde les contenus que tu veux relire plus tard.
+          </p>
+        </motion.div>
+
+        {/* Tab bar */}
+        <div className="mb-10 flex items-center gap-1 overflow-x-auto">
+          {platformOrder.map((platform) => {
+            const cfg = platformConfig[platform];
+            const isActive = activeTab === platform;
+            return (
+              <button
+                key={platform}
+                onClick={() => setActiveTab(platform)}
+                className="relative flex flex-1 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-semibold transition-all"
+                style={{
+                  background: isActive ? cfg.color + "18" : "transparent",
+                  color: isActive ? cfg.color : "rgba(255,255,255,0.45)",
+                  border: isActive ? `1px solid ${cfg.color}35` : "1px solid transparent",
+                }}
+              >
+                <span style={{ color: isActive ? cfg.color : "rgba(255,255,255,0.35)" }}>
+                  {cfg.icon}
+                </span>
+                {cfg.label}
+                {isActive && (
+                  <motion.span
+                    layoutId="content-tab-indicator"
+                    className="absolute bottom-0 left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-full"
+                    style={{ background: cfg.color }}
+                    transition={{ duration: 0.22 }}
+                  />
+                )}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Active section */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.28, ease: "easeOut" }}
+          >
+            {/* Section header */}
+            <div className="mb-6 flex items-center gap-3">
+              <div
+                className="flex h-8 w-8 items-center justify-center rounded-xl"
+                style={{ background: config.color + "18", color: config.color }}
+              >
+                {config.icon}
+              </div>
+              <span className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.4)" }}>
+                {activePosts.length} post{activePosts.length > 1 ? "s" : ""}
+              </span>
+            </div>
+
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {activePosts.map((post) => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  onRead={() => setRedirectPost(post)}
+                  isFav={favorites.includes(post.id)}
+                  onToggleFav={() => toggle(post.id)}
+                />
+              ))}
+            </div>
+          </motion.div>
+        </AnimatePresence>
       </div>
-    </section>
+
+      {/* Redirect modal */}
+      <AnimatePresence>
+        {redirectPost && (
+          <RedirectModal
+            post={redirectPost}
+            onConfirm={handleConfirmRedirect}
+            onCancel={() => setRedirectPost(null)}
+          />
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
