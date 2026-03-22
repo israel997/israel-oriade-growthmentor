@@ -129,6 +129,31 @@ export default function CommunautePage() {
   return (
     <div className="min-h-screen" style={{ background: "#03071A" }}>
 
+      {/* ── Breath glow bg ── */}
+      <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
+        {/* Glow centre — respiration principale */}
+        <motion.div
+          animate={{ scale: [1, 1.18, 1], opacity: [0.18, 0.32, 0.18] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full"
+          style={{ width: "clamp(320px, 60vw, 700px)", height: "clamp(320px, 60vw, 700px)", background: "radial-gradient(circle, rgba(26,63,216,1) 0%, rgba(59,130,246,0.5) 35%, transparent 70%)", filter: "blur(40px)" }}
+        />
+        {/* Glow haut gauche — décalé */}
+        <motion.div
+          animate={{ scale: [1, 1.22, 1], opacity: [0.1, 0.2, 0.1] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+          className="absolute rounded-full"
+          style={{ width: "clamp(200px, 40vw, 480px)", height: "clamp(200px, 40vw, 480px)", top: "-5%", left: "-5%", background: "radial-gradient(circle, rgba(99,102,241,1) 0%, rgba(139,92,246,0.4) 40%, transparent 70%)", filter: "blur(50px)" }}
+        />
+        {/* Glow bas droite */}
+        <motion.div
+          animate={{ scale: [1, 1.15, 1], opacity: [0.1, 0.22, 0.1] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+          className="absolute rounded-full"
+          style={{ width: "clamp(180px, 35vw, 420px)", height: "clamp(180px, 35vw, 420px)", bottom: "0%", right: "-5%", background: "radial-gradient(circle, rgba(59,130,246,1) 0%, rgba(26,63,216,0.4) 40%, transparent 70%)", filter: "blur(45px)" }}
+        />
+      </div>
+
       {/* ── HERO ── */}
       <section className="relative mx-auto max-w-4xl px-6 py-24 text-center">
         <FadeIn>
