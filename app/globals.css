@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+:root {
+  --color-primary: #000000;
+  --color-secondary: #1a1a1a;
+  --color-accent: #F5C200;
+  --color-accent-light: #F5C200;
+  --color-bg: #FFFFFF;
+  --color-surface: #F8F9FA;
+  --color-surface-2: #F1F3F5;
+  --color-text-primary: #000000;
+  --color-text-secondary: #6B7280;
+  --color-text-muted: #9CA3AF;
+  --color-border: #E5E7EB;
+
+  --shadow-card: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.04);
+  --shadow-elevated: 0 20px 25px -5px rgb(0 0 0 / 0.08), 0 8px 10px -6px rgb(0 0 0 / 0.05);
+  --shadow-hover: 0 25px 35px -5px rgb(0 0 0 / 0.12), 0 10px 15px -6px rgb(0 0 0 / 0.08);
+
+  --radius-card: 24px;
+  --radius-btn: 12px;
+
+  --font-sans: 'Inter', system-ui, sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: linear-gradient(135deg, #8C8C8C 0%, #D0D0D0 55%, #B8B8B8 100%);
+  min-height: 100vh;
+  color: #111111;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Navbar hover */
+.nav-link:hover,
+.nav-btn:hover {
+  background: #070F3C !important;
+  color: #ffffff !important;
+  border-color: #070F3C !important;
+}
+
+/* Scrollbar subtile */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
