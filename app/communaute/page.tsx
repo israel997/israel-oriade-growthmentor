@@ -129,46 +129,6 @@ export default function CommunautePage() {
   return (
     <div className="min-h-screen" style={{ background: "#03071A" }}>
 
-      {/* ── Arc horizon (planet glow) ── */}
-      <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
-        {/* Halo diffus derrière l'arc */}
-        <div className="absolute left-1/2 -translate-x-1/2" style={{
-          top: "clamp(180px, 28vw, 340px)",
-          width: "clamp(500px, 110vw, 1400px)",
-          height: "clamp(500px, 110vw, 1400px)",
-          borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(26,63,216,0.22) 0%, rgba(59,130,246,0.08) 35%, transparent 65%)",
-          filter: "blur(8px)",
-        }} />
-        {/* Arc brillant — trait lumineux */}
-        <div className="absolute left-1/2 -translate-x-1/2" style={{
-          top: "clamp(200px, 30vw, 360px)",
-          width: "clamp(480px, 105vw, 1320px)",
-          height: "clamp(480px, 105vw, 1320px)",
-          borderRadius: "50%",
-          border: "1.5px solid transparent",
-          background: "transparent",
-          boxShadow: "0 0 clamp(12px,2vw,24px) clamp(2px,0.5vw,6px) rgba(59,130,246,0.55), inset 0 0 clamp(12px,2vw,24px) clamp(2px,0.5vw,6px) rgba(26,63,216,0.3)",
-          clipPath: "polygon(0 0, 100% 0, 100% 42%, 0 42%)",
-        }} />
-        {/* Lueur centrale au-dessus de l'arc */}
-        <div className="absolute left-1/2 -translate-x-1/2" style={{
-          top: "clamp(180px, 27vw, 330px)",
-          width: "clamp(280px, 55vw, 700px)",
-          height: "clamp(60px, 10vw, 120px)",
-          background: "radial-gradient(ellipse 100% 100% at 50% 100%, rgba(96,165,250,0.45) 0%, rgba(59,130,246,0.15) 50%, transparent 80%)",
-          filter: "blur(4px)",
-        }} />
-        {/* Fond sombre sous l'arc pour découper */}
-        <div className="absolute left-1/2 -translate-x-1/2" style={{
-          top: "calc(clamp(200px, 30vw, 360px) + clamp(240px, 52.5vw, 660px))",
-          width: "clamp(480px, 105vw, 1320px)",
-          height: "clamp(480px, 105vw, 1320px)",
-          borderRadius: "50%",
-          background: "#03071A",
-        }} />
-      </div>
-
       {/* ── HERO ── */}
       <section className="relative mx-auto max-w-4xl px-6 py-24 text-center">
         <FadeIn>

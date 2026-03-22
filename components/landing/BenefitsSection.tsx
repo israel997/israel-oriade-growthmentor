@@ -85,11 +85,11 @@ function BenefitCard({ b, i }: { b: typeof benefits[0]; i: number }) {
         transition={{ duration: 0.22 }}
         className="flex h-full flex-col gap-4 rounded-2xl p-6"
         style={{
-          background: "linear-gradient(135deg, #1A3FD8 0%, #0D1B5E 100%)",
+          background: "rgba(255,255,255,0.04)",
           backdropFilter: "blur(16px)",
           WebkitBackdropFilter: "blur(16px)",
-          border: "1px solid rgba(96,165,250,0.2)",
-          boxShadow: "0 4px 24px rgba(26,63,216,0.25)",
+          border: "1px solid rgba(96,165,250,0.15)",
+          boxShadow: "0 4px 24px rgba(0,0,0,0.2)",
         }}
       >
         <div
