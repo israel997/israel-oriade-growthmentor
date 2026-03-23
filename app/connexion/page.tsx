@@ -7,25 +7,54 @@ import { signIn } from "next-auth/react";
 
 type Tab = "login" | "register";
 
+const EyeOpen = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+);
+const EyeOff = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+);
+
+const Check = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+);
+const X = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+);
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const SPECIAL_RE = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+
 export default function ConnexionPage() {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("login");
   const [googleLoading, setGoogleLoading] = useState(false);
 
+  // Login
   const [loginEmail, setLoginEmail] = useState("");
+  const [loginEmailTouched, setLoginEmailTouched] = useState(false);
   const [loginPwd, setLoginPwd] = useState("");
+  const [showLoginPwd, setShowLoginPwd] = useState(false);
   const [loginError, setLoginError] = useState("");
 
+  // Register
   const [regName, setRegName] = useState("");
   const [regEmail, setRegEmail] = useState("");
+  const [regEmailTouched, setRegEmailTouched] = useState(false);
   const [regPwd, setRegPwd] = useState("");
+  const [showRegPwd, setShowRegPwd] = useState(false);
   const [regPwdConfirm, setRegPwdConfirm] = useState("");
+  const [showRegPwdConfirm, setShowRegPwdConfirm] = useState(false);
   const [regError, setRegError] = useState("");
 
   const [loading, setLoading] = useState(false);
-  const [showLoginPwd, setShowLoginPwd] = useState(false);
-  const [showRegPwd, setShowRegPwd] = useState(false);
-  const [showRegPwdConfirm, setShowRegPwdConfirm] = useState(false);
+
+  // Computed validations
+  const loginEmailValid = EMAIL_RE.test(loginEmail.trim());
+  const regEmailValid = EMAIL_RE.test(regEmail.trim());
+  const hasLength = regPwd.length >= 8;
+  const hasSpecial = SPECIAL_RE.test(regPwd);
+  const pwdMatch = regPwd.length > 0 && regPwdConfirm.length > 0 && regPwd === regPwdConfirm;
+  const pwdMismatch = regPwdConfirm.length > 0 && regPwd !== regPwdConfirm;
 
   const handleGoogleLogin = async () => {
     setGoogleLoading(true);
@@ -36,22 +65,19 @@ export default function ConnexionPage() {
     e.preventDefault();
     setLoginError("");
     if (!loginEmail.trim() || !loginPwd) { setLoginError("Remplis tous les champs."); return; }
+    if (!loginEmailValid) { setLoginError("L'adresse email n'est pas valide."); return; }
     setLoading(true);
     try {
-      const res = await signIn("credentials", {
-        email: loginEmail.trim(),
-        password: loginPwd,
-        redirect: false,
-      });
+      const res = await signIn("credentials", { email: loginEmail.trim(), password: loginPwd, redirect: false });
       setLoading(false);
       if (res?.error) {
-        setLoginError("Email ou mot de passe incorrect.");
+        setLoginError("Email ou mot de passe incorrect. Vérifie tes identifiants.");
       } else {
         router.push("/espace-membre");
       }
     } catch {
       setLoading(false);
-      setLoginError("Erreur de connexion. Réessaie.");
+      setLoginError("Erreur de connexion. Réessaie dans quelques instants.");
     }
   };
 
@@ -59,9 +85,10 @@ export default function ConnexionPage() {
     e.preventDefault();
     setRegError("");
     if (!regName.trim() || !regEmail.trim() || !regPwd) { setRegError("Remplis tous les champs."); return; }
-    if (regPwd.length < 8) { setRegError("Le mot de passe doit faire au moins 8 caractères."); return; }
-    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(regPwd)) { setRegError("Le mot de passe doit contenir au moins un caractère spécial (!@#$%...)."); return; }
-    if (regPwd !== regPwdConfirm) { setRegError("Les mots de passe ne correspondent pas."); return; }
+    if (!regEmailValid) { setRegError("L'adresse email n'est pas valide."); return; }
+    if (!hasLength) { setRegError("Le mot de passe doit faire au moins 8 caractères."); return; }
+    if (!hasSpecial) { setRegError("Le mot de passe doit contenir au moins un caractère spécial (!@#$%...)."); return; }
+    if (pwdMismatch || !pwdMatch) { setRegError("Les mots de passe ne correspondent pas."); return; }
     setLoading(true);
     try {
       const res = await fetch("/api/auth/register", {
@@ -71,11 +98,7 @@ export default function ConnexionPage() {
       });
       const data = await res.json();
       if (!res.ok) { setLoading(false); setRegError(data.error); return; }
-      const login = await signIn("credentials", {
-        email: regEmail.trim(),
-        password: regPwd,
-        redirect: false,
-      });
+      const login = await signIn("credentials", { email: regEmail.trim(), password: regPwd, redirect: false });
       setLoading(false);
       if (login?.error) { setRegError("Compte créé mais connexion échouée. Connecte-toi manuellement."); setTab("login"); }
       else router.push("/espace-membre");
@@ -91,8 +114,13 @@ export default function ConnexionPage() {
     color: "white",
   };
 
+  const INPUT_ERROR = {
+    ...INPUT,
+    border: "1px solid rgba(248,113,113,0.5)",
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center px-4" style={{ background: "#03071A" }}>
+    <div className="min-h-screen flex items-center justify-center px-4 py-12" style={{ background: "#03071A" }}>
       <div aria-hidden className="pointer-events-none fixed inset-0 overflow-hidden">
         <div style={{ position: "absolute", width: "60vw", height: "60vw", maxWidth: 600, maxHeight: 600, left: "-10%", top: "-10%", borderRadius: "50%", background: "radial-gradient(circle at 40% 40%, rgba(26,63,216,0.4) 0%, transparent 70%)", filter: "blur(60px)" }} />
         <div style={{ position: "absolute", width: "50vw", height: "50vw", maxWidth: 500, maxHeight: 500, right: "-5%", bottom: "0%", borderRadius: "50%", background: "radial-gradient(circle at 60% 60%, rgba(139,92,246,0.3) 0%, transparent 70%)", filter: "blur(55px)" }} />
@@ -141,30 +169,43 @@ export default function ConnexionPage() {
             ))}
           </div>
 
+          {/* LOGIN */}
           {tab === "login" && (
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "rgba(255,255,255,0.35)" }}>Email</label>
-                <input type="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)}
+                <input
+                  type="email" value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  onBlur={() => setLoginEmailTouched(true)}
                   className="w-full rounded-xl px-4 py-3 text-sm outline-none placeholder:text-white/20"
-                  style={INPUT} placeholder="ton@email.com" autoComplete="email" />
+                  style={loginEmailTouched && loginEmail.length > 0 && !loginEmailValid ? INPUT_ERROR : INPUT}
+                  placeholder="ton@email.com" autoComplete="email"
+                />
+                {loginEmailTouched && loginEmail.length > 0 && !loginEmailValid && (
+                  <p className="text-xs mt-1.5 flex items-center gap-1" style={{ color: "#F87171" }}>
+                    <X /> Format d&apos;email invalide (ex: nom@domaine.com)
+                  </p>
+                )}
               </div>
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "rgba(255,255,255,0.35)" }}>Mot de passe</label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-xs font-semibold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.35)" }}>Mot de passe</label>
+                  <Link href="/mot-de-passe-oublie" className="text-xs hover:underline" style={{ color: "rgba(96,165,250,0.7)" }}>
+                    Mot de passe oublié ?
+                  </Link>
+                </div>
                 <div className="relative">
                   <input type={showLoginPwd ? "text" : "password"} value={loginPwd} onChange={(e) => setLoginPwd(e.target.value)}
                     className="w-full rounded-xl px-4 py-3 pr-11 text-sm outline-none placeholder:text-white/20"
                     style={INPUT} placeholder="••••••••" autoComplete="current-password" />
                   <button type="button" onClick={() => setShowLoginPwd(v => !v)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors">
-                    {showLoginPwd
-                      ? <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-                      : <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                    }
+                    {showLoginPwd ? <EyeOff /> : <EyeOpen />}
                   </button>
                 </div>
               </div>
-              {loginError && <p className="text-sm" style={{ color: "#F87171" }}>{loginError}</p>}
+              {loginError && <p className="text-sm flex items-start gap-1.5" style={{ color: "#F87171" }}><X />{loginError}</p>}
               <button type="submit" disabled={loading}
                 className="w-full rounded-xl py-3 text-sm font-bold text-white transition-transform hover:scale-[1.01] disabled:opacity-60"
                 style={{ background: "linear-gradient(135deg, #1A3FD8, #3B82F6)" }}>
@@ -173,6 +214,7 @@ export default function ConnexionPage() {
             </form>
           )}
 
+          {/* REGISTER */}
           {tab === "register" && (
             <form onSubmit={handleRegister} className="space-y-4">
               <div>
@@ -183,41 +225,67 @@ export default function ConnexionPage() {
               </div>
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "rgba(255,255,255,0.35)" }}>Email</label>
-                <input type="email" value={regEmail} onChange={(e) => setRegEmail(e.target.value)}
+                <input
+                  type="email" value={regEmail}
+                  onChange={(e) => setRegEmail(e.target.value)}
+                  onBlur={() => setRegEmailTouched(true)}
                   className="w-full rounded-xl px-4 py-3 text-sm outline-none placeholder:text-white/20"
-                  style={INPUT} placeholder="ton@email.com" autoComplete="email" />
+                  style={regEmailTouched && regEmail.length > 0 && !regEmailValid ? INPUT_ERROR : INPUT}
+                  placeholder="ton@email.com" autoComplete="email"
+                />
+                {regEmailTouched && regEmail.length > 0 && !regEmailValid && (
+                  <p className="text-xs mt-1.5 flex items-center gap-1" style={{ color: "#F87171" }}>
+                    <X /> Format d&apos;email invalide (ex: nom@domaine.com)
+                  </p>
+                )}
               </div>
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "rgba(255,255,255,0.35)" }}>Mot de passe</label>
                 <div className="relative">
                   <input type={showRegPwd ? "text" : "password"} value={regPwd} onChange={(e) => setRegPwd(e.target.value)}
                     className="w-full rounded-xl px-4 py-3 pr-11 text-sm outline-none placeholder:text-white/20"
-                    style={INPUT} placeholder="8 caractères minimum" autoComplete="new-password" />
+                    style={regPwd.length > 0 && (!hasLength || !hasSpecial) ? INPUT_ERROR : INPUT}
+                    placeholder="8 caractères minimum" autoComplete="new-password" />
                   <button type="button" onClick={() => setShowRegPwd(v => !v)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors">
-                    {showRegPwd
-                      ? <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-                      : <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                    }
+                    {showRegPwd ? <EyeOff /> : <EyeOpen />}
                   </button>
                 </div>
+                {regPwd.length > 0 && (
+                  <div className="mt-2 space-y-1">
+                    <p className="text-xs flex items-center gap-1.5" style={{ color: hasLength ? "#4ADE80" : "#F87171" }}>
+                      {hasLength ? <Check /> : <X />} 8 caractères minimum
+                    </p>
+                    <p className="text-xs flex items-center gap-1.5" style={{ color: hasSpecial ? "#4ADE80" : "#F87171" }}>
+                      {hasSpecial ? <Check /> : <X />} Au moins un caractère spécial (!@#$%&*...)
+                    </p>
+                  </div>
+                )}
               </div>
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "rgba(255,255,255,0.35)" }}>Confirmer</label>
+                <label className="block text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "rgba(255,255,255,0.35)" }}>Confirmer le mot de passe</label>
                 <div className="relative">
                   <input type={showRegPwdConfirm ? "text" : "password"} value={regPwdConfirm} onChange={(e) => setRegPwdConfirm(e.target.value)}
                     className="w-full rounded-xl px-4 py-3 pr-11 text-sm outline-none placeholder:text-white/20"
-                    style={INPUT} placeholder="••••••••" autoComplete="new-password" />
+                    style={pwdMismatch ? INPUT_ERROR : pwdMatch ? { ...INPUT, border: "1px solid rgba(74,222,128,0.4)" } : INPUT}
+                    placeholder="••••••••" autoComplete="new-password" />
                   <button type="button" onClick={() => setShowRegPwdConfirm(v => !v)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors">
-                    {showRegPwdConfirm
-                      ? <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
-                      : <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                    }
+                    {showRegPwdConfirm ? <EyeOff /> : <EyeOpen />}
                   </button>
                 </div>
+                {pwdMismatch && (
+                  <p className="text-xs mt-1.5 flex items-center gap-1" style={{ color: "#F87171" }}>
+                    <X /> Les mots de passe ne correspondent pas
+                  </p>
+                )}
+                {pwdMatch && (
+                  <p className="text-xs mt-1.5 flex items-center gap-1" style={{ color: "#4ADE80" }}>
+                    <Check /> Les mots de passe correspondent
+                  </p>
+                )}
               </div>
-              {regError && <p className="text-sm" style={{ color: "#F87171" }}>{regError}</p>}
+              {regError && <p className="text-sm flex items-start gap-1.5" style={{ color: "#F87171" }}><X />{regError}</p>}
               <button type="submit" disabled={loading}
                 className="w-full rounded-xl py-3 text-sm font-bold text-white transition-transform hover:scale-[1.01] disabled:opacity-60"
                 style={{ background: "linear-gradient(135deg, #1A3FD8, #3B82F6)" }}>
