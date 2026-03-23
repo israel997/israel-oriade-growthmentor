@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const OnboardingModal = dynamic(() => import("@/components/onboarding-modal"), {
@@ -21,8 +21,11 @@ const navLinks = [
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [memberName, setMemberName] = useState<string | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
     setMobileOpen(false);
@@ -33,6 +36,23 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    try {
+      const s = localStorage.getItem("gm_member_session");
+      if (s) setMemberName(JSON.parse(s).name?.split(" ")[0] ?? null);
+    } catch {}
+  }, [pathname]);
+
+  const handleDiagnosticClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const hasProfile = typeof window !== "undefined" && !!localStorage.getItem("gm_profile");
+    if (!hasProfile) {
+      setShowOnboarding(true);
+    } else {
+      router.push("/diagnostic");
+    }
+  };
 
   if (pathname.startsWith("/admin")) return <>{children}</>;
   if (pathname.startsWith("/espace-membre")) return <>{children}</>;
@@ -84,25 +104,35 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           </nav>
 
           <div className="flex items-center gap-2 md:gap-3">
-            <Link
-              href="/diagnostic"
+            <button
+              onClick={handleDiagnosticClick}
               className="nav-btn hidden rounded-xl border px-4 py-2 text-sm font-semibold transition-all md:inline-flex"
-              style={
-                { borderColor: "rgba(255,255,255,0.3)", color: "#fff" }
-              }
+              style={{ borderColor: "rgba(255,255,255,0.3)", color: "#fff" }}
             >
               Évaluer mon niveau
-            </Link>
+            </button>
 
             <Link
               href="/espace-membre"
               className="hidden items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white transition-transform hover:scale-[1.02] md:inline-flex"
               style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}
             >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-              </svg>
-              Mon espace
+              {memberName ? (
+                <>
+                  <span className="inline-flex h-5 w-5 items-center justify-center rounded-full text-xs font-bold"
+                    style={{ background: "rgba(255,255,255,0.2)" }}>
+                    {memberName[0].toUpperCase()}
+                  </span>
+                  {memberName}
+                </>
+              ) : (
+                <>
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                  </svg>
+                  Mon espace
+                </>
+              )}
             </Link>
 
             {/* Burger mobile */}
@@ -141,11 +171,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               ))}
             </nav>
             <div className="mt-3 grid gap-2">
-              <Link href="/diagnostic" className="rounded-lg border border-white/20 px-3 py-2.5 text-center text-sm font-semibold text-white">
+              <button onClick={handleDiagnosticClick} className="rounded-lg border border-white/20 px-3 py-2.5 text-center text-sm font-semibold text-white">
                 Évaluer mon niveau
-              </Link>
+              </button>
               <Link href="/espace-membre" className="rounded-lg px-3 py-2.5 text-center text-sm font-semibold text-white" style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}>
-                Mon espace
+                {memberName ?? "Mon espace"}
               </Link>
             </div>
           </div>
@@ -166,7 +196,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </footer>
 
-      <OnboardingModal onSaved={() => {}} />
+      <OnboardingModal
+        open={showOnboarding}
+        onClose={() => setShowOnboarding(false)}
+        onSaved={() => { setShowOnboarding(false); router.push("/diagnostic"); }}
+      />
     </>
   );
 }

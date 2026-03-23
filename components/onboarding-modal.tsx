@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Profile = {
   firstName: string;
@@ -25,19 +25,27 @@ const genders = [
 const steps = ["firstName", "gender", "country"] as const;
 type Step = typeof steps[number];
 
-export default function OnboardingModal({ onSaved }: { onSaved: (name: string) => void }) {
-  const [open, setOpen] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return !localStorage.getItem("gm_profile");
-  });
+export default function OnboardingModal({ onSaved, open: openProp, onClose }: {
+  onSaved: (name: string) => void;
+  open?: boolean;
+  onClose?: () => void;
+}) {
+  const [open, setOpen] = useState(openProp ?? false);
   const [step, setStep] = useState<Step>("firstName");
   const [direction, setDirection] = useState(1);
   const [profile, setProfile] = useState<Profile>({ firstName: "", gender: "", country: "" });
 
+  useEffect(() => { if (openProp !== undefined) setOpen(openProp); }, [openProp]);
+
+  const close = () => {
+    setOpen(false);
+    onClose?.();
+  };
+
   const saveProfile = () => {
     localStorage.setItem("gm_profile", JSON.stringify(profile));
     onSaved(profile.firstName.trim());
-    setOpen(false);
+    close();
   };
 
   const next = (field: keyof Profile, value: string) => {
@@ -50,7 +58,7 @@ export default function OnboardingModal({ onSaved }: { onSaved: (name: string) =
     if (field === "country") {
       localStorage.setItem("gm_profile", JSON.stringify(updated));
       onSaved(updated.firstName.trim());
-      setOpen(false);
+      close();
     }
   };
 
