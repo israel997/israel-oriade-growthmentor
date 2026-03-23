@@ -57,6 +57,7 @@ export default function ConnexionPage() {
     setRegError("");
     if (!regName.trim() || !regEmail.trim() || !regPwd) { setRegError("Remplis tous les champs."); return; }
     if (regPwd.length < 8) { setRegError("Le mot de passe doit faire au moins 8 caractères."); return; }
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(regPwd)) { setRegError("Le mot de passe doit contenir au moins un caractère spécial (!@#$%...)."); return; }
     if (regPwd !== regPwdConfirm) { setRegError("Les mots de passe ne correspondent pas."); return; }
     setLoading(true);
     try {

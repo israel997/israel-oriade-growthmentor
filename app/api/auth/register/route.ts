@@ -10,7 +10,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Champs manquants." }, { status: 400 });
     }
     if (password.length < 8) {
-      return NextResponse.json({ error: "Mot de passe trop court." }, { status: 400 });
+      return NextResponse.json({ error: "Mot de passe trop court (8 caractères minimum)." }, { status: 400 });
+    }
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+      return NextResponse.json({ error: "Le mot de passe doit contenir au moins un caractère spécial." }, { status: 400 });
     }
 
     const client = await clientPromise;
