@@ -49,8 +49,9 @@ export default function IzzyPage() {
       {/* Header */}
       <div className="flex items-center gap-3 mb-5 shrink-0 rounded-2xl p-4"
         style={{ background: "rgba(255,255,255,0.04)", backdropFilter: "blur(16px)", border: "1px solid rgba(96,165,250,0.13)" }}>
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl text-lg"
-          style={{ background: "linear-gradient(135deg, #7C3AED, #A78BFA)" }}>IZ</div>
+        <div className="h-10 w-10 rounded-xl overflow-hidden shrink-0">
+          <img src="/images/P2.webp" alt="Izzy" className="h-full w-full object-cover object-top" />
+        </div>
         <div className="flex-1">
           <p className="font-bold text-white">Izzy</p>
           <p className="text-xs uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.35)" }}>Consultant business IA · Growth Mentor</p>
@@ -88,8 +89,9 @@ export default function IzzyPage() {
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
             {m.role === "assistant" && (
-              <div className="h-7 w-7 rounded-full shrink-0 flex items-center justify-center text-xs mr-2 mt-0.5"
-                style={{ background: "linear-gradient(135deg,#7C3AED,#A78BFA)" }}>IZ</div>
+              <div className="h-7 w-7 rounded-full shrink-0 overflow-hidden mr-2 mt-0.5">
+                <img src="/images/P2.webp" alt="Izzy" className="h-full w-full object-cover object-top" />
+            </div>
             )}
             <div className="max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap"
               style={{
@@ -106,8 +108,9 @@ export default function IzzyPage() {
 
         {loading && (
           <div className="flex justify-start">
-            <div className="h-7 w-7 rounded-full shrink-0 flex items-center justify-center text-xs mr-2"
-              style={{ background: "linear-gradient(135deg,#7C3AED,#A78BFA)" }}>IZ</div>
+            <div className="h-7 w-7 rounded-full shrink-0 overflow-hidden mr-2">
+              <img src="/images/P2.webp" alt="Izzy" className="h-full w-full object-cover object-top" />
+            </div>
             <div className="rounded-2xl px-4 py-3" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(96,165,250,0.12)" }}>
               <div className="flex gap-1">
                 {[0, 1, 2].map((i) => (
