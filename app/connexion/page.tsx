@@ -23,6 +23,16 @@ const X = () => (
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const SPECIAL_RE = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+const NAME_RE = /^[a-zA-ZÀ-ÿ\s\-']+$/; // only letters, spaces, hyphens, apostrophes
+
+function validateFullName(name: string): string {
+  if (!name.trim()) return "";
+  if (!NAME_RE.test(name)) return "Le nom ne peut pas contenir de chiffres ou caractères spéciaux.";
+  const parts = name.trim().split(/\s+/);
+  const tooLong = parts.find(p => p.length > 15);
+  if (tooLong) return `"${tooLong}" dépasse 15 caractères.`;
+  return "";
+}
 
 export default function ConnexionPage() {
   const router = useRouter();
@@ -38,6 +48,7 @@ export default function ConnexionPage() {
 
   // Register
   const [regName, setRegName] = useState("");
+  const [regNameTouched, setRegNameTouched] = useState(false);
   const [regEmail, setRegEmail] = useState("");
   const [regEmailTouched, setRegEmailTouched] = useState(false);
   const [regPwd, setRegPwd] = useState("");
@@ -49,6 +60,7 @@ export default function ConnexionPage() {
   const [loading, setLoading] = useState(false);
 
   // Computed validations
+  const nameError = validateFullName(regName);
   const loginEmailValid = EMAIL_RE.test(loginEmail.trim());
   const regEmailValid = EMAIL_RE.test(regEmail.trim());
   const hasLength = regPwd.length >= 8;
@@ -85,6 +97,7 @@ export default function ConnexionPage() {
     e.preventDefault();
     setRegError("");
     if (!regName.trim() || !regEmail.trim() || !regPwd) { setRegError("Remplis tous les champs."); return; }
+    if (nameError) { setRegError(nameError); return; }
     if (!regEmailValid) { setRegError("L'adresse email n'est pas valide."); return; }
     if (!hasLength) { setRegError("Le mot de passe doit faire au moins 8 caractères."); return; }
     if (!hasSpecial) { setRegError("Le mot de passe doit contenir au moins un caractère spécial (!@#$%...)."); return; }
@@ -219,9 +232,17 @@ export default function ConnexionPage() {
             <form onSubmit={handleRegister} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "rgba(255,255,255,0.35)" }}>Nom complet</label>
-                <input type="text" value={regName} onChange={(e) => setRegName(e.target.value)}
+                <input type="text" value={regName}
+                  onChange={(e) => setRegName(e.target.value)}
+                  onBlur={() => setRegNameTouched(true)}
                   className="w-full rounded-xl px-4 py-3 text-sm outline-none placeholder:text-white/20"
-                  style={INPUT} placeholder="Ton prénom et nom" autoComplete="name" />
+                  style={regNameTouched && nameError ? INPUT_ERROR : INPUT}
+                  placeholder="Ton prénom et nom" autoComplete="name" />
+                {regNameTouched && nameError && (
+                  <p className="text-xs mt-1.5 flex items-center gap-1" style={{ color: "#F87171" }}>
+                    <X /> {nameError}
+                  </p>
+                )}
               </div>
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "rgba(255,255,255,0.35)" }}>Email</label>
