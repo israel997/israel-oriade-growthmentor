@@ -15,7 +15,7 @@ const offers = [
     price: "79€",
     href: "/formations/lancement-digital-30j",
     points: ["Positionnement", "Offre simple", "Tunnel de vente", "Premiers prospects"],
-    image: "/images/P3.jpeg",
+    image: "/images/P3.webp",
   },
   {
     tag: "Intermédiaire",
@@ -25,7 +25,7 @@ const offers = [
     href: "/formations/croissance-systeme",
     points: ["KPI & tracking", "Email automation", "Pages de conversion", "Meilleure marge"],
     featured: true,
-    image: "/images/P4.jpeg",
+    image: "/images/P4.webp",
   },
   {
     tag: "Avancé",
@@ -34,7 +34,7 @@ const offers = [
     price: "390€",
     href: "/formations/mentorat-elite",
     points: ["Audit business", "Roadmap 90 jours", "Décisions data-driven", "Accélération du CA"],
-    image: "/images/P5.jpeg",
+    image: "/images/P5.webp",
   },
 ];
 

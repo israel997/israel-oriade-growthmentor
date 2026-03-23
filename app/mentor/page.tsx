@@ -76,7 +76,7 @@ export default function MentorPage() {
           className="pointer-events-none absolute right-0 top-0 hidden h-full lg:block"
           style={{ width: "48%" }}
         >
-          <Image src="/images/P1.PNG" alt="" fill className="object-cover object-top" sizes="48vw" priority />
+          <Image src="/images/P1.webp" alt="" fill className="object-cover object-top" sizes="48vw" priority />
           {/* Gradient masque gauche */}
           <div className="absolute inset-0" style={{ background: "linear-gradient(to right, #05092A 0%, transparent 35%)" }} />
           <div className="absolute inset-0" style={{ background: "linear-gradient(to top, #05092A 0%, transparent 30%)" }} />

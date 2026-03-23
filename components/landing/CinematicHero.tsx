@@ -51,17 +51,16 @@ export default function CinematicHero() {
         }}
         className="pointer-events-none absolute right-0 top-0 hidden h-full lg:block"
         style={{ width: "50%" }}
-      >{/* 
+      >
         <Image
-          src="/images/P2.PNG"
+          src="/images/P2.webp"
           alt=""
           fill
           sizes="50vw"
           className="object-cover object-top"
           priority
         />
-
-       */}</motion.div>
+      </motion.div>
 
       <div className="relative mx-auto w-full max-w-6xl px-6 py-24 lg:px-8">
         <div className="max-w-3xl">

@@ -7,15 +7,15 @@ import { useCallback, useEffect, useState } from "react";
 const BG = "#05092A";
 
 const images = [
-  "/images/P3.jpeg",
-  "/images/P4.jpeg",
-  "/images/P5.jpeg",
-  "/images/P6.jpeg",
-  "/images/P7.jpeg",
-  "/images/P8.jpeg",
-  "/images/P9.jpeg",
-  "/images/P10.jpeg",
-  "/images/P11.jpeg",
+  "/images/P3.webp",
+  "/images/P4.webp",
+  "/images/P5.webp",
+  "/images/P6.webp",
+  "/images/P7.webp",
+  "/images/P8.webp",
+  "/images/P9.webp",
+  "/images/P10.webp",
+  "/images/P11.webp",
 ];
 
 export default function TestimonialsSection() {
