@@ -49,7 +49,7 @@ export default function CinematicHero() {
           opacity: { duration: 1, delay: 0.4 },
           y: { duration: 3.5, repeat: Infinity, ease: "easeInOut", delay: 1.2 },
         }}
-        className="pointer-events-none absolute right-0 top-0 hidden h-full lg:block"
+        className="pointer-events-none absolute inset-y-0 right-0 hidden lg:block"
         style={{ width: "50%" }}
       >
         <Image
