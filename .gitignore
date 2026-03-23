@@ -39,3 +39,26 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# agents-library [start]
+# agents-library manifest
+.agents-library.json
+
+# Claude Code sub-agents
+.claude/agents/
+
+# GitHub Copilot instructions
+.github/copilot-instructions.md
+.github/instructions/
+
+# Amazon Q Developer
+.amazonq/
+
+# OpenAI Codex CLI
+AGENTS.md
+.codex/
+
+# Aider
+CONVENTIONS.md
+.aider.conf.yml
+# agents-library [end]

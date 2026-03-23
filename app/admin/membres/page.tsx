@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import AdminHeader from "@/components/admin/AdminHeader";
 
 type Member = {
@@ -24,19 +24,6 @@ export default function AdminMembresPage() {
   const [members, setMembers] = useState<Member[]>(mockMembers);
   const [confirmRevoke, setConfirmRevoke] = useState<string | null>(null);
 
-  useEffect(() => {
-    try {
-      const session = localStorage.getItem("gm_member_session");
-      if (session) {
-        const s = JSON.parse(session);
-        const exists = members.some((m) => m.email === s.email);
-        if (!exists && s.email) {
-          setMembers((prev) => [...prev, { email: s.email, name: s.name ?? s.email, method: s.method ?? "Email", joinedAt: new Date().toISOString().split("T")[0], online: true }]);
-        }
-      }
-    } catch {}
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const revokeAccess = (email: string) => {
     setMembers((prev) => prev.map((m) => m.email === email ? { ...m, revoked: true, online: false } : m));

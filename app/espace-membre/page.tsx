@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 
-type Session = { name: string; email: string; method?: string };
 type DiagResult = { date: string; score: number; badge: string };
 
 const BADGE_CROWNS: Record<string, number> = {
@@ -39,14 +39,12 @@ const quickLinks = [
 ];
 
 export default function EspaceMembreDashboard() {
-  const [session, setSession] = useState<Session | null>(null);
+  const { data: authSession } = useSession();
   const [results, setResults] = useState<DiagResult[]>([]);
   const [canTest, setCanTest] = useState(true);
 
   useEffect(() => {
     try {
-      const s = localStorage.getItem("gm_member_session");
-      if (s) setSession(JSON.parse(s));
       const r = localStorage.getItem("gm_diag_results");
       if (r) {
         const parsed: DiagResult[] = JSON.parse(r);
@@ -62,7 +60,7 @@ export default function EspaceMembreDashboard() {
   const lastResult = results[results.length - 1];
   const badge = lastResult?.badge ?? "Apprenti";
   const badgeStyle = BADGE_CONFIG[badge] ?? BADGE_CONFIG["Apprenti"];
-  const firstName = session?.name?.split(" ")[0] ?? "Membre";
+  const firstName = authSession?.user?.name?.split(" ")[0] ?? "Membre";
 
   const hour = new Date().getHours();
   const timeGreeting =
@@ -90,7 +88,7 @@ export default function EspaceMembreDashboard() {
         </div>
         <div className="flex-1">
           <p className="text-lg font-bold text-white">Bonjour, {firstName}</p>
-          <p className="text-sm mt-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>{session?.email}</p>
+          <p className="text-sm mt-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>{authSession?.user?.email}</p>
         </div>
         <div className="flex flex-col items-end gap-2">
           <span className="flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-bold"

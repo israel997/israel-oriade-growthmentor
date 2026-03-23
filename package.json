@@ -10,6 +10,9 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",
+    "@auth/mongodb-adapter": "^3.11.1",
+    "@types/bcryptjs": "^2.4.6",
+    "bcryptjs": "^3.0.3",
     "framer-motion": "^12.38.0",
     "lucide-react": "^0.577.0",
     "mongodb": "^7.1.0",

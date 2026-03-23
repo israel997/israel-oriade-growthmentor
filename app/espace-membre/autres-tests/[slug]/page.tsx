@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter, useParams } from "next/navigation";
+import { saveUserData } from "@/lib/sync-user-data";
 
 // ── Test definitions ──────────────────────────────────────────────────────────
 
@@ -181,7 +182,7 @@ export default function TestSlugPage() {
       try {
         const prev = JSON.parse(localStorage.getItem(test.storageKey) ?? "[]");
         prev.push({ date: new Date().toISOString(), score: pct, badge: badge.label });
-        localStorage.setItem(test.storageKey, JSON.stringify(prev));
+        saveUserData(test.storageKey, prev);
       } catch {}
       setPhase("result");
     }

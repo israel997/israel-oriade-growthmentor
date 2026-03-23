@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 
 type Result = { date: string; score: number; badge: string };
@@ -76,14 +77,14 @@ function MiniScoreBar({ results, color }: { results: Result[]; color: string }) 
 }
 
 export default function ProgressionPage() {
+  const { data: authSession } = useSession();
   const [results, setResults] = useState<Result[]>([]);
   const [otherResults, setOtherResults] = useState<Record<string, Result[]>>({});
-  const [firstName, setFirstName] = useState("toi");
+
+  const firstName = authSession?.user?.name?.split(" ")[0] ?? "toi";
 
   useEffect(() => {
     try {
-      const s = localStorage.getItem("gm_member_session");
-      if (s) setFirstName(JSON.parse(s).name?.split(" ")[0] ?? "toi");
       const r = localStorage.getItem("gm_diag_results");
       if (r) setResults(JSON.parse(r));
       const other: Record<string, Result[]> = {};

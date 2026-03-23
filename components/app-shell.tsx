@@ -4,6 +4,7 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 
 const OnboardingModal = dynamic(() => import("@/components/onboarding-modal"), {
   ssr: false
@@ -22,10 +23,12 @@ const navLinks = [
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { data: authSession } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [memberName, setMemberName] = useState<string | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
+
+  const memberName = authSession?.user?.name?.split(" ")[0] ?? null;
 
   useEffect(() => {
     setMobileOpen(false);
@@ -36,13 +39,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  useEffect(() => {
-    try {
-      const s = localStorage.getItem("gm_member_session");
-      if (s) setMemberName(JSON.parse(s).name?.split(" ")[0] ?? null);
-    } catch {}
-  }, [pathname]);
 
   const handleDiagnosticClick = (e: React.MouseEvent) => {
     e.preventDefault();

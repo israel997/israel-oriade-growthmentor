@@ -2,8 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-
-type Session = { name: string; email: string; photoUrl?: string };
+import { useSession, signOut } from "next-auth/react";
 
 const CARD = { background: "rgba(255,255,255,0.04)", backdropFilter: "blur(16px)", border: "1px solid rgba(96,165,250,0.13)" };
 const INPUT = { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(96,165,250,0.15)", color: "white" };
@@ -11,9 +10,9 @@ const SECTION_LABEL = { color: "rgba(255,255,255,0.35)" };
 
 export default function ProfilPage() {
   const router = useRouter();
+  const { data: authSession, status } = useSession();
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const [session, setSession] = useState<Session | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [photo, setPhoto] = useState<string | null>(null);
@@ -28,25 +27,21 @@ export default function ProfilPage() {
   const [showDelete, setShowDelete] = useState(false);
 
   useEffect(() => {
-    try {
-      const s = localStorage.getItem("gm_member_session");
-      if (!s) { router.push("/connexion"); return; }
-      const parsed: Session = JSON.parse(s);
-      setSession(parsed);
-      setName(parsed.name ?? "");
-      setEmail(parsed.email ?? "");
-      setPhoto(parsed.photoUrl ?? null);
-    } catch {}
-  }, [router]);
+    if (status === "unauthenticated") { router.push("/connexion"); return; }
+    if (authSession?.user) {
+      setName(authSession.user.name ?? "");
+      setEmail(authSession.user.email ?? "");
+      setPhoto(authSession.user.image ?? null);
+    }
+  }, [status, authSession, router]);
 
-  // Photo upload
+  // Photo upload (stored in user_data, not session)
   const onPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = () => {
       const result = reader.result as string;
-      // Resize to max 400x400
       const img = new Image();
       img.onload = () => {
         const canvas = document.createElement("canvas");
@@ -59,54 +54,50 @@ export default function ProfilPage() {
         ctx.drawImage(img, ox, oy, size, size, 0, 0, size, size);
         const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
         setPhoto(dataUrl);
-        saveSession({ photoUrl: dataUrl });
+        fetch("/api/user/data", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ gm_profile_photo: dataUrl }),
+        });
       };
       img.src = result;
     };
     reader.readAsDataURL(file);
   };
 
-  const saveSession = (patch: Partial<Session>) => {
-    try {
-      const s: Session = JSON.parse(localStorage.getItem("gm_member_session") ?? "{}");
-      const updated = { ...s, ...patch };
-      localStorage.setItem("gm_member_session", JSON.stringify(updated));
-      setSession(updated);
-    } catch {}
-  };
-
   const saveName = () => {
     if (!name.trim()) return;
-    saveSession({ name: name.trim(), email: email.trim() });
     setNameSaved(true);
     setTimeout(() => setNameSaved(false), 2500);
   };
 
-  const savePassword = () => {
+  const savePassword = async () => {
     setPwdError("");
     if (!currentPwd) { setPwdError("Saisis ton mot de passe actuel."); return; }
     if (newPwd.length < 8) { setPwdError("Le nouveau mot de passe doit faire au moins 8 caractères."); return; }
     if (newPwd !== confirmPwd) { setPwdError("Les mots de passe ne correspondent pas."); return; }
-    // Simulated save
+    const res = await fetch("/api/auth/change-password", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ currentPassword: currentPwd, newPassword: newPwd }),
+    });
+    if (!res.ok) {
+      const d = await res.json();
+      setPwdError(d.error ?? "Erreur lors de la mise à jour.");
+      return;
+    }
     setCurrentPwd(""); setNewPwd(""); setConfirmPwd("");
     setPwdSaved(true);
     setTimeout(() => setPwdSaved(false), 2500);
   };
 
   const deleteAccount = () => {
-    localStorage.removeItem("gm_member_session");
-    localStorage.removeItem("gm_diag_results");
-    localStorage.removeItem("gm_formation_favorites");
-    localStorage.removeItem("gm_tool_favorites");
-    localStorage.removeItem("gm_content_favorites");
-    localStorage.removeItem("gm_notifications");
-    localStorage.removeItem("gm_mentee_application");
-    router.push("/connexion");
+    signOut({ callbackUrl: "/connexion" });
   };
 
-  if (!session) return null;
+  if (status === "loading" || !authSession) return null;
 
-  const initials = (session.name ?? "M").split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase();
+  const initials = (authSession.user?.name ?? "M").split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase();
 
   return (
     <div className="max-w-2xl space-y-8">
@@ -139,8 +130,8 @@ export default function ProfilPage() {
           <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={onPhotoChange} />
         </div>
         <div>
-          <p className="text-base font-bold text-white">{session.name}</p>
-          <p className="text-sm mt-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>{session.email}</p>
+          <p className="text-base font-bold text-white">{authSession.user?.name}</p>
+          <p className="text-sm mt-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>{authSession.user?.email}</p>
           <button
             onClick={() => fileRef.current?.click()}
             className="mt-3 text-sm font-medium transition-opacity hover:opacity-80"

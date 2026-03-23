@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 
 
 const nav = [
@@ -18,11 +19,7 @@ const nav = [
 ];
 
 function LogoutButton() {
-  const router = useRouter();
-  const logout = () => {
-    localStorage.removeItem("gm_member_session");
-    router.push("/connexion");
-  };
+  const logout = () => signOut({ callbackUrl: "/connexion" });
   return (
     <button onClick={logout}
       className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors hover:bg-red-500/10"

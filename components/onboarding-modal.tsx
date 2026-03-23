@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { saveUserData } from "@/lib/sync-user-data";
 
 type Profile = {
   firstName: string;
@@ -43,7 +44,7 @@ export default function OnboardingModal({ onSaved, open: openProp, onClose }: {
   };
 
   const saveProfile = () => {
-    localStorage.setItem("gm_profile", JSON.stringify(profile));
+    saveUserData("gm_profile", profile);
     onSaved(profile.firstName.trim());
     close();
   };
@@ -56,7 +57,7 @@ export default function OnboardingModal({ onSaved, open: openProp, onClose }: {
     if (field === "firstName") { setStep("gender"); return; }
     if (field === "gender") { setStep("country"); return; }
     if (field === "country") {
-      localStorage.setItem("gm_profile", JSON.stringify(updated));
+      saveUserData("gm_profile", updated);
       onSaved(updated.firstName.trim());
       close();
     }

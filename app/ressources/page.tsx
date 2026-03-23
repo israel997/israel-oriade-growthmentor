@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { useSession } from "next-auth/react";
 import WaveGridBg from "@/components/wave-grid-bg";
 
 const typeFilters = ["Tous", "Gratuit", "Payant", "Ebook", "Template", "Checklist"];
@@ -486,16 +487,14 @@ function LoginRequiredModal({ onClose }: { onClose: () => void }) {
 }
 
 export default function RessourcesPage() {
+  const { data: authSession } = useSession();
   const [activeType, setActiveType] = useState("Tous");
   const [activeTopic, setActiveTopic] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedResource, setSelectedResource] = useState<typeof resources[0] | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  useEffect(() => {
-    setIsLoggedIn(Boolean(localStorage.getItem("gm_member_session")));
-  }, []);
+  const isLoggedIn = !!authSession?.user;
 
   const handleDownload = (href: string) => {
     if (!isLoggedIn) {
