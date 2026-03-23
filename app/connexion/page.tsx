@@ -34,16 +34,21 @@ export default function ConnexionPage() {
     setLoginError("");
     if (!loginEmail.trim() || !loginPwd) { setLoginError("Remplis tous les champs."); return; }
     setLoading(true);
-    const res = await signIn("credentials", {
-      email: loginEmail.trim(),
-      password: loginPwd,
-      redirect: false,
-    });
-    setLoading(false);
-    if (res?.error) {
-      setLoginError("Email ou mot de passe incorrect.");
-    } else {
-      router.push("/espace-membre");
+    try {
+      const res = await signIn("credentials", {
+        email: loginEmail.trim(),
+        password: loginPwd,
+        redirect: false,
+      });
+      setLoading(false);
+      if (res?.error) {
+        setLoginError("Email ou mot de passe incorrect.");
+      } else {
+        router.push("/espace-membre");
+      }
+    } catch {
+      setLoading(false);
+      setLoginError("Erreur de connexion. Réessaie.");
     }
   };
 
@@ -54,22 +59,26 @@ export default function ConnexionPage() {
     if (regPwd.length < 8) { setRegError("Le mot de passe doit faire au moins 8 caractères."); return; }
     if (regPwd !== regPwdConfirm) { setRegError("Les mots de passe ne correspondent pas."); return; }
     setLoading(true);
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: regName.trim(), email: regEmail.trim(), password: regPwd }),
-    });
-    const data = await res.json();
-    if (!res.ok) { setLoading(false); setRegError(data.error); return; }
-    // Auto-login after register
-    const login = await signIn("credentials", {
-      email: regEmail.trim(),
-      password: regPwd,
-      redirect: false,
-    });
-    setLoading(false);
-    if (login?.error) { setRegError("Compte créé mais connexion échouée. Connecte-toi manuellement."); setTab("login"); }
-    else router.push("/espace-membre");
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: regName.trim(), email: regEmail.trim(), password: regPwd }),
+      });
+      const data = await res.json();
+      if (!res.ok) { setLoading(false); setRegError(data.error); return; }
+      const login = await signIn("credentials", {
+        email: regEmail.trim(),
+        password: regPwd,
+        redirect: false,
+      });
+      setLoading(false);
+      if (login?.error) { setRegError("Compte créé mais connexion échouée. Connecte-toi manuellement."); setTab("login"); }
+      else router.push("/espace-membre");
+    } catch {
+      setLoading(false);
+      setRegError("Erreur réseau. Vérifie ta connexion et réessaie.");
+    }
   };
 
   const INPUT = {
