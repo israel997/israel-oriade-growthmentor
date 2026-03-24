@@ -166,20 +166,35 @@ export default function ProgressionPage() {
           </p>
           <ul className="space-y-2">
             {[
-              { icon: "📈", text: "Suis ton évolution dans le temps grâce à la courbe de progression." },
-              { icon: "🎯", text: "Compare ton score à la moyenne de la communauté pour savoir où tu en es." },
-              { icon: "🏅", text: "Débloque des badges (Apprenti → Elite) en améliorant tes résultats." },
-              { icon: "🧪", text: "Passe les tests thématiques (Contenu, Vente, Digital) pour identifier tes points forts et tes axes de travail." },
+              {
+                icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>,
+                text: "Suis ton évolution dans le temps grâce à la courbe de progression.",
+              },
+              {
+                icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>,
+                text: "Compare ton score à la moyenne de la communauté pour savoir où tu en es.",
+              },
+              {
+                icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M8.21 13.89 7 23l5-3 5 3-1.21-9.12"/><path d="M15 7a3 3 0 1 0-6 0c0 1.5.8 2.8 2 3.5V12h2v-1.5c1.2-.7 2-2 2-3.5Z"/><path d="M12 2v1"/></svg>,
+                text: "Débloque des badges (Apprenti → Elite) en améliorant tes résultats.",
+              },
+              {
+                icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>,
+                text: "Passe les tests thématiques (Contenu, Vente, Digital) pour identifier tes points forts.",
+              },
             ].map((item) => (
               <li key={item.text} className="flex items-start gap-2.5 text-sm" style={{ color: "rgba(255,255,255,0.55)" }}>
-                <span className="shrink-0 mt-0.5">{item.icon}</span>
+                <span className="shrink-0 mt-0.5" style={{ color: "#93C5FD" }}>{item.icon}</span>
                 <span>{item.text}</span>
               </li>
             ))}
           </ul>
-          <p className="text-xs font-medium pt-1" style={{ color: "rgba(96,165,250,0.7)" }}>
-            💡 Plus tu te testes régulièrement, plus tu mesures concrètement ta progression, {firstName}.
-          </p>
+          <div className="flex items-center gap-2 pt-1">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#60A5FA" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+            <p className="text-xs font-medium" style={{ color: "rgba(96,165,250,0.7)" }}>
+              Plus tu te testes régulièrement, plus tu mesures concrètement ta progression, {firstName}.
+            </p>
+          </div>
         </div>
       )}
 
