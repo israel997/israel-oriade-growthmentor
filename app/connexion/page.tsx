@@ -29,8 +29,8 @@ function validateFullName(name: string): string {
   if (!name.trim()) return "";
   if (!NAME_RE.test(name)) return "Le nom ne peut pas contenir de chiffres ou caractères spéciaux.";
   const parts = name.trim().split(/\s+/);
-  const tooLong = parts.find(p => p.length > 15);
-  if (tooLong) return `"${tooLong}" dépasse 15 caractères.`;
+  const tooLong = parts.find(p => p.length > 20);
+  if (tooLong) return `"${tooLong}" dépasse 20 caractères.`;
   return "";
 }
 

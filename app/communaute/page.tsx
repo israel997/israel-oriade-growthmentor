@@ -408,12 +408,11 @@ export default function CommunautePage() {
                 href="https://kloo.me/whatsapp-israel-oriade"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-3 rounded-2xl px-8 py-4 text-base font-semibold text-white transition-transform hover:scale-[1.02]"
-                style={{ background: "#25D366", boxShadow: "0 0 32px rgba(37,211,102,0.3)" }}
+                className="inline-flex items-center gap-3 rounded-2xl px-8 py-4 text-base font-semibold border border-green-500 text-green-500 bg-transparent hover:bg-green-500 hover:text-white transition-all duration-200 hover:scale-[1.02]"
               >
                 <span className="relative flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: "#fff" }} />
-                  <span className="relative inline-flex h-3 w-3 rounded-full" style={{ background: "#fff" }} />
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: "#22C55E" }} />
+                  <span className="relative inline-flex h-3 w-3 rounded-full" style={{ background: "#22C55E" }} />
                 </span>
                 Je suis actuellement {/*  */}en ligne
                 <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
