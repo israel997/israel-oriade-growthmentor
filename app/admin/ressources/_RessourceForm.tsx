@@ -11,7 +11,7 @@ const LABEL = "block text-xs font-semibold mb-1.5";
 const LSTYLE = { color: "rgba(255,255,255,0.6)" };
 
 type RessourceData = {
-  title?: string; desc?: string; fullDesc?: string; category?: string; type?: string;
+  id?: string; title?: string; desc?: string; fullDesc?: string; category?: string; type?: string;
   topic?: string; author?: string; rating?: number; downloads?: number; price?: string;
   downloadHref?: string; gradient?: string;
 };
@@ -36,7 +36,17 @@ export default function RessourceForm({ initial, title }: { initial?: RessourceD
 
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
-  const save = () => { setSaved(true); setTimeout(() => { setSaved(false); router.push("/admin/ressources"); }, 1200); };
+  const save = async () => {
+    setSaved(true);
+    const id = initial?.id;
+    const payload = { ...form, rating: Number(form.rating), downloads: Number(form.downloads) };
+    if (id) {
+      await fetch(`/api/ressources/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+    } else {
+      await fetch("/api/ressources", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...payload, id: form.title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "") }) });
+    }
+    setTimeout(() => { setSaved(false); router.push("/admin/ressources"); }, 800);
+  };
 
   return (
     <div className="max-w-3xl">

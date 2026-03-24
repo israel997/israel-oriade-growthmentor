@@ -34,7 +34,17 @@ export default function OutilForm({ initial, title }: { initial?: Partial<Tool>;
   });
 
   const set = (k: string, v: unknown) => setForm((f) => ({ ...f, [k]: v }));
-  const save = () => { setSaved(true); setTimeout(() => { setSaved(false); router.push("/admin/outils"); }, 1200); };
+  const save = async () => {
+    setSaved(true);
+    const slug = (initial as { slug?: string })?.slug;
+    const payload = { ...form, rating: Number(form.rating) };
+    if (slug) {
+      await fetch(`/api/outils/${slug}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+    } else {
+      await fetch("/api/outils", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+    }
+    setTimeout(() => { setSaved(false); router.push("/admin/outils"); }, 800);
+  };
 
   return (
     <div className="max-w-3xl">

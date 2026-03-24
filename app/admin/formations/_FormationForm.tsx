@@ -53,9 +53,16 @@ export default function FormationForm({ initial, title }: { initial?: Partial<Fo
   const addModule = () => setField("modules", [...form.modules, { title: "", lessons: [""] }]);
   const removeModule = (i: number) => setField("modules", form.modules.filter((_, idx) => idx !== i));
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setSaved(true);
-    setTimeout(() => { setSaved(false); router.push("/admin/formations"); }, 1200);
+    const id = (initial as { id?: string })?.id;
+    const payload = { ...form, members: Number(form.members) };
+    if (id) {
+      await fetch(`/api/formations/${id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+    } else {
+      await fetch("/api/formations", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...payload, id: form.title.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "") }) });
+    }
+    setTimeout(() => { setSaved(false); router.push("/admin/formations"); }, 800);
   };
 
   return (

@@ -1,10 +1,14 @@
-import { tools } from "@/lib/tools-data";
+import clientPromise from "@/lib/mongodb";
 import OutilForm from "../_OutilForm";
 import { notFound } from "next/navigation";
 
 export default async function EditOutilPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const tool = tools.find((t) => t.slug === slug);
+  const client = await clientPromise;
+  const col = client.db().collection("outils");
+  const tool = await col.findOne({ slug });
   if (!tool) return notFound();
-  return <OutilForm title={`Éditer — ${tool.name}`} initial={tool} />;
+  const { _id, ...data } = tool;
+  void _id;
+  return <OutilForm title={`Éditer — ${data.name}`} initial={data} />;
 }

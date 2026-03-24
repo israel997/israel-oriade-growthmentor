@@ -1,10 +1,14 @@
-import { formationCards } from "@/lib/site-data";
+import clientPromise from "@/lib/mongodb";
 import FormationForm from "../_FormationForm";
 import { notFound } from "next/navigation";
 
 export default async function EditFormationPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const formation = formationCards.find((f) => f.id === id);
+  const client = await clientPromise;
+  const col = client.db().collection("formations");
+  const formation = await col.findOne({ id });
   if (!formation) return notFound();
-  return <FormationForm title={`Éditer — ${formation.title}`} initial={formation} />;
+  const { _id, ...data } = formation;
+  void _id;
+  return <FormationForm title={`Éditer — ${data.title}`} initial={data} />;
 }
