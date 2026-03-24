@@ -110,7 +110,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
             <Link
               href="/espace-membre"
-              className="hidden items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white transition-transform hover:scale-[1.02] md:inline-flex"
+              className="hidden items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white transition-all hover:scale-[1.02] hover:brightness-75 hover:text-yellow-400 md:inline-flex"
               style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}
             >
               {memberName ? (
