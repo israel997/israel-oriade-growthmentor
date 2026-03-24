@@ -113,11 +113,29 @@ export default function AutresTestsPage() {
   return (
     <div className="max-w-2xl space-y-8">
       <div>
-        <h1 className="text-xl font-bold text-white">Autres Tests</h1>
+        <h1 className="text-xl font-bold text-white">Tests Business</h1>
         <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.4)" }}>
           3 tests thématiques indépendants — chacun avec son propre système de badges, renouvelable chaque semaine.
         </p>
       </div>
+
+      {/* Diagnostic hebdomadaire */}
+      <Link href="/espace-membre/diagnostic"
+        className="flex items-center gap-4 rounded-2xl px-6 py-5 transition-opacity hover:opacity-90"
+        style={{ background: "linear-gradient(135deg, rgba(5,150,105,0.18) 0%, rgba(52,211,153,0.12) 100%)", border: "1px solid rgba(52,211,153,0.25)" }}>
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl" style={{ background: "rgba(52,211,153,0.15)" }}>
+          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="#34D399" strokeWidth={1.8}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          </svg>
+        </div>
+        <div className="flex-1">
+          <p className="text-sm font-bold text-white">Diagnostic Hebdomadaire</p>
+          <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.45)" }}>Évalue ton niveau business global — offre, contenu, ventes, audience, positionnement.</p>
+        </div>
+        <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="#34D399" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+        </svg>
+      </Link>
 
       <div className="space-y-4">
         {TESTS.map((t) => {
