@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
-import { tools } from "@/lib/tools-data";
+import type { Tool } from "@/lib/tools-data";
 import TrackView from "@/components/track-view";
 
 const BG = "#03071A";
@@ -106,19 +106,22 @@ const CATEGORY_COLORS: Record<string, string> = {
   "Vidéo & Communication": "bg-indigo-500/20 text-indigo-300",
 };
 
-const categories = ["Tous", ...Array.from(new Set(tools.map(t => t.category)))];
-
 export default function TestesPage() {
+  const [tools, setTools] = useState<Tool[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState("Tous");
   const [filterOpen, setFilterOpen] = useState(false);
   const filterRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem("gm_tool_favorites") || "[]");
-      setFavorites(saved);
-    } catch {}
+    fetch("/api/outils")
+      .then((r) => r.json())
+      .then((data) => setTools(Array.isArray(data) ? data : []))
+      .catch(() => {});
+    fetch("/api/favoris")
+      .then((r) => r.json())
+      .then((d) => { if (Array.isArray(d?.outils)) setFavorites(d.outils); })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -132,13 +135,16 @@ export default function TestesPage() {
   }, []);
 
   function toggleFavorite(slug: string) {
-    setFavorites(prev => {
-      const next = prev.includes(slug) ? prev.filter(s => s !== slug) : [...prev, slug];
-      localStorage.setItem("gm_tool_favorites", JSON.stringify(next));
-      return next;
-    });
+    const isFav = favorites.includes(slug);
+    setFavorites(prev => isFav ? prev.filter(s => s !== slug) : [...prev, slug]);
+    fetch("/api/favoris", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ category: "outils", id: slug, action: isFav ? "remove" : "add" }),
+    }).catch(() => {});
   }
 
+  const categories = ["Tous", ...Array.from(new Set(tools.map(t => t.category)))];
   const filtered = activeCategory === "Tous" ? tools : tools.filter(t => t.category === activeCategory);
 
   return (

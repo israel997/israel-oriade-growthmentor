@@ -9,7 +9,30 @@ import WaveGridBg from "@/components/wave-grid-bg";
 const typeFilters = ["Tous", "Gratuit", "Payant", "Ebook", "Template", "Checklist"];
 const topicFilters = ["Business", "Création de Contenu", "Vente", "Marketing", "Social Media", "Développement personnel", "Design", "Tech"];
 
-const resources = [
+type Resource = {
+  id: string; title: string; desc: string; fullDesc: string;
+  category: string; type: string; topic: string; author: string;
+  rating: number; downloads: number; downloadHref: string; detailHref: string;
+  gradient: string; iconType?: string; price?: string;
+};
+
+function getIcon(iconType?: string) {
+  const cls = "h-10 w-10 text-white/80";
+  switch (iconType) {
+    case "check-circle": return <svg className={cls} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.3}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>;
+    case "layout": return <svg className={cls} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.3}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5M12 12.75l3-3-3-3" /></svg>;
+    case "bulb": return <svg className={cls} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.3}><path strokeLinecap="round" strokeLinejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 0 0 1.5-.189m-1.5.189a6.01 6.01 0 0 1-1.5-.189m3.75 7.478a12.06 12.06 0 0 1-4.5 0m3.75 2.383a14.406 14.406 0 0 1-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 1 0-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" /></svg>;
+    case "image": return <svg className={cls} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.3}><path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Zm10.5-11.25h.008v.008h-.008V8.25Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" /></svg>;
+    case "sparkles": return <svg className={cls} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.3}><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" /></svg>;
+    case "lightning": return <svg className={cls} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.3}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" /></svg>;
+    case "chart": return <svg className={cls} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.3}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5M12 12.75l3-3-3-3" /></svg>;
+    case "brush": return <svg className={cls} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.3}><path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" /></svg>;
+    default: return <svg className={cls} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.3}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" /></svg>;
+  }
+}
+
+// Legacy placeholder (array replaced by API fetch below)
+const resources: Resource[] = [
   {
     id: "ebook-positionnement",
     title: "Trouver ton positionnement rentable",
@@ -195,6 +218,7 @@ const resources = [
   },
 ];
 
+// Note: resources array above is for type reference only — data comes from API
 function Stars({ rating }: { rating: number }) {
   return (
     <div className="flex items-center gap-1">
@@ -211,7 +235,7 @@ function Stars({ rating }: { rating: number }) {
   );
 }
 
-function ResourceModal({ r, onClose, onDownload }: { r: typeof resources[0]; onClose: () => void; onDownload: (href: string) => void }) {
+function ResourceModal({ r, onClose, onDownload }: { r: Resource; onClose: () => void; onDownload: (href: string) => void }) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -232,7 +256,7 @@ function ResourceModal({ r, onClose, onDownload }: { r: typeof resources[0]; onC
       >
         {/* Cover */}
         <div className="relative flex items-center justify-center" style={{ background: r.gradient, height: "140px" }}>
-          {r.icon}
+          {getIcon(r.iconType)}
           <span className="absolute top-4 left-4 rounded-full px-2.5 py-0.5 text-xs font-semibold text-white/90"
             style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(8px)" }}>
             {r.category}
@@ -325,7 +349,7 @@ function HeartButton({ id }: { id: string }) {
   );
 }
 
-function ResourceCard({ r, i, onDetail, onDownload }: { r: typeof resources[0]; i: number; onDetail: () => void; onDownload: (href: string) => void }) {
+function ResourceCard({ r, i, onDetail, onDownload }: { r: Resource; i: number; onDetail: () => void; onDownload: (href: string) => void }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 28 }}
@@ -347,7 +371,7 @@ function ResourceCard({ r, i, onDetail, onDownload }: { r: typeof resources[0]; 
       >
         {/* Cover */}
         <div className="relative flex items-center justify-center" style={{ background: r.gradient, height: "160px" }}>
-          {r.icon}
+          {getIcon(r.iconType)}
           <span className="absolute top-3 left-3 rounded-full px-2.5 py-0.5 text-xs font-semibold text-white/90"
             style={{ background: "rgba(0,0,0,0.35)", backdropFilter: "blur(8px)" }}>
             {r.category}
@@ -491,8 +515,17 @@ export default function RessourcesPage() {
   const [activeType, setActiveType] = useState("Tous");
   const [activeTopic, setActiveTopic] = useState<string | null>(null);
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedResource, setSelectedResource] = useState<typeof resources[0] | null>(null);
+  const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [ressourcesData, setRessourcesData] = useState<Resource[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/ressources")
+      .then((r) => r.json())
+      .then((data) => setRessourcesData(Array.isArray(data) ? data : []))
+      .finally(() => setLoading(false));
+  }, []);
 
   const isLoggedIn = !!authSession?.user;
 
@@ -504,7 +537,7 @@ export default function RessourcesPage() {
     window.location.href = href;
   };
 
-  const filtered = resources.filter((r) => {
+  const filtered = ressourcesData.filter((r) => {
     const typeMatch = activeType === "Tous" || r.category === activeType || r.type === activeType;
     const topicMatch = !activeTopic || r.topic === activeTopic;
     return typeMatch && topicMatch;
@@ -594,8 +627,15 @@ export default function RessourcesPage() {
           )}
         </AnimatePresence>
 
+        {/* Loading */}
+        {loading && (
+          <div className="flex justify-center py-20">
+            <div className="h-8 w-8 rounded-full border-2 border-blue-500/30 border-t-blue-500 animate-spin" />
+          </div>
+        )}
+
         {/* Grid */}
-        <AnimatePresence mode="wait">
+        {!loading && <AnimatePresence mode="wait">
           <motion.div
             key={activeType + String(activeTopic)}
             initial={{ opacity: 0 }}
@@ -608,9 +648,9 @@ export default function RessourcesPage() {
               <ResourceCard key={r.id} r={r} i={i} onDetail={() => setSelectedResource(r)} onDownload={handleDownload} />
             ))}
           </motion.div>
-        </AnimatePresence>
+        </AnimatePresence>}
 
-        {filtered.length === 0 && (
+        {!loading && filtered.length === 0 && (
           <div className="mt-20 text-center text-white/30">
             <p className="text-lg">Aucune ressource dans cette catégorie pour l'instant.</p>
           </div>

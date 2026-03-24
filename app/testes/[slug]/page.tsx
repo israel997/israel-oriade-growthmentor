@@ -5,7 +5,7 @@ import { useParams, notFound } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, CheckCircle2, XCircle, Lightbulb, Rocket, ExternalLink, DollarSign, Tag } from "lucide-react";
 import Link from "next/link";
-import { tools } from "@/lib/tools-data";
+import type { Tool } from "@/lib/tools-data";
 
 const BG = "#03071A";
 
@@ -114,29 +114,37 @@ const TAB_CONFIG: { id: TabId; label: string; color: string; icon: React.ReactNo
 
 export default function ToolDetailPage() {
   const { slug } = useParams<{ slug: string }>();
-  const tool = tools.find(t => t.slug === slug);
-
+  const [tool, setTool] = useState<Tool | null | undefined>(undefined); // undefined = loading
   const [isFav, setIsFav] = useState(false);
   const [activeTab, setActiveTab] = useState<TabId>("features");
 
   useEffect(() => {
-    if (!tool) return;
-    try {
-      const saved = JSON.parse(localStorage.getItem("gm_tool_favorites") || "[]") as string[];
-      setIsFav(saved.includes(tool.slug));
-    } catch {}
-  }, [tool]);
+    fetch(`/api/outils/${slug}`)
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => setTool(data ?? null))
+      .catch(() => setTool(null));
+    fetch("/api/favoris")
+      .then((r) => r.json())
+      .then((d) => { if (Array.isArray(d?.outils)) setIsFav(d.outils.includes(slug)); })
+      .catch(() => {});
+  }, [slug]);
 
   function toggleFav() {
     if (!tool) return;
-    setIsFav(prev => {
-      const saved: string[] = JSON.parse(localStorage.getItem("gm_tool_favorites") || "[]");
-      const next = prev ? saved.filter(s => s !== tool.slug) : [...saved, tool.slug];
-      localStorage.setItem("gm_tool_favorites", JSON.stringify(next));
-      return !prev;
-    });
+    const next = !isFav;
+    setIsFav(next);
+    fetch("/api/favoris", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ category: "outils", id: tool.slug, action: next ? "add" : "remove" }),
+    }).catch(() => {});
   }
 
+  if (tool === undefined) return (
+    <div className="relative min-h-screen flex items-center justify-center" style={{ background: "#03071A" }}>
+      <div className="h-8 w-8 rounded-full border-2 border-emerald-500/30 border-t-emerald-500 animate-spin" />
+    </div>
+  );
   if (!tool) return notFound();
 
   const catColor = CATEGORY_COLORS[tool.category] ?? "bg-slate-500/20 text-slate-300 border-slate-500/30";

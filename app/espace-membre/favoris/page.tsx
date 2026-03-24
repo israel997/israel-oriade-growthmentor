@@ -2,46 +2,61 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { formationCards } from "@/lib/site-data";
-import { tools } from "@/lib/tools-data";
 
 type Tab = "formations" | "outils" | "contenus";
+type FavFormation = { id: string; title: string; type: string; coverGradient: string; price: string; href?: string };
+type FavTool = { slug: string; name: string; category: string; logoGradient: string; price: string };
+type FavContent = { id: string; platform?: string; description?: string; coverGradient?: string; href?: string };
 
 const CARD = { background: "rgba(255,255,255,0.04)", backdropFilter: "blur(16px)", border: "1px solid rgba(96,165,250,0.13)" };
 
 export default function FavorisPage() {
   const [tab, setTab] = useState<Tab>("formations");
-  const [formFavIds, setFormFavIds] = useState<string[]>([]);
-  const [toolFavIds, setToolFavIds] = useState<string[]>([]);
-  const [contentFavIds, setContentFavIds] = useState<string[]>([]);
+  const [favFormations, setFavFormations] = useState<FavFormation[]>([]);
+  const [favTools, setFavTools] = useState<FavTool[]>([]);
+  const [favContents, setFavContents] = useState<FavContent[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    try {
-      setFormFavIds(JSON.parse(localStorage.getItem("gm_formation_favorites") || "[]"));
-      setToolFavIds(JSON.parse(localStorage.getItem("gm_tool_favorites") || "[]"));
-      setContentFavIds(JSON.parse(localStorage.getItem("gm_content_favorites") || "[]"));
-    } catch {}
-  }, []);
-
-  const removeFav = (key: string, id: string) => {
-    try {
-      const prev: string[] = JSON.parse(localStorage.getItem(key) || "[]");
-      const next = prev.filter((x) => x !== id);
-      localStorage.setItem(key, JSON.stringify(next));
-      if (key === "gm_formation_favorites") setFormFavIds(next);
-      if (key === "gm_tool_favorites") setToolFavIds(next);
-      if (key === "gm_content_favorites") setContentFavIds(next);
-    } catch {}
+  const loadFavoris = () => {
+    Promise.all([
+      fetch("/api/favoris").then((r) => r.json()),
+      fetch("/api/formations").then((r) => r.json()),
+      fetch("/api/outils").then((r) => r.json()),
+      fetch("/api/contenus").then((r) => r.json()),
+    ])
+      .then(([favs, formations, outils, contenus]) => {
+        const fIds: string[] = favs?.formations ?? [];
+        const tIds: string[] = favs?.outils ?? [];
+        const cIds: string[] = favs?.contenus ?? [];
+        setFavFormations(Array.isArray(formations) ? formations.filter((f: FavFormation) => fIds.includes(f.id)) : []);
+        setFavTools(Array.isArray(outils) ? outils.filter((t: FavTool) => tIds.includes(t.slug)) : []);
+        setFavContents(Array.isArray(contenus) ? contenus.filter((c: FavContent) => cIds.includes(c.id)) : []);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   };
 
-  const favFormations = formationCards.filter((f) => formFavIds.includes(f.id));
-  const favTools = tools.filter((t) => toolFavIds.includes(t.slug));
+  useEffect(() => { loadFavoris(); }, []);
+
+  const removeFav = (category: "formations" | "outils" | "contenus", id: string) => {
+    fetch("/api/favoris", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ category, id, action: "remove" }),
+    }).then(() => loadFavoris()).catch(() => {});
+  };
 
   const tabs: { id: Tab; label: string; count: number }[] = [
     { id: "formations", label: "Formations", count: favFormations.length },
     { id: "outils",     label: "Outils",     count: favTools.length },
-    { id: "contenus",   label: "Contenus",   count: contentFavIds.length },
+    { id: "contenus",   label: "Contenus",   count: favContents.length },
   ];
+
+  if (loading) return (
+    <div className="flex justify-center py-20">
+      <div className="h-8 w-8 rounded-full border-2 border-blue-500/30 border-t-blue-500 animate-spin" />
+    </div>
+  );
 
   return (
     <div className="max-w-3xl space-y-6">
@@ -87,7 +102,7 @@ export default function FavorisPage() {
                   style={{ background: "rgba(96,165,250,0.08)", color: "#93C5FD", border: "1px solid rgba(96,165,250,0.15)" }}>
                   Voir
                 </Link>
-                <button onClick={() => removeFav("gm_formation_favorites", f.id)}
+                <button onClick={() => removeFav("formations", f.id)}
                   className="rounded-lg px-3 py-1.5 text-sm font-medium"
                   style={{ background: "rgba(239,68,68,0.08)", color: "#F87171", border: "1px solid rgba(239,68,68,0.15)" }}>
                   Retirer
@@ -118,7 +133,7 @@ export default function FavorisPage() {
                   style={{ background: "rgba(96,165,250,0.08)", color: "#93C5FD", border: "1px solid rgba(96,165,250,0.15)" }}>
                   Voir
                 </Link>
-                <button onClick={() => removeFav("gm_tool_favorites", t.slug)}
+                <button onClick={() => removeFav("outils", t.slug)}
                   className="rounded-lg px-3 py-1.5 text-sm font-medium"
                   style={{ background: "rgba(239,68,68,0.08)", color: "#F87171", border: "1px solid rgba(239,68,68,0.15)" }}>
                   Retirer
@@ -132,19 +147,29 @@ export default function FavorisPage() {
       {/* Contenus */}
       {tab === "contenus" && (
         <div className="space-y-2">
-          {contentFavIds.length === 0 ? (
+          {favContents.length === 0 ? (
             <Empty label="contenu" href="/contenus" />
-          ) : contentFavIds.map((id) => (
-            <div key={id} className="flex items-center gap-4 rounded-2xl px-5 py-4" style={CARD}>
-              <div className="h-10 w-10 shrink-0 rounded-xl" style={{ background: "linear-gradient(135deg,#1877F2,#0D1B5E)" }} />
-              <div className="flex-1">
-                <p className="text-sm text-white">{id}</p>
+          ) : favContents.map((c) => (
+            <div key={c.id} className="flex items-center gap-4 rounded-2xl px-5 py-4" style={CARD}>
+              <div className="h-10 w-10 shrink-0 rounded-xl" style={{ background: c.coverGradient ?? "linear-gradient(135deg,#1877F2,#0D1B5E)" }} />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-white">{c.platform}</p>
+                <p className="text-xs mt-0.5 truncate" style={{ color: "rgba(255,255,255,0.4)" }}>{c.description}</p>
               </div>
-              <button onClick={() => removeFav("gm_content_favorites", id)}
-                className="rounded-lg px-3 py-1.5 text-sm font-medium"
-                style={{ background: "rgba(239,68,68,0.08)", color: "#F87171", border: "1px solid rgba(239,68,68,0.15)" }}>
-                Retirer
-              </button>
+              <div className="flex gap-2 shrink-0">
+                {c.href && (
+                  <a href={c.href} target="_blank" rel="noopener noreferrer"
+                    className="rounded-lg px-3 py-1.5 text-sm font-medium"
+                    style={{ background: "rgba(96,165,250,0.08)", color: "#93C5FD", border: "1px solid rgba(96,165,250,0.15)" }}>
+                    Voir
+                  </a>
+                )}
+                <button onClick={() => removeFav("contenus", c.id)}
+                  className="rounded-lg px-3 py-1.5 text-sm font-medium"
+                  style={{ background: "rgba(239,68,68,0.08)", color: "#F87171", border: "1px solid rgba(239,68,68,0.15)" }}>
+                  Retirer
+                </button>
+              </div>
             </div>
           ))}
         </div>

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
-import { formationCards, type FormationCard } from "@/lib/site-data";
+import type { FormationCard } from "@/lib/site-data";
 import WaveGridBg from "@/components/wave-grid-bg";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -18,16 +18,20 @@ const filters = ["Tous", "Formation", "Masterclass", "Accompagnement"] as const;
 function FavoriteButton({ id }: { id: string }) {
   const [saved, setSaved] = useState(false);
   useEffect(() => {
-    try { setSaved((JSON.parse(localStorage.getItem("gm_formation_favorites") || "[]") as string[]).includes(id)); } catch {}
+    fetch("/api/favoris")
+      .then((r) => r.json())
+      .then((d) => { if (Array.isArray(d?.formations)) setSaved(d.formations.includes(id)); })
+      .catch(() => {});
   }, [id]);
   const toggle = (e: React.MouseEvent) => {
     e.stopPropagation();
-    try {
-      const prev: string[] = JSON.parse(localStorage.getItem("gm_formation_favorites") || "[]");
-      const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
-      localStorage.setItem("gm_formation_favorites", JSON.stringify(next));
-      setSaved(next.includes(id));
-    } catch {}
+    const next = !saved;
+    setSaved(next);
+    fetch("/api/favoris", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ category: "formations", id, action: next ? "add" : "remove" }),
+    }).catch(() => {});
   };
   return (
     <button aria-label={saved ? "Retirer des favoris" : "Ajouter aux favoris"} onClick={toggle}
@@ -508,6 +512,15 @@ export default function FormationsPage() {
   const [sortOpen, setSortOpen] = useState(false);
   const [selected, setSelected] = useState<FormationCard | null>(null);
   const sortRef = useRef<HTMLDivElement>(null);
+  const [formationCards, setFormationCards] = useState<FormationCard[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/formations")
+      .then((r) => r.json())
+      .then((data) => setFormationCards(Array.isArray(data) ? data : []))
+      .finally(() => setLoading(false));
+  }, []);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -654,8 +667,15 @@ export default function FormationsPage() {
           </div>
         </div>
 
+        {/* Loading */}
+        {loading && (
+          <div className="flex justify-center py-20">
+            <div className="h-8 w-8 rounded-full border-2 border-blue-500/30 border-t-blue-500 animate-spin" />
+          </div>
+        )}
+
         {/* Grid */}
-        <motion.div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" layout>
+        {!loading && <motion.div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3" layout>
           <AnimatePresence mode="popLayout">
             {filtered.map((f, i) => (
               <motion.div
@@ -670,9 +690,9 @@ export default function FormationsPage() {
               </motion.div>
             ))}
           </AnimatePresence>
-        </motion.div>
+        </motion.div>}
 
-        {filtered.length === 0 && (
+        {!loading && filtered.length === 0 && (
           <p className="mt-20 text-center text-white/35">Aucun programme pour ce filtre.</p>
         )}
 

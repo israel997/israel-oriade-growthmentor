@@ -366,15 +366,20 @@ function useFavorites() {
   const [favorites, setFavorites] = useState<string[]>([]);
 
   useEffect(() => {
-    setFavorites(JSON.parse(localStorage.getItem("gm_content_favorites") || "[]"));
+    fetch("/api/favoris")
+      .then((r) => r.json())
+      .then((d) => { if (Array.isArray(d?.contenus)) setFavorites(d.contenus); })
+      .catch(() => {});
   }, []);
 
   const toggle = (id: string) => {
-    setFavorites((prev) => {
-      const next = prev.includes(id) ? prev.filter((f) => f !== id) : [...prev, id];
-      localStorage.setItem("gm_content_favorites", JSON.stringify(next));
-      return next;
-    });
+    const isFav = favorites.includes(id);
+    setFavorites((prev) => isFav ? prev.filter((f) => f !== id) : [...prev, id]);
+    fetch("/api/favoris", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ category: "contenus", id, action: isFav ? "remove" : "add" }),
+    }).catch(() => {});
   };
 
   return { favorites, toggle };
@@ -629,8 +634,16 @@ export default function ContenusPage() {
   const [activeTab, setActiveTab] = useState<Platform>("Facebook");
   const [redirectPost, setRedirectPost] = useState<Post | null>(null);
   const { favorites, toggle } = useFavorites();
+  const [allPosts, setAllPosts] = useState<Post[]>([]);
 
-  const activePosts = posts.filter((p) => p.platform === activeTab);
+  useEffect(() => {
+    fetch("/api/contenus?type=post")
+      .then((r) => r.json())
+      .then((data) => setAllPosts(Array.isArray(data) ? data : []))
+      .catch(() => {});
+  }, []);
+
+  const activePosts = allPosts.filter((p) => p.platform === activeTab);
   const config = platformConfig[activeTab];
 
   const handleConfirmRedirect = () => {

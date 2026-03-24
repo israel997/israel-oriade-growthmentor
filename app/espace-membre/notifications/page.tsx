@@ -5,14 +5,6 @@ import Link from "next/link";
 
 type Notif = { id: string; type: "contenu" | "diagnostic" | "badge" | "mentee" | "actu"; title: string; body: string; href?: string; date: string; read: boolean };
 
-const DEFAULT_NOTIFS: Notif[] = [
-  { id: "n1", type: "actu",       title: "Nouveau : Formation Tunnel de Vente",    body: "La formation Tunnel de Vente de A à Z vient d'être mise à jour avec 3 nouveaux modules.", href: "/formations", date: "2026-03-22", read: false },
-  { id: "n2", type: "diagnostic", title: "Ton test hebdo est disponible",           body: "Une nouvelle semaine commence. Passe ton test de progression pour suivre ton évolution.", href: "/espace-membre/diagnostic", date: "2026-03-22", read: false },
-  { id: "n3", type: "contenu",    title: "Nouveau contenu publié",                  body: "Israël a publié un nouveau post LinkedIn : '5 erreurs qui tuent ton personal branding'.", href: "/contenus", date: "2026-03-21", read: false },
-  { id: "n4", type: "mentee",     title: "Programme Mentee — Nouvelles places",     body: "De nouvelles places se sont ouvertes pour le programme Mentee. Candidature ouverte jusqu'au 31 mars.", href: "/espace-membre/mentee", date: "2026-03-20", read: true },
-  { id: "n5", type: "badge",      title: "Badge débloqué : Confirmé",              body: "Ton score de 64/100 t'a permis de débloquer le badge Confirmé. Continue sur ta lancée !", href: "/espace-membre/progression", date: "2026-03-18", read: true },
-  { id: "n6", type: "actu",       title: "Ressource gratuite : Guide Personal Branding", body: "Un nouveau guide PDF est disponible en téléchargement gratuit dans la section Ressources.", href: "/ressources", date: "2026-03-16", read: true },
-];
 
 const TYPE_CONFIG: Record<string, { color: string; label: string; icon: React.ReactNode }> = {
   contenu:    { color: "#3B82F6", label: "Contenu",    icon: <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg> },
@@ -27,21 +19,31 @@ export default function NotificationsPage() {
   const [filter, setFilter] = useState<"all" | "unread">("all");
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem("gm_notifications");
-      setNotifs(saved ? JSON.parse(saved) : DEFAULT_NOTIFS);
-    } catch {
-      setNotifs(DEFAULT_NOTIFS);
-    }
+    fetch("/api/notifications")
+      .then((r) => r.json())
+      .then((data) => setNotifs(Array.isArray(data) ? data : []))
+      .catch(() => {});
   }, []);
 
-  const save = (updated: Notif[]) => {
-    setNotifs(updated);
-    localStorage.setItem("gm_notifications", JSON.stringify(updated));
+  const markRead = (id: string) => {
+    setNotifs((prev) => prev.map((n) => n.id === id ? { ...n, read: true } : n));
+    fetch(`/api/notifications/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ read: true }),
+    }).catch(() => {});
   };
 
-  const markRead = (id: string) => save(notifs.map((n) => n.id === id ? { ...n, read: true } : n));
-  const markAllRead = () => save(notifs.map((n) => ({ ...n, read: true })));
+  const markAllRead = () => {
+    setNotifs((prev) => prev.map((n) => ({ ...n, read: true })));
+    notifs.filter((n) => !n.read).forEach((n) => {
+      fetch(`/api/notifications/${n.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ read: true }),
+      }).catch(() => {});
+    });
+  };
 
   const unread = notifs.filter((n) => !n.read).length;
   const displayed = filter === "unread" ? notifs.filter((n) => !n.read) : notifs;

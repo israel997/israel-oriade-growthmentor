@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import AdminHeader from "@/components/admin/AdminHeader";
 import ConfirmModal from "@/components/admin/ConfirmModal";
@@ -118,8 +118,9 @@ function ProfileForm({ profile, onSave, onCancel }: { profile?: Partial<Profile>
 
 export default function AdminContenusPage() {
   const [tab, setTab] = useState<"posts" | "profils">("posts");
-  const [posts, setPosts] = useState(initPosts);
-  const [profiles, setProfiles] = useState(initProfiles);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [loading, setLoading] = useState(true);
   const [deletePost, setDeletePost] = useState<string | null>(null);
   const [deleteProfile, setDeleteProfile] = useState<string | null>(null);
   const [editPost, setEditPost] = useState<Partial<Post> | null>(null);
@@ -127,13 +128,38 @@ export default function AdminContenusPage() {
   const [addingPost, setAddingPost] = useState(false);
   const [addingProfile, setAddingProfile] = useState(false);
 
-  const savePost = (p: Post) => {
-    setPosts((prev) => prev.some((x) => x.id === p.id) ? prev.map((x) => x.id === p.id ? p : x) : [...prev, p]);
-    setAddingPost(false); setEditPost(null);
+  const load = () => {
+    setLoading(true);
+    Promise.all([
+      fetch("/api/contenus?type=post").then((r) => r.json()),
+      fetch("/api/contenus?type=profile").then((r) => r.json()),
+    ]).then(([p, pr]) => {
+      setPosts(Array.isArray(p) ? p : []);
+      setProfiles(Array.isArray(pr) ? pr : []);
+    }).finally(() => setLoading(false));
   };
-  const saveProfile = (p: Profile) => {
-    setProfiles((prev) => prev.some((x) => x.id === p.id) ? prev.map((x) => x.id === p.id ? p : x) : [...prev, p]);
+
+  useEffect(() => { load(); }, []);
+
+  const savePost = async (p: Post) => {
+    const exists = posts.some((x) => x.id === p.id);
+    if (exists) {
+      await fetch(`/api/contenus/${p.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...p, type: "post" }) });
+    } else {
+      await fetch("/api/contenus", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...p, type: "post" }) });
+    }
+    setAddingPost(false); setEditPost(null);
+    load();
+  };
+  const saveProfile = async (p: Profile) => {
+    const exists = profiles.some((x) => x.id === p.id);
+    if (exists) {
+      await fetch(`/api/contenus/${p.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...p, type: "profile" }) });
+    } else {
+      await fetch("/api/contenus", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...p, type: "profile" }) });
+    }
     setAddingProfile(false); setEditProfile(null);
+    load();
   };
 
   return (
@@ -157,7 +183,7 @@ export default function AdminContenusPage() {
         {(["posts", "profils"] as const).map((t) => (
           <button key={t} onClick={() => setTab(t)} className="px-4 py-2 rounded-lg text-sm font-medium capitalize transition-colors"
             style={{ background: tab === t ? "rgba(59,130,246,0.15)" : "transparent", color: tab === t ? "#60A5FA" : "rgba(255,255,255,0.4)", border: tab === t ? "1px solid rgba(59,130,246,0.25)" : "1px solid transparent" }}>
-            {t === "posts" ? `Posts (${posts.length})` : `Profils Business (${profiles.length})`}
+            {t === "posts" ? `Posts (${loading ? "…" : posts.length})` : `Profils Business (${loading ? "…" : profiles.length})`}
           </button>
         ))}
       </div>
@@ -228,10 +254,10 @@ export default function AdminContenusPage() {
       )}
 
       <ConfirmModal open={!!deletePost} message="Le post sera supprimé définitivement."
-        onConfirm={() => { setPosts(posts.filter((p) => p.id !== deletePost)); setDeletePost(null); }}
+        onConfirm={async () => { if (deletePost) { await fetch(`/api/contenus/${deletePost}`, { method: "DELETE" }); setDeletePost(null); load(); } }}
         onCancel={() => setDeletePost(null)} />
       <ConfirmModal open={!!deleteProfile} message="Le profil sera supprimé définitivement."
-        onConfirm={() => { setProfiles(profiles.filter((p) => p.id !== deleteProfile)); setDeleteProfile(null); }}
+        onConfirm={async () => { if (deleteProfile) { await fetch(`/api/contenus/${deleteProfile}`, { method: "DELETE" }); setDeleteProfile(null); load(); } }}
         onCancel={() => setDeleteProfile(null)} />
     </div>
   );
