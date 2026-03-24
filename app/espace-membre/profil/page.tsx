@@ -11,7 +11,7 @@ const SECTION_LABEL = { color: "rgba(255,255,255,0.35)" };
 
 export default function ProfilPage() {
   const router = useRouter();
-  const { data: authSession, status } = useSession();
+  const { data: authSession, status, update } = useSession();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [name, setName] = useState("");
@@ -66,8 +66,15 @@ export default function ProfilPage() {
     reader.readAsDataURL(file);
   };
 
-  const saveName = () => {
+  const saveName = async () => {
     if (!name.trim()) return;
+    const res = await fetch("/api/user/profile", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: name.trim() }),
+    });
+    if (!res.ok) { toast.error("Erreur lors de la sauvegarde."); return; }
+    await update({ name: name.trim() });
     setNameSaved(true);
     setTimeout(() => setNameSaved(false), 2500);
     toast.success("Profil enregistré !");

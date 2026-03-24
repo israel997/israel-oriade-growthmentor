@@ -36,12 +36,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) token.id = user.id;
+      if (trigger === "update" && token.id) {
+        // Reload name from DB after profile update
+        const client = await clientPromise;
+        const dbUser = await client.db().collection("users").findOne(
+          { _id: new (await import("mongodb")).ObjectId(token.id as string) },
+          { projection: { name: 1 } }
+        );
+        if (dbUser?.name) token.name = dbUser.name;
+      }
       return token;
     },
     async session({ session, token }) {
       if (token?.id) session.user.id = token.id as string;
+      if (token?.name) session.user.name = token.name as string;
       return session;
     },
   },

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { saveUserData } from "@/lib/sync-user-data";
 
 type Status = "none" | "pending" | "accepted" | "rejected";
 type Application = { status: Status; submittedAt?: string; goal?: string; level?: string; hours?: string; motivation?: string };
@@ -45,7 +46,7 @@ export default function MenteePage() {
     setSubmitting(true);
     setTimeout(() => {
       const application: Application = { status: "pending", submittedAt: new Date().toISOString(), ...form };
-      localStorage.setItem("gm_mentee_application", JSON.stringify(application));
+      saveUserData("gm_mentee_application", application);
       setApp(application);
       setSubmitting(false);
       setShowForm(false);
