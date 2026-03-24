@@ -7,7 +7,7 @@ export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [resetUrl, setResetUrl] = useState("");
+  const [sent, setSent] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,7 +22,7 @@ export default function ForgotPasswordPage() {
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error); setLoading(false); return; }
-      setResetUrl(data.resetUrl ?? "");
+      setSent(true);
       setLoading(false);
     } catch {
       setError("Erreur réseau. Réessaie.");
@@ -54,21 +54,16 @@ export default function ForgotPasswordPage() {
         <div className="rounded-3xl p-8"
           style={{ background: "rgba(255,255,255,0.04)", backdropFilter: "blur(20px)", border: "1px solid rgba(96,165,250,0.15)" }}>
 
-          {resetUrl ? (
+          {sent ? (
             <div className="text-center space-y-4">
               <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto" style={{ background: "rgba(74,222,128,0.15)" }}>
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4ADE80" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               </div>
-              <p className="text-white font-semibold">Demande enregistrée</p>
+              <p className="text-white font-semibold">Email envoyé !</p>
               <p className="text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>
-                Clique sur le lien ci-dessous pour réinitialiser ton mot de passe.
+                Si cette adresse est associée à un compte, tu recevras un lien de réinitialisation dans quelques instants.
               </p>
-              <Link href={resetUrl}
-                className="block w-full rounded-xl py-3 text-sm font-bold text-white text-center transition-transform hover:scale-[1.01]"
-                style={{ background: "linear-gradient(135deg, #1A3FD8, #3B82F6)" }}>
-                Réinitialiser mon mot de passe
-              </Link>
-              <p className="text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>Ce lien expire dans 1 heure.</p>
+              <p className="text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>Ce lien expire dans 1 heure. Vérifie aussi tes spams.</p>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">

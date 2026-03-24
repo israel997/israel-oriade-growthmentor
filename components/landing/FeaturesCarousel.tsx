@@ -59,7 +59,7 @@ export default function FeaturesCarousel() {
       <div className="relative mx-auto max-w-6xl px-6 lg:px-8">
         <FadeIn>
           <span className="inline-block rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-widest" style={{ background: "rgba(96,165,250,0.15)", color: "#60A5FA" }}>
-            Top offres
+            Mes Top Offres
           </span>
           <h2 className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">Choisis ton niveau, avance à ton rythme</h2>
           <p className="mt-3 max-w-xl text-white/50">+10 offres conçues pour aider mes mentees à construire leur business et à gagner au moins 50 000 F chaque mois.<br /><br />Voici mes meilleures recommandations.</p>

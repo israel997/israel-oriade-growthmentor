@@ -133,7 +133,7 @@ export default function BenefitsSection() {
           transition={{ duration: 0.55, ease: "easeOut" }}
         >
           <span className="inline-block rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-widest" style={{ background: "rgba(96,165,250,0.15)", color: "#60A5FA" }}>
-            La plateforme
+            Ma Plateforme
           </span>
           <h2 className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
             Ce dont tu vas <em>profiter ici</em>
