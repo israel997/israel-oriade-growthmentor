@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter, useParams } from "next/navigation";
 import { saveUserData } from "@/lib/sync-user-data";
+import { toast } from "sonner";
 
 // ── Test definitions ──────────────────────────────────────────────────────────
 
@@ -183,6 +184,7 @@ export default function TestSlugPage() {
         const prev = JSON.parse(localStorage.getItem(test.storageKey) ?? "[]");
         prev.push({ date: new Date().toISOString(), score: pct, badge: badge.label });
         saveUserData(test.storageKey, prev);
+        toast.success(`Test terminé ! Badge obtenu : ${badge.label}`);
       } catch {}
       setPhase("result");
     }

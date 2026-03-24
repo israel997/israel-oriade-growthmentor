@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
+import { toast } from "sonner";
 
 const CARD = { background: "rgba(255,255,255,0.04)", backdropFilter: "blur(16px)", border: "1px solid rgba(96,165,250,0.13)" };
 const INPUT = { background: "rgba(255,255,255,0.04)", border: "1px solid rgba(96,165,250,0.15)", color: "white" };
@@ -58,7 +59,7 @@ export default function ProfilPage() {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ gm_profile_photo: dataUrl }),
-        });
+        }).then(() => toast.success("Photo de profil mise à jour !"));
       };
       img.src = result;
     };
@@ -69,6 +70,7 @@ export default function ProfilPage() {
     if (!name.trim()) return;
     setNameSaved(true);
     setTimeout(() => setNameSaved(false), 2500);
+    toast.success("Profil enregistré !");
   };
 
   const savePassword = async () => {
@@ -89,6 +91,7 @@ export default function ProfilPage() {
     setCurrentPwd(""); setNewPwd(""); setConfirmPwd("");
     setPwdSaved(true);
     setTimeout(() => setPwdSaved(false), 2500);
+    toast.success("Mot de passe mis à jour !");
   };
 
   const deleteAccount = () => {
