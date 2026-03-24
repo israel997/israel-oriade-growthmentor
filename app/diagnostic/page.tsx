@@ -524,7 +524,7 @@ export default function QuizPage() {
                     delay: 0.15,
                   },
                   {
-                    val: "2 min",
+                    val: "1 min",
                     label: "pour ton résultat",
                     icon: (
                       <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

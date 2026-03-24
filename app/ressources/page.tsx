@@ -480,7 +480,7 @@ export default function RessourcesPage() {
         >
           <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "#60A5FA" }}>Tu ne sais pas par où commencer ?</p>
           <h2 className="mt-3 text-2xl font-bold text-white">Fais ton diagnostic gratuit</h2>
-          <p className="mt-2 text-white/50">En 2 minutes, identifie ton profil et reçois les ressources adaptées à ton niveau.</p>
+          <p className="mt-2 text-white/50">En 1 minute, identifie ton profil et reçois les ressources adaptées à ton niveau.</p>
           <Link
             href="/diagnostic"
             className="mt-6 inline-flex items-center gap-2 rounded-xl px-7 py-3.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02]"

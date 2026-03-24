@@ -222,7 +222,7 @@ export default function BadgesPage() {
       {!currentBadge && (
         <div className="rounded-2xl p-8 text-center" style={{ background: "rgba(255,255,255,0.02)", border: "1px dashed rgba(96,165,250,0.15)" }}>
           <p className="text-sm font-semibold text-white mb-1">Passe ton premier test pour débloquer ton badge</p>
-          <p className="text-sm mb-4" style={{ color: "rgba(255,255,255,0.4)" }}>Le test prend 2 minutes et te donne un score sur 100.</p>
+          <p className="text-sm mb-4" style={{ color: "rgba(255,255,255,0.4)" }}>Le test prend 1 minute et te donne un score sur 100.</p>
           <Link href="/espace-membre/diagnostic"
             className="inline-flex rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02]"
             style={{ background: "linear-gradient(135deg, #1A3FD8, #3B82F6)" }}>

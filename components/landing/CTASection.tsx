@@ -45,7 +45,7 @@ export default function CTASection() {
             <h2 className="mt-5 text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-5xl">
               Où en es-tu vraiment ?<br />
               <span style={{ display: "inline-block", background: "linear-gradient(90deg, #1A3FD8 0%, #60A5FA 60%, #1A3FD8 100%)", WebkitBackgroundClip: "text", backgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                2 minutes pour le savoir.
+                1 minute pour le savoir.
               </span>
             </h2>
 

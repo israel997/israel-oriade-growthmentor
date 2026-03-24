@@ -247,7 +247,7 @@ export default function DiagnosticPage() {
             <div className="grid grid-cols-3 gap-3">
               {[
                 { val: "10", label: "questions" },
-                { val: "2 min", label: "pour finir" },
+                { val: "1 min", label: "pour finir" },
                 { val: "5", label: "niveaux de badge" },
               ].map((s) => (
                 <div key={s.label} className="rounded-2xl p-4 text-center"

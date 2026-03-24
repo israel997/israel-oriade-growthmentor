@@ -53,7 +53,7 @@ const sections: Section[] = [
       </svg>
     ),
     tagline: "La pièce maîtresse de ta progression — à faire chaque semaine",
-    description: "Le diagnostic hebdomadaire est le cœur de l'expérience GrowthMentor. En 10 questions et 2 minutes, il évalue ton niveau business global sur l'offre, le contenu, les ventes, l'audience et le positionnement. Résultat immédiat avec badge personnalisé.",
+    description: "Le diagnostic hebdomadaire est le cœur de l'expérience GrowthMentor. En 10 questions et 1 minute, il évalue ton niveau business global sur l'offre, le contenu, les ventes, l'audience et le positionnement. Résultat immédiat avec badge personnalisé.",
     tips: ["Fais-le chaque semaine depuis le Tableau de bord — c'est ton repère de progression", "Réponds honnêtement — c'est pour toi, pas pour les autres", "Ton score alimente automatiquement Ma Progression et Mes Badges"],
   },
   {
@@ -269,7 +269,7 @@ export default function PlanPage() {
       <div className="rounded-2xl p-6 flex items-center justify-between gap-4" style={{ background: "rgba(245,194,0,0.06)", border: "1px solid rgba(245,194,0,0.2)" }}>
         <div>
           <p className="text-sm font-bold text-white">Prêt à commencer ?</p>
-          <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.45)" }}>Lance ton diagnostic hebdomadaire depuis le tableau de bord — il ne prend que 2 minutes.</p>
+          <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.45)" }}>Lance ton diagnostic hebdomadaire depuis le tableau de bord — il ne prend que 1 minute.</p>
         </div>
         <Link
           href="/espace-membre"
