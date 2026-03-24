@@ -38,22 +38,108 @@ const quickLinks = [
   { label: "Programme Mentee",   href: "/espace-membre/mentee",      color: "#F5C200", icon: <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" /></svg> },
 ];
 
+type StepStatus = { diagDone: boolean; contentuDone: boolean; venteDone: boolean; digitalDone: boolean; ressourcesDone: boolean; contentusDone: boolean; communauteDone: boolean };
+
+const STEPS = [
+  {
+    id: "diagnostic",
+    icon: <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>,
+    title: "Lance ton diagnostic de niveau",
+    desc: "Découvre où tu en es et obtiens ton premier badge personnalisé.",
+    cta: "Faire le diagnostic",
+    href: "/espace-membre/diagnostic",
+    color: "#34D399",
+    done: (s: StepStatus) => s.diagDone,
+  },
+  {
+    id: "contenu",
+    icon: <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>,
+    title: "Passe le test Stratégies de contenu",
+    desc: "Évalue tes compétences en création et distribution de contenu.",
+    cta: "Passer le test",
+    href: "/espace-membre/autres-tests/contenu",
+    color: "#60A5FA",
+    done: (s: StepStatus) => s.contentuDone,
+  },
+  {
+    id: "vente",
+    icon: <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" /></svg>,
+    title: "Passe le test de Vente",
+    desc: "Mesure ta maîtrise des techniques de vente et de conversion.",
+    cta: "Passer le test",
+    href: "/espace-membre/autres-tests/vente",
+    color: "#F97316",
+    done: (s: StepStatus) => s.venteDone,
+  },
+  {
+    id: "digital",
+    icon: <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0H3" /></svg>,
+    title: "Passe le test de Compétences Digital",
+    desc: "Évalue ton niveau sur les outils et stratégies digitales.",
+    cta: "Passer le test",
+    href: "/espace-membre/autres-tests/digital",
+    color: "#A78BFA",
+    done: (s: StepStatus) => s.digitalDone,
+  },
+  {
+    id: "ressources",
+    icon: <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" /></svg>,
+    title: "Parcours les ressources gratuites",
+    desc: "Formations, outils et guides sélectionnés pour accélérer ta croissance.",
+    cta: "Voir les ressources",
+    href: "/ressources",
+    color: "#F5C200",
+    done: (s: StepStatus) => s.ressourcesDone,
+  },
+  {
+    id: "contenus",
+    icon: <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" /></svg>,
+    title: "Explore la section Contenus",
+    desc: "Articles et stratégies pour booster ton marketing de contenu.",
+    cta: "Explorer les contenus",
+    href: "/contenus",
+    color: "#FB7185",
+    done: (s: StepStatus) => s.contentusDone,
+  },
+  {
+    id: "communaute",
+    icon: <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" /></svg>,
+    title: "Rejoins la communauté",
+    desc: "Des centaines d'entrepreneurs digitaux qui s'entraident au quotidien.",
+    cta: "Rejoindre la communauté",
+    href: "/communaute",
+    color: "#22C55E",
+    done: (s: StepStatus) => s.communauteDone,
+  },
+];
+
 export default function EspaceMembreDashboard() {
   const { data: authSession } = useSession();
   const [results, setResults] = useState<DiagResult[]>([]);
   const [canTest, setCanTest] = useState(true);
+  const [stepStatus, setStepStatus] = useState<StepStatus>({
+    diagDone: false, contentuDone: false, venteDone: false, digitalDone: false,
+    ressourcesDone: false, contentusDone: false, communauteDone: false,
+  });
 
   useEffect(() => {
     try {
       const r = localStorage.getItem("gm_diag_results");
-      if (r) {
-        const parsed: DiagResult[] = JSON.parse(r);
-        setResults(parsed);
-        if (parsed.length > 0) {
-          const last = new Date(parsed[parsed.length - 1].date).getTime();
-          setCanTest(Date.now() - last > 7 * 24 * 60 * 60 * 1000);
-        }
+      const diagResults: DiagResult[] = r ? JSON.parse(r) : [];
+      setResults(diagResults);
+      if (diagResults.length > 0) {
+        const last = new Date(diagResults[diagResults.length - 1].date).getTime();
+        setCanTest(Date.now() - last > 7 * 24 * 60 * 60 * 1000);
       }
+      setStepStatus({
+        diagDone: diagResults.length > 0,
+        contentuDone: JSON.parse(localStorage.getItem("gm_test_contenu_results") || "[]").length > 0,
+        venteDone: JSON.parse(localStorage.getItem("gm_test_vente_results") || "[]").length > 0,
+        digitalDone: JSON.parse(localStorage.getItem("gm_test_digital_results") || "[]").length > 0,
+        ressourcesDone: !!localStorage.getItem("gm_visited_ressources"),
+        contentusDone: !!localStorage.getItem("gm_visited_contenus"),
+        communauteDone: !!localStorage.getItem("gm_visited_communaute"),
+      });
     } catch {}
   }, []);
 
@@ -61,6 +147,9 @@ export default function EspaceMembreDashboard() {
   const badge = lastResult?.badge ?? "Apprenti";
   const badgeStyle = BADGE_CONFIG[badge] ?? BADGE_CONFIG["Apprenti"];
   const firstName = authSession?.user?.name?.split(" ")[0] ?? "Membre";
+
+  const completedCount = STEPS.filter(s => s.done(stepStatus)).length;
+  const nextStep = STEPS.find(s => !s.done(stepStatus));
 
   const hour = new Date().getHours();
   const timeGreeting =
@@ -103,6 +192,63 @@ export default function EspaceMembreDashboard() {
           )}
         </div>
       </div>
+
+      {/* Prochaine étape recommandée */}
+      {nextStep ? (
+        <div className="rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center gap-4"
+          style={{ background: `linear-gradient(135deg, ${nextStep.color}12, ${nextStep.color}06)`, border: `1px solid ${nextStep.color}30`, backdropFilter: "blur(16px)" }}>
+          <div className="shrink-0 flex h-12 w-12 items-center justify-center rounded-xl" style={{ background: `${nextStep.color}18`, color: nextStep.color }}>
+            {nextStep.icon}
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: nextStep.color }}>
+              Prochaine étape recommandée
+            </p>
+            <p className="text-base font-bold text-white">{nextStep.title}</p>
+            <p className="text-sm mt-0.5" style={{ color: "rgba(255,255,255,0.45)" }}>{nextStep.desc}</p>
+            {/* Progress bar */}
+            <div className="mt-3 flex items-center gap-3">
+              <div className="flex gap-1">
+                {STEPS.map((s) => (
+                  <div key={s.id} className="h-1.5 w-4 rounded-full transition-all"
+                    style={{ background: s.done(stepStatus) ? nextStep.color : "rgba(255,255,255,0.12)" }} />
+                ))}
+              </div>
+              <span className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.4)" }}>
+                {completedCount}/{STEPS.length} étapes
+              </span>
+            </div>
+          </div>
+          <Link href={nextStep.href}
+            onClick={() => {
+              if (nextStep.id === "ressources") localStorage.setItem("gm_visited_ressources", "1");
+              if (nextStep.id === "contenus") localStorage.setItem("gm_visited_contenus", "1");
+              if (nextStep.id === "communaute") localStorage.setItem("gm_visited_communaute", "1");
+            }}
+            className="shrink-0 rounded-xl px-5 py-2.5 text-sm font-bold text-white transition-all hover:scale-[1.02] hover:brightness-110"
+            style={{ background: nextStep.id === "diagnostic" ? "#1A3FD8" : nextStep.color }}>
+            {nextStep.cta} →
+          </Link>
+        </div>
+      ) : (
+        <div className="rounded-2xl p-5 flex items-center gap-4"
+          style={{ background: "rgba(245,194,0,0.08)", border: "1px solid rgba(245,194,0,0.25)", backdropFilter: "blur(16px)" }}>
+          <div className="shrink-0 flex h-12 w-12 items-center justify-center rounded-xl" style={{ background: "rgba(245,194,0,0.15)", color: "#F5C200" }}>
+            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 0 0 2.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 0 1 2.916.52 6.003 6.003 0 0 1-5.395 4.972m0 0a6.726 6.726 0 0 1-2.749 1.35m0 0a6.772 6.772 0 0 1-3.044 0" /></svg>
+          </div>
+          <div>
+            <p className="text-base font-bold text-white">Félicitations, {firstName} !</p>
+            <p className="text-sm mt-0.5" style={{ color: "rgba(255,255,255,0.45)" }}>
+              Tu as complété toutes les étapes. Postule au programme Mentee pour aller encore plus loin.
+            </p>
+          </div>
+          <Link href="/espace-membre/mentee"
+            className="shrink-0 ml-auto rounded-xl px-5 py-2.5 text-sm font-bold text-white transition-all hover:scale-[1.02]"
+            style={{ background: "linear-gradient(135deg, #F5C200, #F97316)" }}>
+            Programme Mentee →
+          </Link>
+        </div>
+      )}
 
       {/* Accès rapides */}
       <div>

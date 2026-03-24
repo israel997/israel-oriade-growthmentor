@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { saveUserData } from "@/lib/sync-user-data";
+import { toast } from "sonner";
 
 const QUESTIONS = [
   { q: "Tu as une offre clairement définie avec un prix et une cible précise ?",        opts: ["Pas encore", "En cours", "Oui mais à affiner", "Oui, clairement définie"] },
@@ -109,6 +110,7 @@ export default function DiagnosticPage() {
         const prev = JSON.parse(localStorage.getItem("gm_diag_results") ?? "[]");
         prev.push({ date: new Date().toISOString(), score: pct, badge: badge.label });
         saveUserData("gm_diag_results", prev);
+        toast.success(`Diagnostic terminé ! Badge obtenu : ${badge.label}`);
       } catch {}
       setPhase("result");
     }
