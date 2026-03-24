@@ -7,7 +7,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ slu
   try {
     const client = await clientPromise;
     const col = client.db().collection("outils");
-    const item = await col.findOne({ $or: [{ slug }, { _id: ObjectId.isValid(slug) ? new ObjectId(slug) : null }] });
+    const item = await col.findOne(ObjectId.isValid(slug) ? { $or: [{ slug }, { _id: new ObjectId(slug) }] } : { slug });
     if (!item) return NextResponse.json({ error: "Introuvable." }, { status: 404 });
     return NextResponse.json(item);
   } catch (e) {
@@ -25,7 +25,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ slug
     const client = await clientPromise;
     const col = client.db().collection("outils");
     await col.updateOne(
-      { $or: [{ slug }, { _id: ObjectId.isValid(slug) ? new ObjectId(slug) : null }] },
+      ObjectId.isValid(slug) ? { $or: [{ slug }, { _id: new ObjectId(slug) }] } : { slug },
       { $set: update }
     );
     return NextResponse.json({ ok: true });
@@ -40,7 +40,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   try {
     const client = await clientPromise;
     const col = client.db().collection("outils");
-    await col.deleteOne({ $or: [{ slug }, { _id: ObjectId.isValid(slug) ? new ObjectId(slug) : null }] });
+    await col.deleteOne(ObjectId.isValid(slug) ? { $or: [{ slug }, { _id: new ObjectId(slug) }] } : { slug });
     return NextResponse.json({ ok: true });
   } catch (e) {
     console.error(e);

@@ -13,12 +13,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const { read } = await req.json();
     const client = await clientPromise;
     const col = client.db().collection("notifications");
-    const filter = { $or: [{ id }, { _id: ObjectId.isValid(id) ? new ObjectId(id) : null }] };
+    const filter = ObjectId.isValid(id) ? { $or: [{ id }, { _id: new ObjectId(id) }] } : { id };
 
     if (read) {
       await col.updateOne(filter, { $addToSet: { readBy: session.user.id } });
     } else {
-      await col.updateOne(filter, { $pull: { readBy: session.user.id } });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await col.updateOne(filter, { $pull: { readBy: session.user.id } } as any);
     }
     return NextResponse.json({ ok: true });
   } catch (e) {
@@ -32,7 +33,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   try {
     const client = await clientPromise;
     const col = client.db().collection("notifications");
-    await col.deleteOne({ $or: [{ id }, { _id: ObjectId.isValid(id) ? new ObjectId(id) : null }] });
+    await col.deleteOne(ObjectId.isValid(id) ? { $or: [{ id }, { _id: new ObjectId(id) }] } : { id });
     return NextResponse.json({ ok: true });
   } catch (e) {
     console.error(e);
