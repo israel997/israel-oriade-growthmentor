@@ -484,6 +484,31 @@ export async function GET() {
     { id: "n6", type: "actu",       title: "Ressource gratuite : Guide Personal Branding", body: "Un nouveau guide PDF est disponible en téléchargement gratuit dans la section Ressources.", href: "/ressources", date: "2026-03-16" },
   ];
 
+  // ── Blog ────────────────────────────────────────────────────────────────────
+  const blog = [
+    {
+      slug: "eviter-les-3-erreurs-debutant",
+      title: "Éviter les 3 erreurs qui bloquent les débutants",
+      excerpt: "Les pièges fréquents qui font perdre 6 mois aux nouveaux créateurs.",
+      date: "2026-03-20",
+      body: "Si tu débutes, l'erreur #1 est de vouloir tout faire en même temps. L'erreur #2 est d'ignorer la validation d'offre. L'erreur #3 est de ne pas mesurer tes actions.",
+    },
+    {
+      slug: "comment-creer-une-offre-qui-convertit",
+      title: "Comment créer une offre qui convertit sans audience massive",
+      excerpt: "Une méthode pragmatique basée sur le problème urgent du client.",
+      date: "2026-03-21",
+      body: "Une bonne offre est spécifique, orientée résultat et simple à comprendre. Concentre-toi sur un problème unique et une promesse mesurable.",
+    },
+  ];
+
+  // ── Témoignages ─────────────────────────────────────────────────────────────
+  const temoignages = [
+    { name: "Sarah", text: "J'ai arrêté de tourner en rond. J'ai un plan clair et mes premières ventes." },
+    { name: "Yanis", text: "Le quiz m'a orienté vers la bonne offre. Gain de temps énorme." },
+    { name: "Mireille", text: "Le suivi est concret, humain, et orienté résultats." },
+  ];
+
   const results: Record<string, string> = {};
 
   // Seed each collection (skip if already has data)
@@ -493,6 +518,8 @@ export async function GET() {
     ["outils", outils],
     ["contenus", contenus],
     ["notifications", notifications],
+    ["blog", blog],
+    ["temoignages", temoignages],
   ] as [string, object[]][]) {
     const col = db.collection(colName);
     const count = await col.countDocuments();

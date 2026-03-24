@@ -1,14 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import AdminHeader from "@/components/admin/AdminHeader";
 import ConfirmModal from "@/components/admin/ConfirmModal";
-import { blogPosts } from "@/lib/site-data";
+
+type BlogPost = { slug: string; title: string; excerpt: string; date: string };
 
 export default function AdminBlogPage() {
-  const [items, setItems] = useState(blogPosts);
+  const [items, setItems] = useState<BlogPost[]>([]);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/blog").then((r) => r.json()).then(setItems);
+  }, []);
+
+  const handleDelete = async (slug: string) => {
+    await fetch(`/api/blog/${slug}`, { method: "DELETE" });
+    setItems(items.filter((p) => p.slug !== slug));
+    setDeleteTarget(null);
+  };
 
   return (
     <div>
@@ -36,7 +47,7 @@ export default function AdminBlogPage() {
       </div>
 
       <ConfirmModal open={!!deleteTarget} message="L'article sera supprimé définitivement."
-        onConfirm={() => { setItems(items.filter((p) => p.slug !== deleteTarget)); setDeleteTarget(null); }}
+        onConfirm={() => deleteTarget && handleDelete(deleteTarget)}
         onCancel={() => setDeleteTarget(null)} />
     </div>
   );

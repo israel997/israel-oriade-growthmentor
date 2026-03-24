@@ -1,12 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AdminHeader from "@/components/admin/AdminHeader";
 import ConfirmModal from "@/components/admin/ConfirmModal";
 import ImageUpload from "@/components/admin/ImageUpload";
-import { testimonials } from "@/lib/site-data";
 
-type Temoignage = { name: string; text: string; imageUrl?: string };
+type Temoignage = { id?: string; name: string; text: string; imageUrl?: string };
 
 const FC = "rounded-lg px-3 py-2 text-sm text-white outline-none w-full";
 const S = { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" };
@@ -14,24 +13,39 @@ const S = { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,25
 const EMPTY: Temoignage = { name: "", text: "", imageUrl: "" };
 
 export default function AdminTemoignagesPage() {
-  const [items, setItems] = useState<Temoignage[]>(testimonials);
-  const [deleteIdx, setDeleteIdx] = useState<number | null>(null);
-  const [editing, setEditing] = useState<number | null>(null);
+  const [items, setItems] = useState<Temoignage[]>([]);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [editing, setEditing] = useState<string | null>(null);
   const [adding, setAdding] = useState(false);
   const [draft, setDraft] = useState<Temoignage>(EMPTY);
 
-  const save = () => {
+  useEffect(() => {
+    fetch("/api/temoignages").then((r) => r.json()).then(setItems);
+  }, []);
+
+  const save = async () => {
     if (editing !== null) {
-      setItems(items.map((t, i) => i === editing ? draft : t));
+      await fetch("/api/temoignages", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(draft) });
+      setItems(items.map((t) => t.id === editing ? { ...draft } : t));
       setEditing(null);
     } else {
-      setItems([...items, draft]);
+      const res = await fetch("/api/temoignages", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(draft) });
+      if (res.ok) {
+        const updated = await fetch("/api/temoignages").then((r) => r.json());
+        setItems(updated);
+      }
       setAdding(false);
     }
     setDraft(EMPTY);
   };
 
-  const startEdit = (i: number) => { setDraft({ ...EMPTY, ...items[i] }); setEditing(i); setAdding(false); };
+  const handleDelete = async (id: string) => {
+    await fetch("/api/temoignages", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) });
+    setItems(items.filter((t) => t.id !== id));
+    setDeleteTarget(null);
+  };
+
+  const startEdit = (t: Temoignage) => { setDraft({ ...t }); setEditing(t.id ?? null); setAdding(false); };
   const startAdd = () => { setDraft(EMPTY); setAdding(true); setEditing(null); };
 
   return (
@@ -63,8 +77,8 @@ export default function AdminTemoignagesPage() {
       )}
 
       <div className="space-y-3">
-        {items.map((t, i) => (
-          <div key={i} className="flex items-start gap-4 rounded-2xl px-5 py-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+        {items.map((t) => (
+          <div key={t.id} className="flex items-start gap-4 rounded-2xl px-5 py-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
             {t.imageUrl ? (
               <img src={t.imageUrl} alt={t.name} className="h-9 w-9 shrink-0 rounded-full object-cover" />
             ) : (
@@ -77,16 +91,16 @@ export default function AdminTemoignagesPage() {
               <p className="text-xs mt-1 leading-relaxed" style={{ color: "rgba(255,255,255,0.55)" }}>&ldquo;{t.text}&rdquo;</p>
             </div>
             <div className="flex gap-2 shrink-0">
-              <button onClick={() => startEdit(i)} className="rounded-lg px-3 py-1.5 text-xs font-medium" style={{ background: "rgba(59,130,246,0.12)", color: "#60A5FA", border: "1px solid rgba(59,130,246,0.2)" }}>Éditer</button>
-              <button onClick={() => setDeleteIdx(i)} className="rounded-lg px-3 py-1.5 text-xs font-medium" style={{ background: "rgba(239,68,68,0.1)", color: "#F87171", border: "1px solid rgba(239,68,68,0.2)" }}>Supprimer</button>
+              <button onClick={() => startEdit(t)} className="rounded-lg px-3 py-1.5 text-xs font-medium" style={{ background: "rgba(59,130,246,0.12)", color: "#60A5FA", border: "1px solid rgba(59,130,246,0.2)" }}>Éditer</button>
+              <button onClick={() => t.id && setDeleteTarget(t.id)} className="rounded-lg px-3 py-1.5 text-xs font-medium" style={{ background: "rgba(239,68,68,0.1)", color: "#F87171", border: "1px solid rgba(239,68,68,0.2)" }}>Supprimer</button>
             </div>
           </div>
         ))}
       </div>
 
-      <ConfirmModal open={deleteIdx !== null} message="Le témoignage sera supprimé définitivement."
-        onConfirm={() => { setItems(items.filter((_, i) => i !== deleteIdx)); setDeleteIdx(null); }}
-        onCancel={() => setDeleteIdx(null)} />
+      <ConfirmModal open={!!deleteTarget} message="Le témoignage sera supprimé définitivement."
+        onConfirm={() => deleteTarget && handleDelete(deleteTarget)}
+        onCancel={() => setDeleteTarget(null)} />
     </div>
   );
 }

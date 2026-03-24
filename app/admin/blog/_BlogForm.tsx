@@ -21,7 +21,16 @@ export default function BlogForm({ initial, title }: { initial?: Partial<BlogPos
     body: initial?.body ?? "",
   });
   const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
-  const save = () => { setSaved(true); setTimeout(() => { setSaved(false); router.push("/admin/blog"); }, 1200); };
+  const save = async () => {
+    setSaved(true);
+    const slug = (initial as { slug?: string })?.slug;
+    if (slug) {
+      await fetch(`/api/blog/${slug}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+    } else {
+      await fetch("/api/blog", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+    }
+    setTimeout(() => { setSaved(false); router.push("/admin/blog"); }, 800);
+  };
 
   return (
     <div className="max-w-3xl">

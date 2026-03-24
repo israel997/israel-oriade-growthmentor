@@ -1,10 +1,14 @@
-import { blogPosts } from "@/lib/site-data";
+import clientPromise from "@/lib/mongodb";
 import BlogForm from "../_BlogForm";
 import { notFound } from "next/navigation";
 
 export default async function EditBlogPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = blogPosts.find((p) => p.slug === slug);
+  const client = await clientPromise;
+  const col = client.db().collection("blog");
+  const post = await col.findOne({ slug });
   if (!post) return notFound();
-  return <BlogForm title={`Éditer — ${post.title}`} initial={post} />;
+  const { _id, ...data } = post;
+  void _id;
+  return <BlogForm title={`Éditer — ${data.title}`} initial={data} />;
 }
