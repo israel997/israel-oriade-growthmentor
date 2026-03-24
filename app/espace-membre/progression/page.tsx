@@ -80,6 +80,7 @@ export default function ProgressionPage() {
   const { data: authSession } = useSession();
   const [results, setResults] = useState<Result[]>([]);
   const [otherResults, setOtherResults] = useState<Record<string, Result[]>>({});
+  const [showInfo, setShowInfo] = useState(false);
 
   const firstName = authSession?.user?.name?.split(" ")[0] ?? "toi";
 
@@ -118,9 +119,20 @@ export default function ProgressionPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-white leading-tight">
-            {firstName}, voici ton évolution
-          </h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-black text-white leading-tight">
+              {firstName}, voici ton évolution
+            </h1>
+            <button
+              onClick={() => setShowInfo(v => !v)}
+              className="shrink-0 flex items-center justify-center h-6 w-6 rounded-full transition-colors"
+              style={{ background: showInfo ? "rgba(96,165,250,0.2)" : "rgba(255,255,255,0.07)", color: "#93C5FD" }}
+              aria-label="En savoir plus">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+              </svg>
+            </button>
+          </div>
           <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.4)" }}>
             Diagnostic principal + tests thématiques sur les derniers jours.
           </p>
@@ -131,6 +143,45 @@ export default function ProgressionPage() {
           + Nouveau test
         </Link>
       </div>
+
+      {/* Info panel */}
+      {showInfo && (
+        <div className="rounded-2xl p-5 space-y-3"
+          style={{ background: "rgba(96,165,250,0.06)", border: "1px solid rgba(96,165,250,0.2)", backdropFilter: "blur(16px)" }}>
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#93C5FD" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M2 12s4-8 10-8 10 8 10 8-4 8-10 8-10-8-10-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+              <p className="text-sm font-bold text-white">Comment fonctionne Ma Progression, {firstName} ?</p>
+            </div>
+            <button onClick={() => setShowInfo(false)} className="shrink-0 transition-opacity hover:opacity-60" style={{ color: "rgba(255,255,255,0.4)" }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+          <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.6)" }}>
+            Cette page est ton tableau de bord personnel, {firstName}. Chaque fois que tu passes un test — diagnostic principal ou test thématique — ton score est enregistré et affiché ici.
+          </p>
+          <ul className="space-y-2">
+            {[
+              { icon: "📈", text: "Suis ton évolution dans le temps grâce à la courbe de progression." },
+              { icon: "🎯", text: "Compare ton score à la moyenne de la communauté pour savoir où tu en es." },
+              { icon: "🏅", text: "Débloque des badges (Apprenti → Elite) en améliorant tes résultats." },
+              { icon: "🧪", text: "Passe les tests thématiques (Contenu, Vente, Digital) pour identifier tes points forts et tes axes de travail." },
+            ].map((item) => (
+              <li key={item.text} className="flex items-start gap-2.5 text-sm" style={{ color: "rgba(255,255,255,0.55)" }}>
+                <span className="shrink-0 mt-0.5">{item.icon}</span>
+                <span>{item.text}</span>
+              </li>
+            ))}
+          </ul>
+          <p className="text-xs font-medium pt-1" style={{ color: "rgba(96,165,250,0.7)" }}>
+            💡 Plus tu te testes régulièrement, plus tu mesures concrètement ta progression, {firstName}.
+          </p>
+        </div>
+      )}
 
       {/* ── DIAGNOSTIC PRINCIPAL ─────────────────────────────────────── */}
       <div className="space-y-4">
