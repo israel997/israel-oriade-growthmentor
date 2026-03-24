@@ -1,17 +1,8 @@
-import { redirect } from "next/navigation";
-import { auth } from "@/auth";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 
 const GRAIN_SVG = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E\")";
 
-export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const session = await auth();
-  const adminEmail = process.env.ADMIN_EMAIL;
-
-  if (!session?.user?.email || session.user.email !== adminEmail) {
-    redirect("/connexion");
-  }
-
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative flex h-screen overflow-hidden" style={{ background: "#060B2E" }}>
       {/* Grain texture */}
