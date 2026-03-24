@@ -119,6 +119,7 @@ export default function TestSlugPage() {
   const [direction, setDirection] = useState(1);
   const [score, setScore] = useState(0);
   const [daysLeft, setDaysLeft] = useState(0);
+  const [showInfo, setShowInfo] = useState(false);
 
   useEffect(() => {
     if (!test) return;
@@ -227,12 +228,42 @@ export default function TestSlugPage() {
         <p className="text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>
           Reviens dans <span className="text-white font-semibold">{daysLeft} jour{daysLeft > 1 ? "s" : ""}</span> pour repasser ce test.
         </p>
-        <button onClick={() => router.push("/espace-membre/autres-tests")}
-          className="mt-6 rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02]"
-          style={{ background: "linear-gradient(135deg, #1A3FD8, #3B82F6)" }}>
-          Voir les autres tests
-        </button>
+        <div className="mt-6 flex items-center justify-center gap-3">
+          <button onClick={() => router.push("/espace-membre/autres-tests")}
+            className="rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02]"
+            style={{ background: "linear-gradient(135deg, #1A3FD8, #3B82F6)" }}>
+            Voir les autres tests
+          </button>
+          <button
+            onClick={() => setShowInfo(v => !v)}
+            className="flex items-center justify-center h-10 w-10 rounded-xl transition-all"
+            style={{
+              background: showInfo ? "rgba(96,165,250,0.15)" : "rgba(255,255,255,0.06)",
+              color: showInfo ? "#93C5FD" : "rgba(255,255,255,0.4)",
+              border: showInfo ? "1px solid rgba(96,165,250,0.3)" : "1px solid rgba(255,255,255,0.08)",
+            }}
+            aria-label="À quoi sert ce test ?">
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+          </button>
+        </div>
       </div>
+
+      {showInfo && (
+        <div className="rounded-2xl p-5 space-y-4"
+          style={{ background: "rgba(96,165,250,0.06)", backdropFilter: "blur(16px)", border: "1px solid rgba(96,165,250,0.2)" }}>
+          <div className="flex items-start justify-between gap-3">
+            <p className="text-sm font-bold text-white">À quoi sert ce test ?</p>
+            <button onClick={() => setShowInfo(false)} className="shrink-0 transition-opacity hover:opacity-60" style={{ color: "rgba(255,255,255,0.4)" }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+          <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.6)" }}>
+            {test.subtitle} Ce test thématique te permet d&apos;évaluer ton niveau sur un aspect précis de ton activité afin de <strong className="text-white">t&apos;ajuster et progresser</strong> là où c&apos;est nécessaire.
+          </p>
+        </div>
+      )}
     </div>
   );
 
@@ -285,15 +316,57 @@ export default function TestSlugPage() {
               ))}
             </div>
 
-            <button
-              onClick={() => setPhase("quiz")}
-              className="group flex w-full items-center justify-center gap-2 rounded-2xl py-4 text-base font-bold text-white transition-transform hover:scale-[1.01]"
-              style={{ background: "linear-gradient(135deg, #1A3FD8, #3B82F6)" }}>
-              Tester mon évolution
-              <svg className="h-5 w-5 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-              </svg>
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setPhase("quiz")}
+                className="group flex flex-1 items-center justify-center gap-2 rounded-2xl py-4 text-base font-bold text-white transition-transform hover:scale-[1.01]"
+                style={{ background: "linear-gradient(135deg, #1A3FD8, #3B82F6)" }}>
+                Tester mon niveau
+                <svg className="h-5 w-5 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setShowInfo(v => !v)}
+                className="flex items-center justify-center h-14 w-14 rounded-2xl transition-all"
+                style={{
+                  background: showInfo ? "rgba(96,165,250,0.15)" : "rgba(255,255,255,0.06)",
+                  color: showInfo ? "#93C5FD" : "rgba(255,255,255,0.4)",
+                  border: showInfo ? "1px solid rgba(96,165,250,0.3)" : "1px solid rgba(255,255,255,0.08)",
+                }}
+                aria-label="À quoi sert ce test ?">
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+                </svg>
+              </button>
+            </div>
+
+            {showInfo && (
+              <div className="rounded-2xl p-5 space-y-4"
+                style={{ background: "rgba(96,165,250,0.06)", backdropFilter: "blur(16px)", border: "1px solid rgba(96,165,250,0.2)" }}>
+                <div className="flex items-start justify-between gap-3">
+                  <p className="text-sm font-bold text-white">À quoi sert ce test ?</p>
+                  <button onClick={() => setShowInfo(false)} className="shrink-0 transition-opacity hover:opacity-60" style={{ color: "rgba(255,255,255,0.4)" }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                </div>
+                <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.6)" }}>
+                  Ce test te permet d&apos;évaluer ton niveau sur un aspect précis de ton activité — <strong className="text-white">{test.label.toLowerCase()}</strong> — afin d&apos;identifier tes forces et les points sur lesquels t&apos;ajuster concrètement.
+                </p>
+                <ul className="space-y-2.5">
+                  {[
+                    { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>, text: `${test.questions.length} questions ciblées sur ${test.label.toLowerCase()}.` },
+                    { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>, text: "Un score sur 100 pour mesurer où tu en es précisément." },
+                    { icon: <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>, text: "Utilise tes résultats pour prioriser tes actions et t'améliorer rapidement." },
+                  ].map((item) => (
+                    <li key={item.text} className="flex items-start gap-2.5 text-sm" style={{ color: "rgba(255,255,255,0.55)" }}>
+                      <span className="shrink-0 mt-0.5" style={{ color: test.color }}>{item.icon}</span>
+                      <span>{item.text}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </motion.div>
         )}
 
