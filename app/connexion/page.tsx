@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 
 type Tab = "login" | "register";
 
@@ -36,7 +36,16 @@ function validateFullName(name: string): string {
 
 export default function ConnexionPage() {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [tab, setTab] = useState<Tab>("login");
+
+  // If already authenticated (e.g. after Google OAuth redirect), send to role-based page
+  useEffect(() => {
+    if (status === "authenticated") {
+      const role = (session?.user as { role?: string })?.role;
+      router.replace(role === "admin" ? "/admin" : "/espace-membre");
+    }
+  }, [status, session, router]);
   const [googleLoading, setGoogleLoading] = useState(false);
 
   // Login
