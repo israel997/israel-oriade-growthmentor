@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+.admin-nav-item:not(.admin-nav-active):hover {
+  background: rgba(59, 130, 246, 0.12) !important;
+}
+
 :root {
   --color-primary: #000000;
   --color-secondary: #1a1a1a;

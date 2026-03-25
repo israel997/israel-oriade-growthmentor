@@ -113,12 +113,6 @@ export default function AdminSidebar() {
         </div>
       </div>
 
-      <style>{`
-        .admin-nav-item:not(.admin-nav-active):hover {
-          background: rgba(59,130,246,0.12) !important;
-        }
-      `}</style>
-
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
         {navItems.map((item) => {
