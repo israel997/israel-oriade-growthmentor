@@ -27,7 +27,12 @@ const FIELD = "rounded-lg px-3 py-2.5 text-sm text-white outline-none w-full";
 const FS = { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)" };
 const LABEL = "block text-xs font-semibold mb-1.5 text-white/60";
 
-const toKey = (d: Date) => d.toISOString().split("T")[0];
+const toKey = (d: Date) => {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+};
 
 const EMPTY: Omit<RDV, "id"> = { nom: "", date: "", heure: "09:00", note: "", priorite: "normale" };
 
