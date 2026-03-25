@@ -6,9 +6,7 @@ export async function proxy(req: NextRequest) {
 
   if (pathname.startsWith("/admin")) {
     const token = await getToken({ req, secret: process.env.AUTH_SECRET });
-    const email = token?.email as string | undefined;
-
-    if (!email || email !== process.env.ADMIN_EMAIL) {
+    if (!token || token.role !== "admin") {
       return NextResponse.redirect(new URL("/connexion", req.url));
     }
   }
