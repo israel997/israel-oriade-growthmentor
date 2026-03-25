@@ -4,6 +4,112 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
+type Accompaniment = { startDate: string | null; endDate: string | null; label: string | null };
+
+function useCountdown(endDate: string | null) {
+  const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; minutes: number; seconds: number } | null>(null);
+  const [expired, setExpired] = useState(false);
+
+  useEffect(() => {
+    if (!endDate) return;
+    const update = () => {
+      const diff = new Date(endDate).getTime() - Date.now();
+      if (diff <= 0) { setExpired(true); setTimeLeft(null); return; }
+      setTimeLeft({
+        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((diff % (1000 * 60)) / 1000),
+      });
+    };
+    update();
+    const id = setInterval(update, 1000);
+    return () => clearInterval(id);
+  }, [endDate]);
+
+  return { timeLeft, expired };
+}
+
+function TimingWidget({ acc }: { acc: Accompaniment }) {
+  const { timeLeft, expired } = useCountdown(acc.endDate);
+  const [open, setOpen] = useState(false);
+
+  const fmt = (d: string | null) =>
+    d ? new Date(d).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : null;
+
+  const totalDays = acc.startDate && acc.endDate
+    ? Math.ceil((new Date(acc.endDate).getTime() - new Date(acc.startDate).getTime()) / 86400000)
+    : null;
+  const elapsed = acc.startDate
+    ? Math.max(0, Math.ceil((Date.now() - new Date(acc.startDate).getTime()) / 86400000))
+    : null;
+  const progress = totalDays && elapsed !== null ? Math.min(100, Math.round((elapsed / totalDays) * 100)) : 0;
+
+  return (
+    <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(96,165,250,0.2)", background: "rgba(96,165,250,0.05)" }}>
+      <div className="flex items-center justify-between px-5 py-4">
+        <div className="flex items-center gap-3">
+          <div className="h-9 w-9 rounded-xl flex items-center justify-center" style={{ background: "rgba(96,165,250,0.15)" }}>
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="#60A5FA" strokeWidth={1.8}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-sm font-bold text-white">{acc.label ?? "Accompagnement"}</p>
+            {!expired && fmt(acc.startDate) && fmt(acc.endDate) && (
+              <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>{fmt(acc.startDate)} → {fmt(acc.endDate)}</p>
+            )}
+          </div>
+        </div>
+        <button onClick={() => setOpen(v => !v)}
+          className="rounded-lg px-3 py-1.5 text-xs font-semibold"
+          style={{ background: "rgba(96,165,250,0.12)", color: "#60A5FA", border: "1px solid rgba(96,165,250,0.2)" }}>
+          {open ? "Masquer" : "Timing"}
+        </button>
+      </div>
+
+      {!expired && (
+        <div className="px-5 pb-3">
+          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.08)" }}>
+            <div className="h-full rounded-full transition-all" style={{ width: `${progress}%`, background: "linear-gradient(90deg, #1A3FD8, #60A5FA)" }} />
+          </div>
+          <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.3)" }}>{progress}% écoulé</p>
+        </div>
+      )}
+
+      {open && (
+        <div className="border-t px-5 py-4 space-y-4" style={{ borderColor: "rgba(96,165,250,0.15)" }}>
+          {expired ? (
+            <p className="text-sm font-bold text-center py-4" style={{ color: "#F87171" }}>
+              Accompagnement terminé le {fmt(acc.endDate)}
+            </p>
+          ) : timeLeft ? (
+            <>
+              <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.35)" }}>Temps restant</p>
+              <div className="grid grid-cols-4 gap-3">
+                {[{ v: timeLeft.days, l: "Jours" }, { v: timeLeft.hours, l: "Heures" }, { v: timeLeft.minutes, l: "Min" }, { v: timeLeft.seconds, l: "Sec" }].map(({ v, l }) => (
+                  <div key={l} className="rounded-xl py-3 text-center" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                    <p className="text-2xl font-black text-white tabular-nums">{String(v).padStart(2, "0")}</p>
+                    <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>{l}</p>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : null}
+          <div className="grid grid-cols-2 gap-3">
+            {[{ label: "Début", val: fmt(acc.startDate) }, { label: "Fin", val: fmt(acc.endDate) }].map(({ label, val }) => val && (
+              <div key={label} className="rounded-xl px-4 py-3" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                <p className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>{label}</p>
+                <p className="text-sm font-semibold text-white mt-0.5">{val}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 type DiagResult = { date: string; score: number; badge: string };
 
 const BADGE_CROWNS: Record<string, number> = {
@@ -121,6 +227,7 @@ export default function EspaceMembreDashboard() {
     diagDone: false, contentuDone: false, venteDone: false, digitalDone: false,
     ressourcesDone: false, contentusDone: false, communauteDone: false,
   });
+  const [accompaniment, setAccompaniment] = useState<Accompaniment | null>(null);
 
   useEffect(() => {
     try {
@@ -141,6 +248,11 @@ export default function EspaceMembreDashboard() {
         communauteDone: !!localStorage.getItem("gm_visited_communaute"),
       });
     } catch {}
+
+    fetch("/api/user/accompaniment")
+      .then((r) => r.json())
+      .then((d) => { if (d.accompaniment) setAccompaniment(d.accompaniment); })
+      .catch(() => {});
   }, []);
 
   const lastResult = results[results.length - 1];
@@ -336,6 +448,12 @@ export default function EspaceMembreDashboard() {
         </div>
 
       </div>
+
+      {/* Accompagnement actif */}
+      {accompaniment?.startDate && accompaniment?.endDate && (
+        <TimingWidget acc={accompaniment} />
+      )}
+
     </div>
   );
 }

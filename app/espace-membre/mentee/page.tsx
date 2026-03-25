@@ -28,6 +28,13 @@ const INPUT_STYLE = {
   color: "white",
 };
 
+const POLICY = [
+  { icon: "📞", title: "Sessions hebdomadaires", desc: "2 appels de 30 min ou 1 appel de 1h par semaine, selon tes préférences." },
+  { icon: "💬", title: "Questions illimitées", desc: "Tu peux poser toutes tes questions par messagerie sans limite." },
+  { icon: "💸", title: "Remboursement conditionnel", desc: "Remboursement uniquement après 50% du temps écoulé et si tu n'es pas satisfait(e)." },
+  { icon: "🔔", title: "Disponibilité", desc: "Préviens au minimum 24h à l'avance si tu dois annuler ou reporter un appel." },
+];
+
 export default function MenteePage() {
   const [app, setApp] = useState<Application>({ status: "none" });
   const [form, setForm] = useState({ goal: "", level: "Débutant", hours: "", motivation: "" });
@@ -62,7 +69,7 @@ export default function MenteePage() {
         <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.4)" }}>Un accompagnement direct et personnalisé avec Israël.</p>
       </div>
 
-      {/* Statut */}
+      {/* Statut candidature */}
       {app.status !== "none" && (
         <div className="rounded-2xl p-5" style={{ background: st.bg, border: `1px solid ${st.border}`, backdropFilter: "blur(16px)" }}>
           <div className="flex items-center gap-2 mb-2">
@@ -98,6 +105,22 @@ export default function MenteePage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
               </svg>
               <span className="text-sm" style={{ color: "rgba(255,255,255,0.7)" }}>{p}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Politique de coaching privé */}
+      <div className="rounded-2xl p-5 space-y-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
+        <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.3)" }}>Politique du coaching privé</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {POLICY.map((p) => (
+            <div key={p.title} className="rounded-xl p-3.5 space-y-1" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.06)" }}>
+              <div className="flex items-center gap-2">
+                <span className="text-base">{p.icon}</span>
+                <p className="text-sm font-semibold text-white">{p.title}</p>
+              </div>
+              <p className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.45)" }}>{p.desc}</p>
             </div>
           ))}
         </div>
