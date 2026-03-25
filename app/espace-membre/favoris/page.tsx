@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type React from "react";
 import Link from "next/link";
 
 type Tab = "formations" | "outils" | "contenus";
@@ -178,14 +179,53 @@ export default function FavorisPage() {
   );
 }
 
+const EMPTY_ICONS: Record<string, React.ReactNode> = {
+  formation: (
+    <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="#60A5FA" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84 51.39 51.39 0 0 0-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
+    </svg>
+  ),
+  outil: (
+    <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="#A78BFA" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.336l-3.276 3.277a3.004 3.004 0 0 1-2.25-2.25l3.276-3.276a4.5 4.5 0 0 0-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437 1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008Z" />
+    </svg>
+  ),
+  contenu: (
+    <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="#34D399" strokeWidth={1.5}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+    </svg>
+  ),
+};
+
+const EMPTY_COLORS: Record<string, { color: string; bg: string }> = {
+  formation: { color: "#60A5FA", bg: "rgba(96,165,250,0.08)" },
+  outil:     { color: "#A78BFA", bg: "rgba(167,139,250,0.08)" },
+  contenu:   { color: "#34D399", bg: "rgba(52,211,153,0.08)" },
+};
+
+const EMPTY_CTXTS: Record<string, string> = {
+  formation: "Explore les formations et clique sur ♡ pour les retrouver ici.",
+  outil:     "Parcours les outils testés et sauvegarde ceux qui t'intéressent.",
+  contenu:   "Découvre les contenus et marque ceux que tu veux relire.",
+};
+
 function Empty({ label, href }: { label: string; href: string }) {
+  const icon = EMPTY_ICONS[label];
+  const colors = EMPTY_COLORS[label] ?? { color: "#93C5FD", bg: "rgba(96,165,250,0.08)" };
+  const ctx = EMPTY_CTXTS[label] ?? `Aucun ${label} favori pour l'instant.`;
   return (
-    <div className="rounded-2xl p-10 text-center" style={{ background: "rgba(255,255,255,0.02)", border: "1px dashed rgba(96,165,250,0.15)" }}>
-      <p className="text-sm font-semibold text-white mb-1">Aucun {label} favori</p>
-      <p className="text-sm mb-4" style={{ color: "rgba(255,255,255,0.4)" }}>Clique sur l&apos;icône de sauvegarde sur les pages du site.</p>
+    <div className="rounded-2xl p-10 flex flex-col items-center text-center gap-5"
+      style={{ background: "rgba(255,255,255,0.02)", border: "1px dashed rgba(255,255,255,0.1)" }}>
+      <div className="flex h-14 w-14 items-center justify-center rounded-2xl" style={{ background: colors.bg }}>
+        {icon}
+      </div>
+      <div>
+        <p className="text-base font-bold text-white mb-1">Aucun {label} sauvegardé</p>
+        <p className="text-sm max-w-xs" style={{ color: "rgba(255,255,255,0.45)" }}>{ctx}</p>
+      </div>
       <Link href={href}
-        className="inline-flex rounded-xl px-4 py-2 text-sm font-semibold text-white transition-transform hover:scale-[1.02]"
-        style={{ background: "linear-gradient(135deg, #1A3FD8, #3B82F6)" }}>
+        className="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold text-white transition-transform hover:scale-[1.02]"
+        style={{ background: `linear-gradient(135deg, #1A3FD8, ${colors.color})` }}>
         Explorer les {label}s →
       </Link>
     </div>

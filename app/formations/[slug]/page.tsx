@@ -3,6 +3,22 @@ import { notFound } from "next/navigation";
 import TrackView from "@/components/track-view";
 import { formations } from "@/lib/site-data";
 
+const EUR_TO_XOF = 655.957;
+
+function formatXof(xof: number): string {
+  return Math.round(xof).toLocaleString("fr-FR") + " XOF";
+}
+
+function getXofPrice(price: string, priceXof?: string): string | null {
+  if (priceXof) return priceXof;
+  if (/gratuit/i.test(price)) return "Gratuit";
+  const match = price.match(/(\d+(?:[.,]\d+)?)/);
+  if (!match) return null;
+  const eur = parseFloat(match[1].replace(",", "."));
+  if (isNaN(eur) || eur === 0) return null;
+  return formatXof(eur * EUR_TO_XOF);
+}
+
 type Props = {
   params: Promise<{ slug: string }>;
 };
@@ -37,8 +53,15 @@ export default async function FormationDetailPage({ params }: Props) {
           ))}
         </ul>
 
-        <div className="mt-6 flex items-center gap-3">
-          <p className="text-lg font-semibold text-white">{formation.price}</p>
+        <div className="mt-6 flex flex-wrap items-center gap-4">
+          <div>
+            <p className="text-2xl font-black text-white">{formation.price}</p>
+            {getXofPrice(formation.price, formation.priceXof) && (
+              <p className="text-sm mt-0.5 text-slate-400">
+                ≈ <span className="font-semibold text-emerald-300">{getXofPrice(formation.price, formation.priceXof)}</span>
+              </p>
+            )}
+          </div>
           <button className="rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-slate-950">Acheter / Accéder</button>
         </div>
       </article>

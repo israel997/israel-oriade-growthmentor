@@ -220,13 +220,26 @@ export default function BadgesPage() {
       </div>
 
       {!currentBadge && (
-        <div className="rounded-2xl p-8 text-center" style={{ background: "rgba(255,255,255,0.02)", border: "1px dashed rgba(96,165,250,0.15)" }}>
-          <p className="text-sm font-semibold text-white mb-1">Passe ton premier test pour débloquer ton badge</p>
-          <p className="text-sm mb-4" style={{ color: "rgba(255,255,255,0.4)" }}>Le test prend 1 minute et te donne un score sur 100.</p>
+        <div className="rounded-2xl p-10 flex flex-col items-center text-center gap-5"
+          style={{ background: "rgba(245,194,0,0.04)", border: "1px dashed rgba(245,194,0,0.2)" }}>
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl"
+            style={{ background: "rgba(245,194,0,0.1)" }}>
+            <svg className="h-8 w-8" viewBox="0 0 24 24" fill="#F5C200" stroke="#F5C200" strokeWidth={1} strokeLinejoin="round">
+              <path d="M2 19h20v2H2zM2 17l4-10 6 6 4-8 4 8-18 4z" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-base font-bold text-white mb-1">Ton badge t&apos;attend</p>
+            <p className="text-sm" style={{ color: "rgba(255,255,255,0.45)" }}>
+              Passe le diagnostic pour obtenir ton niveau — de l&apos;Apprenti à l&apos;Élite.<br />
+              Le test prend 1 minute et te donne un score sur 100.
+            </p>
+          </div>
           <Link href="/espace-membre/diagnostic"
-            className="inline-flex rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02]"
+            className="inline-flex items-center gap-2 rounded-xl px-6 py-3 text-sm font-bold text-white transition-transform hover:scale-[1.02]"
             style={{ background: "linear-gradient(135deg, #1A3FD8, #3B82F6)" }}>
-            Tester mon évolution →
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+            Passer mon premier test
           </Link>
         </div>
       )}

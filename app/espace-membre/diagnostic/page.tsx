@@ -60,6 +60,8 @@ export default function DiagnosticPage() {
   const [cooldown, setCooldown] = useState(false);
   const [daysLeft, setDaysLeft] = useState(0);
   const [showInfo, setShowInfo] = useState(false);
+  const [hasWip, setHasWip] = useState(false);
+  const [wipData, setWipData] = useState<{ currentQ: number; answers: number[] } | null>(null);
 
   useEffect(() => {
     try {
@@ -73,7 +75,17 @@ export default function DiagnosticPage() {
           if (diff < days7) {
             setCooldown(true);
             setDaysLeft(Math.ceil((days7 - diff) / (24 * 60 * 60 * 1000)));
+            return;
           }
+        }
+      }
+      // Restore in-progress quiz
+      const wip = localStorage.getItem("gm_diag_wip");
+      if (wip) {
+        const parsed = JSON.parse(wip);
+        if (parsed && (parsed.currentQ > 0 || parsed.answers?.some((a: number) => a !== -1))) {
+          setWipData(parsed);
+          setHasWip(true);
         }
       }
     } catch {}
@@ -94,19 +106,27 @@ export default function DiagnosticPage() {
     const next = [...answers];
     next[currentQ] = ai;
     setAnswers(next);
+    try {
+      localStorage.setItem("gm_diag_wip", JSON.stringify({ currentQ, answers: next }));
+    } catch {}
   };
 
   const handleNext = () => {
     if (!hasAnswered) return;
     if (currentQ < QUESTIONS.length - 1) {
       setDirection(1);
-      setCurrentQ((q) => q + 1);
+      const nextQ = currentQ + 1;
+      setCurrentQ(nextQ);
+      try {
+        localStorage.setItem("gm_diag_wip", JSON.stringify({ currentQ: nextQ, answers }));
+      } catch {}
     } else {
       const total = answers.reduce((acc, a) => acc + (a === -1 ? 0 : a), 0);
       const pct = Math.round((total / (QUESTIONS.length * 3)) * 100);
       const badge = getBadge(pct);
       setScore(pct);
       try {
+        localStorage.removeItem("gm_diag_wip");
         const prev = JSON.parse(localStorage.getItem("gm_diag_results") ?? "[]");
         prev.push({ date: new Date().toISOString(), score: pct, badge: badge.label });
         saveUserData("gm_diag_results", prev);
@@ -258,12 +278,41 @@ export default function DiagnosticPage() {
               ))}
             </div>
 
+            {hasWip && wipData && (
+              <div className="rounded-2xl px-5 py-4 flex items-center gap-4"
+                style={{ background: "rgba(245,194,0,0.07)", border: "1px solid rgba(245,194,0,0.2)" }}>
+                <svg className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="#F5C200" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                </svg>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-white">Test en cours — question {wipData.currentQ + 1}/{QUESTIONS.length}</p>
+                  <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.45)" }}>Tu peux reprendre où tu t&apos;étais arrêté.</p>
+                </div>
+                <button
+                  onClick={() => {
+                    setCurrentQ(wipData.currentQ);
+                    setAnswers(wipData.answers);
+                    setPhase("quiz");
+                  }}
+                  className="shrink-0 rounded-xl px-4 py-2 text-sm font-bold transition-transform hover:scale-[1.02]"
+                  style={{ background: "rgba(245,194,0,0.15)", color: "#F5C200", border: "1px solid rgba(245,194,0,0.3)" }}>
+                  Reprendre →
+                </button>
+              </div>
+            )}
+
             <div className="flex gap-3">
               <button
-                onClick={() => setPhase("quiz")}
+                onClick={() => {
+                  try { localStorage.removeItem("gm_diag_wip"); } catch {}
+                  setAnswers(Array(QUESTIONS.length).fill(-1));
+                  setCurrentQ(0);
+                  setHasWip(false);
+                  setPhase("quiz");
+                }}
                 className="group flex flex-1 items-center justify-center gap-2 rounded-2xl py-4 text-base font-bold text-white transition-transform hover:scale-[1.01]"
                 style={{ background: "linear-gradient(135deg, #1A3FD8, #3B82F6)" }}>
-                Tester mon évolution
+                {hasWip ? "Recommencer à zéro" : "Tester mon évolution"}
                 <svg className="h-5 w-5 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                 </svg>

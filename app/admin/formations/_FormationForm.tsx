@@ -34,6 +34,7 @@ export default function FormationForm({ initial, title }: { initial?: Partial<Fo
     period: initial?.period ?? "",
     validityPeriod: initial?.validityPeriod ?? "",
     price: initial?.price ?? "",
+    priceXof: (initial as { priceXof?: string })?.priceXof ?? "",
     originalPrice: initial?.originalPrice ?? "",
     promo: initial?.promo ?? "",
     members: String(initial?.members ?? 0),
@@ -93,10 +94,13 @@ export default function FormationForm({ initial, title }: { initial?: Partial<Fo
                 <option>Accompagnement</option>
               </select>
             </Field>
-            <Field label="Prix (ex: 79€)">
+            <Field label="Prix en € (ex: 79€)">
               <input className={FIELD} style={FIELD_STYLE} value={form.price} onChange={(e) => setField("price", e.target.value)} />
             </Field>
-            <Field label="Prix barré (ex: 99€)">
+            <Field label="Prix en XOF (ex: 51 821 XOF)">
+              <input className={FIELD} style={FIELD_STYLE} value={form.priceXof} onChange={(e) => setField("priceXof", e.target.value)} placeholder="Auto-calculé si vide" />
+            </Field>
+            <Field label="Prix barré en € (ex: 99€)">
               <input className={FIELD} style={FIELD_STYLE} value={form.originalPrice} onChange={(e) => setField("originalPrice", e.target.value)} />
             </Field>
             <Field label="Promo (ex: -20%)">

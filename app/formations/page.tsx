@@ -363,7 +363,10 @@ function FormationModal({ f, onClose }: { f: FormationCard; onClose: () => void 
               {f.originalPrice && (
                 <p className="text-xs text-white/35 line-through">{f.originalPrice}</p>
               )}
-              <p className="text-2xl font-bold text-white">{f.price}</p>
+              <p className="text-2xl font-bold text-white">{f.priceXof ?? f.price}</p>
+              {f.priceXof && f.priceXof !== f.price && (
+                <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>≈ {f.price}</p>
+              )}
             </div>
             <Link
               href={f.href}
@@ -452,15 +455,20 @@ function FormationCard({ f, onDetail }: { f: FormationCard; onDetail: () => void
         </p>
 
         {/* Price */}
-        <div className="flex items-baseline gap-2">
-          <span
-            className="rounded-lg px-2.5 py-1 text-sm font-bold"
-            style={{ background: "#0D1B5E", color: isFree ? "#4ADE80" : "#93C5FD" }}
-          >
-            {f.price}
-          </span>
-          {f.originalPrice && (
-            <span className="text-xs text-white/30 line-through">{f.originalPrice}</span>
+        <div className="flex flex-col gap-0.5">
+          <div className="flex items-baseline gap-2">
+            <span
+              className="rounded-lg px-2.5 py-1 text-sm font-bold"
+              style={{ background: "#0D1B5E", color: isFree ? "#4ADE80" : "#93C5FD" }}
+            >
+              {f.priceXof ?? f.price}
+            </span>
+            {f.originalPrice && (
+              <span className="text-xs text-white/30 line-through">{f.originalPrice}</span>
+            )}
+          </div>
+          {f.priceXof && f.priceXof !== f.price && (
+            <span className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>≈ {f.price}</span>
           )}
         </div>
 
