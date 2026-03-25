@@ -42,21 +42,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user && user.id) {
         token.id = user.id;
         const client = await clientPromise;
-        const dbUser = await client.db().collection("users").findOne(
-          { _id: new ObjectId(user.id) },
-          { projection: { role: 1, name: 1 } }
-        );
-        if (dbUser?.role) {
-          token.role = dbUser.role;
-        } else if (user.email === process.env.ADMIN_EMAIL) {
-          // Auto-assign admin role on first login
+
+        // ADMIN_EMAIL always wins, regardless of what's stored in DB
+        if (process.env.ADMIN_EMAIL && user.email === process.env.ADMIN_EMAIL) {
           await client.db().collection("users").updateOne(
             { _id: new ObjectId(user.id) },
             { $set: { role: "admin" } }
           );
           token.role = "admin";
         } else {
-          token.role = "user";
+          const dbUser = await client.db().collection("users").findOne(
+            { _id: new ObjectId(user.id) },
+            { projection: { role: 1, name: 1 } }
+          );
+          token.role = dbUser?.role ?? "user";
         }
       }
 
