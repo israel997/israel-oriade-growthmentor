@@ -29,6 +29,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   const memberName = authSession?.user?.name?.split(" ")[0] ?? null;
+  const isAdmin = (authSession?.user as { role?: string })?.role === "admin";
 
   useEffect(() => {
     setMobileOpen(false);
@@ -131,6 +132,19 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               )}
             </Link>
 
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="hidden items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-semibold text-white transition-all hover:scale-[1.02] md:inline-flex"
+                style={{ background: "rgba(245,194,0,0.12)", border: "1px solid rgba(245,194,0,0.25)", color: "#F5C200" }}
+              >
+                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+                </svg>
+                Backoffice
+              </Link>
+            )}
+
             {/* Burger mobile */}
             <button
               type="button"
@@ -173,6 +187,11 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               <Link href="/espace-membre" className="rounded-lg px-3 py-2.5 text-center text-sm font-semibold text-white" style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}>
                 {memberName ?? "Mon espace"}
               </Link>
+              {isAdmin && (
+                <Link href="/admin" className="rounded-lg px-3 py-2.5 text-center text-sm font-semibold" style={{ background: "rgba(245,194,0,0.1)", border: "1px solid rgba(245,194,0,0.2)", color: "#F5C200" }}>
+                  ← Revenir au Backoffice
+                </Link>
+              )}
             </div>
           </div>
         )}
