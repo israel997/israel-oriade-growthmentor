@@ -75,10 +75,26 @@ export default function BadgesPage() {
   const [results, setResults] = useState<DiagResult[]>([]);
 
   useEffect(() => {
-    try {
-      const r = localStorage.getItem("gm_diag_results");
-      if (r) setResults(JSON.parse(r));
-    } catch {}
+    fetch("/api/user/results")
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => {
+        if (data && data.length > 0) {
+          const diag = data
+            .filter((d: { type: string; date: string; score: number; badge: string }) => d.type === "diagnostic")
+            .map((d: { date: string; score: number; badge: string }) => ({ date: d.date, score: d.score, badge: d.badge }));
+          if (diag.length > 0) { setResults(diag); return; }
+        }
+        try {
+          const r = localStorage.getItem("gm_diag_results");
+          if (r) setResults(JSON.parse(r));
+        } catch {}
+      })
+      .catch(() => {
+        try {
+          const r = localStorage.getItem("gm_diag_results");
+          if (r) setResults(JSON.parse(r));
+        } catch {}
+      });
   }, []);
 
   const currentBadge = results.length > 0 ? results[results.length - 1].badge : null;

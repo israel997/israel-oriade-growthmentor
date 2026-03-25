@@ -230,24 +230,55 @@ export default function EspaceMembreDashboard() {
   const [accompaniment, setAccompaniment] = useState<Accompaniment | null>(null);
 
   useEffect(() => {
-    try {
-      const r = localStorage.getItem("gm_diag_results");
-      const diagResults: DiagResult[] = r ? JSON.parse(r) : [];
-      setResults(diagResults);
-      if (diagResults.length > 0) {
-        const last = new Date(diagResults[diagResults.length - 1].date).getTime();
-        setCanTest(Date.now() - last > 7 * 24 * 60 * 60 * 1000);
-      }
-      setStepStatus({
-        diagDone: diagResults.length > 0,
-        contentuDone: JSON.parse(localStorage.getItem("gm_test_contenu_results") || "[]").length > 0,
-        venteDone: JSON.parse(localStorage.getItem("gm_test_vente_results") || "[]").length > 0,
-        digitalDone: JSON.parse(localStorage.getItem("gm_test_digital_results") || "[]").length > 0,
-        ressourcesDone: !!localStorage.getItem("gm_visited_ressources"),
-        contentusDone: !!localStorage.getItem("gm_visited_contenus"),
-        communauteDone: !!localStorage.getItem("gm_visited_communaute"),
-      });
-    } catch {}
+    const loadFromLocalStorage = () => {
+      try {
+        const r = localStorage.getItem("gm_diag_results");
+        const diagResults: DiagResult[] = r ? JSON.parse(r) : [];
+        setResults(diagResults);
+        if (diagResults.length > 0) {
+          const last = new Date(diagResults[diagResults.length - 1].date).getTime();
+          setCanTest(Date.now() - last > 7 * 24 * 60 * 60 * 1000);
+        }
+        setStepStatus((prev) => ({
+          ...prev,
+          diagDone: diagResults.length > 0,
+          contentuDone: JSON.parse(localStorage.getItem("gm_test_contenu_results") || "[]").length > 0,
+          venteDone: JSON.parse(localStorage.getItem("gm_test_vente_results") || "[]").length > 0,
+          digitalDone: JSON.parse(localStorage.getItem("gm_test_digital_results") || "[]").length > 0,
+          ressourcesDone: !!localStorage.getItem("gm_visited_ressources"),
+          contentusDone: !!localStorage.getItem("gm_visited_contenus"),
+          communauteDone: !!localStorage.getItem("gm_visited_communaute"),
+        }));
+      } catch {}
+    };
+
+    fetch("/api/user/results")
+      .then((r) => r.ok ? r.json() : null)
+      .then((data) => {
+        if (data && data.length > 0) {
+          const diag = data
+            .filter((d: { type: string; date: string; score: number; badge: string }) => d.type === "diagnostic")
+            .map((d: { date: string; score: number; badge: string }) => ({ date: d.date, score: d.score, badge: d.badge }));
+          if (diag.length > 0) {
+            setResults(diag);
+            const last = new Date(diag[diag.length - 1].date).getTime();
+            setCanTest(Date.now() - last > 7 * 24 * 60 * 60 * 1000);
+          }
+          setStepStatus((prev) => ({
+            ...prev,
+            diagDone: diag.length > 0,
+            contentuDone: data.some((d: { type: string }) => d.type === "contenu"),
+            venteDone: data.some((d: { type: string }) => d.type === "vente"),
+            digitalDone: data.some((d: { type: string }) => d.type === "digital"),
+            ressourcesDone: !!localStorage.getItem("gm_visited_ressources"),
+            contentusDone: !!localStorage.getItem("gm_visited_contenus"),
+            communauteDone: !!localStorage.getItem("gm_visited_communaute"),
+          }));
+        } else {
+          loadFromLocalStorage();
+        }
+      })
+      .catch(loadFromLocalStorage);
 
     fetch("/api/user/accompaniment")
       .then((r) => r.json())

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
+import { createNotification } from "@/lib/createNotification";
 
 export async function GET() {
   try {
@@ -19,6 +20,12 @@ export async function POST(req: NextRequest) {
     const client = await clientPromise;
     const col = client.db().collection("blog");
     await col.insertOne(body);
+    await createNotification({
+      title: "Nouvel article publié",
+      message: `"${body.title ?? "Un nouvel article"}" vient d'être publié sur le blog. Lis-le dès maintenant.`,
+      type: "blog",
+      link: "/blog",
+    });
     return NextResponse.json({ ok: true });
   } catch (e) {
     console.error(e);

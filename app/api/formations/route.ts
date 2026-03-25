@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+import { createNotification } from "@/lib/createNotification";
 
 export async function GET() {
   try {
@@ -20,6 +21,12 @@ export async function POST(req: NextRequest) {
     const client = await clientPromise;
     const col = client.db().collection("formations");
     const result = await col.insertOne({ ...body, _id: new ObjectId() });
+    await createNotification({
+      title: "Nouvelle formation disponible",
+      message: `"${body.title ?? "Une nouvelle formation"}" vient d'être publiée. Découvre-la dès maintenant.`,
+      type: "formation",
+      link: "/espace-membre/formations",
+    });
     return NextResponse.json({ ok: true, id: result.insertedId });
   } catch (e) {
     console.error(e);

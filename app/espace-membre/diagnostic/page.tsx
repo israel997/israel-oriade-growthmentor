@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { saveUserData } from "@/lib/sync-user-data";
+import { saveResult } from "@/lib/saveResult";
 import { toast } from "sonner";
 
 const QUESTIONS = [
@@ -127,9 +128,11 @@ export default function DiagnosticPage() {
       setScore(pct);
       try {
         localStorage.removeItem("gm_diag_wip");
+        const date = new Date().toISOString();
         const prev = JSON.parse(localStorage.getItem("gm_diag_results") ?? "[]");
-        prev.push({ date: new Date().toISOString(), score: pct, badge: badge.label });
+        prev.push({ date, score: pct, badge: badge.label });
         saveUserData("gm_diag_results", prev);
+        saveResult("diagnostic", pct, badge.label);
         toast.success(`Diagnostic terminé ! Badge obtenu : ${badge.label}`);
       } catch {}
       setPhase("result");

@@ -85,18 +85,40 @@ export default function ProgressionPage() {
   const firstName = authSession?.user?.name?.split(" ")[0] ?? "toi";
 
   useEffect(() => {
-    try {
-      const r = localStorage.getItem("gm_diag_results");
-      if (r) setResults(JSON.parse(r));
-      const other: Record<string, Result[]> = {};
-      for (const t of OTHER_TESTS) {
+    // Charger depuis la DB, fallback localStorage
+    fetch("/api/user/results")
+      .then((r) => r.ok ? r.json() : null)
+      .then((data: { type: string; score: number; badge: string; date: string }[] | null) => {
+        if (data && data.length > 0) {
+          const diag = data.filter((d) => d.type === "diagnostic").map((d) => ({ date: d.date, score: d.score, badge: d.badge }));
+          if (diag.length > 0) setResults(diag);
+          const other: Record<string, Result[]> = {};
+          for (const t of OTHER_TESTS) {
+            other[t.slug] = data.filter((d) => d.type === t.slug).map((d) => ({ date: d.date, score: d.score, badge: d.badge }));
+          }
+          setOtherResults(other);
+        } else {
+          // Fallback localStorage
+          try {
+            const r = localStorage.getItem("gm_diag_results");
+            if (r) setResults(JSON.parse(r));
+            const other: Record<string, Result[]> = {};
+            for (const t of OTHER_TESTS) {
+              try {
+                const v = localStorage.getItem(t.storageKey);
+                other[t.slug] = v ? JSON.parse(v) : [];
+              } catch { other[t.slug] = []; }
+            }
+            setOtherResults(other);
+          } catch {}
+        }
+      })
+      .catch(() => {
         try {
-          const v = localStorage.getItem(t.storageKey);
-          other[t.slug] = v ? JSON.parse(v) : [];
-        } catch { other[t.slug] = []; }
-      }
-      setOtherResults(other);
-    } catch {}
+          const r = localStorage.getItem("gm_diag_results");
+          if (r) setResults(JSON.parse(r));
+        } catch {}
+      });
   }, []);
 
   const last = results[results.length - 1];

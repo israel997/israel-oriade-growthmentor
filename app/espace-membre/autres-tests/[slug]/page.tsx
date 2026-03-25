@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter, useParams } from "next/navigation";
 import { saveUserData } from "@/lib/sync-user-data";
+import { saveResult } from "@/lib/saveResult";
 import { toast } from "sonner";
 
 // ── Test definitions ──────────────────────────────────────────────────────────
@@ -182,9 +183,11 @@ export default function TestSlugPage() {
       const badge = getBadge(pct);
       setScore(pct);
       try {
+        const date = new Date().toISOString();
         const prev = JSON.parse(localStorage.getItem(test.storageKey) ?? "[]");
-        prev.push({ date: new Date().toISOString(), score: pct, badge: badge.label });
+        prev.push({ date, score: pct, badge: badge.label });
         saveUserData(test.storageKey, prev);
+        saveResult(slug, pct, badge.label);
         toast.success(`Test terminé ! Badge obtenu : ${badge.label}`);
       } catch {}
       setPhase("result");
