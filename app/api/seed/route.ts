@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
+import bcrypt from "bcryptjs";
 
 // Run once to populate MongoDB with initial data.
 // Call: GET /api/seed
@@ -528,6 +529,32 @@ export async function GET() {
       results[colName] = `${data.length} documents insérés`;
     } else {
       results[colName] = `déjà ${count} documents — ignoré`;
+    }
+  }
+
+  // ── Compte Admin ────────────────────────────────────────────────────────────
+  const usersCol = db.collection("users");
+  const adminEmail = "israellawani.pro@gmail.com";
+  const existingAdmin = await usersCol.findOne({ email: adminEmail });
+
+  if (!existingAdmin) {
+    const hashed = await bcrypt.hash("adminmentor1@", 12);
+    await usersCol.insertOne({
+      name: "Israël Oriadé",
+      email: adminEmail,
+      password: hashed,
+      emailVerified: null,
+      image: null,
+      role: "admin",
+      createdAt: new Date(),
+    });
+    results["admin"] = "Compte admin créé";
+  } else {
+    if (existingAdmin.role !== "admin") {
+      await usersCol.updateOne({ email: adminEmail }, { $set: { role: "admin" } });
+      results["admin"] = "Rôle admin mis à jour";
+    } else {
+      results["admin"] = "Compte admin déjà configuré";
     }
   }
 

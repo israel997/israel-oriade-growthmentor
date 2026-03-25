@@ -79,7 +79,7 @@ export default function ConnexionPage() {
 
   const handleGoogleLogin = async () => {
     setGoogleLoading(true);
-    await signIn("google", { callbackUrl: "/auth/redirect" });
+    await signIn("google", { redirectTo: "/auth/redirect" });
   };
 
   const handleLogin = async (e: React.FormEvent) => {
