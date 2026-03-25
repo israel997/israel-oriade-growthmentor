@@ -4,7 +4,7 @@ import clientPromise from "@/lib/mongodb";
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, email, password } = await req.json();
+    const { name, email, password, pays, whatsapp } = await req.json();
 
     if (!name || !email || !password) {
       return NextResponse.json({ error: "Champs manquants." }, { status: 400 });
@@ -32,6 +32,8 @@ export async function POST(req: NextRequest) {
       emailVerified: null,
       image: null,
       role: "user",
+      pays: pays ?? null,
+      whatsapp: whatsapp ?? null,
       createdAt: new Date(),
     });
 

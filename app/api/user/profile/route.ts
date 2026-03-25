@@ -3,6 +3,21 @@ import { auth } from "@/auth";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 
+export async function GET() {
+  const session = await auth();
+  if (!session?.user?.id) return NextResponse.json({ error: "Non autorisé." }, { status: 401 });
+  try {
+    const client = await clientPromise;
+    const user = await client.db().collection("users").findOne(
+      { _id: new ObjectId(session.user.id) },
+      { projection: { pays: 1, whatsapp: 1, name: 1 } }
+    );
+    return NextResponse.json({ pays: user?.pays ?? null, whatsapp: user?.whatsapp ?? null });
+  } catch {
+    return NextResponse.json({ pays: null });
+  }
+}
+
 export async function PATCH(req: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) {

@@ -141,7 +141,7 @@ const quickLinks = [
   { label: "Diagnostic Hebdomadaire", href: "/espace-membre/diagnostic",  color: "#34D399", icon: <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg> },
   { label: "Discuter avec Izzy", href: "/espace-membre/izzy",        color: "#A78BFA", icon: <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" /></svg> },
   { label: "Mes favoris",        href: "/espace-membre/favoris",     color: "#60A5FA", icon: <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" /></svg> },
-  { label: "Programme Mentee",   href: "/espace-membre/mentee",      color: "#F5C200", icon: <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" /></svg> },
+  { label: "Mentee Premium",      href: "/espace-membre/mentee",      color: "#F5C200", icon: <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" /></svg> },
 ];
 
 type StepStatus = { diagDone: boolean; contentuDone: boolean; venteDone: boolean; digitalDone: boolean; ressourcesDone: boolean; contentusDone: boolean; communauteDone: boolean };
@@ -228,8 +228,14 @@ export default function EspaceMembreDashboard() {
     ressourcesDone: false, contentusDone: false, communauteDone: false,
   });
   const [accompaniment, setAccompaniment] = useState<Accompaniment | null>(null);
+  const [menteeAccepted, setMenteeAccepted] = useState(false);
 
   useEffect(() => {
+    try {
+      const app = JSON.parse(localStorage.getItem("gm_mentee_application") ?? "null");
+      if (app?.status === "accepted") setMenteeAccepted(true);
+    } catch {}
+
     const loadFromLocalStorage = () => {
       try {
         const r = localStorage.getItem("gm_diag_results");
@@ -334,6 +340,68 @@ export default function EspaceMembreDashboard() {
             </span>
           )}
         </div>
+      </div>
+
+      {/* Badges membre */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        {/* Badge Mentee — argent — toujours visible */}
+        <div className="flex items-center gap-3 rounded-2xl px-5 py-4 flex-1"
+          style={{ background: "linear-gradient(135deg, rgba(148,163,184,0.1) 0%, rgba(148,163,184,0.05) 100%)", border: "1px solid rgba(148,163,184,0.25)" }}>
+          <div className="h-10 w-10 shrink-0 rounded-xl flex items-center justify-center"
+            style={{ background: "linear-gradient(135deg, #94A3B8, #CBD5E1)" }}>
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-sm font-bold" style={{ color: "#CBD5E1" }}>Mentee</p>
+            <p className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>Membre Growth Mentor</p>
+          </div>
+          <span className="ml-auto text-[10px] font-semibold rounded-full px-2 py-0.5"
+            style={{ background: "rgba(148,163,184,0.15)", color: "#94A3B8", border: "1px solid rgba(148,163,184,0.2)" }}>
+            Argent
+          </span>
+        </div>
+
+        {/* Badge Mentee Premium — or — conditionnel */}
+        {menteeAccepted ? (
+          <div className="flex items-center gap-3 rounded-2xl px-5 py-4 flex-1"
+            style={{ background: "linear-gradient(135deg, rgba(245,194,0,0.12) 0%, rgba(249,115,22,0.06) 100%)", border: "1px solid rgba(245,194,0,0.3)" }}>
+            <div className="h-10 w-10 shrink-0 rounded-xl flex items-center justify-center"
+              style={{ background: "linear-gradient(135deg, #F5C200, #F97316)" }}>
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={1.8}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-sm font-bold" style={{ color: "#F5C200" }}>Mentee Premium</p>
+              <p className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>Programme sélection privée</p>
+            </div>
+            <span className="ml-auto text-[10px] font-semibold rounded-full px-2 py-0.5"
+              style={{ background: "rgba(245,194,0,0.15)", color: "#F5C200", border: "1px solid rgba(245,194,0,0.25)" }}>
+              Or
+            </span>
+          </div>
+        ) : (
+          <Link href="/espace-membre/mentee"
+            className="flex items-center gap-3 rounded-2xl px-5 py-4 flex-1 transition-all hover:scale-[1.01]"
+            style={{ background: "rgba(245,194,0,0.04)", border: "1px dashed rgba(245,194,0,0.2)" }}>
+            <div className="h-10 w-10 shrink-0 rounded-xl flex items-center justify-center"
+              style={{ background: "rgba(245,194,0,0.08)" }}>
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="#F5C200" strokeWidth={1.8}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-sm font-bold" style={{ color: "rgba(245,194,0,0.6)" }}>Mentee Premium</p>
+              <p className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>Candidater au programme</p>
+            </div>
+            <span className="ml-auto text-[10px] font-semibold rounded-full px-2 py-0.5"
+              style={{ background: "rgba(245,194,0,0.08)", color: "rgba(245,194,0,0.4)", border: "1px dashed rgba(245,194,0,0.2)" }}>
+              Or
+            </span>
+          </Link>
+        )}
       </div>
 
       {/* Prochaine étape recommandée */}

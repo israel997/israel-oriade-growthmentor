@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 
 type Tab = "login" | "register";
 
@@ -21,6 +20,22 @@ const X = () => (
   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
 );
 
+const flagEmoji = (code: string) =>
+  [...code.toUpperCase()].map(c => String.fromCodePoint(c.charCodeAt(0) + 127397)).join("");
+
+const COUNTRIES = [
+  { code: "FR", name: "France" }, { code: "BE", name: "Belgique" }, { code: "CH", name: "Suisse" },
+  { code: "CA", name: "Canada" }, { code: "CI", name: "Côte d'Ivoire" }, { code: "SN", name: "Sénégal" },
+  { code: "MA", name: "Maroc" }, { code: "TN", name: "Tunisie" }, { code: "DZ", name: "Algérie" },
+  { code: "CM", name: "Cameroun" }, { code: "ML", name: "Mali" }, { code: "CD", name: "RD Congo" },
+  { code: "CG", name: "Congo" }, { code: "GA", name: "Gabon" }, { code: "BJ", name: "Bénin" },
+  { code: "TG", name: "Togo" }, { code: "BF", name: "Burkina Faso" }, { code: "NE", name: "Niger" },
+  { code: "GN", name: "Guinée" }, { code: "RW", name: "Rwanda" }, { code: "MG", name: "Madagascar" },
+  { code: "MU", name: "Maurice" }, { code: "RE", name: "La Réunion" }, { code: "US", name: "États-Unis" },
+  { code: "GB", name: "Royaume-Uni" }, { code: "DE", name: "Allemagne" }, { code: "ES", name: "Espagne" },
+  { code: "IT", name: "Italie" }, { code: "PT", name: "Portugal" }, { code: "NL", name: "Pays-Bas" },
+];
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const SPECIAL_RE = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
 const NAME_RE = /^[a-zA-ZÀ-ÿ\s\-']+$/; // only letters, spaces, hyphens, apostrophes
@@ -35,17 +50,9 @@ function validateFullName(name: string): string {
 }
 
 export default function ConnexionPage() {
-  const router = useRouter();
-  const { data: session, status } = useSession();
   const [tab, setTab] = useState<Tab>("login");
+  const [popup, setPopup] = useState<{ title: string; description?: string } | null>(null);
 
-  // If already authenticated (e.g. after Google OAuth redirect), send to role-based page
-  useEffect(() => {
-    if (status === "authenticated") {
-      const role = (session?.user as { role?: string })?.role;
-      router.replace(role === "admin" ? "/admin" : "/espace-membre");
-    }
-  }, [status, session, router]);
   const [googleLoading, setGoogleLoading] = useState(false);
 
   // Login
@@ -65,6 +72,8 @@ export default function ConnexionPage() {
   const [regPwdConfirm, setRegPwdConfirm] = useState("");
   const [showRegPwdConfirm, setShowRegPwdConfirm] = useState(false);
   const [regError, setRegError] = useState("");
+  const [regPays, setRegPays] = useState("");
+  const [regWhatsapp, setRegWhatsapp] = useState("");
 
   const [loading, setLoading] = useState(false);
 
@@ -94,7 +103,13 @@ export default function ConnexionPage() {
       if (res?.error) {
         setLoginError("Email ou mot de passe incorrect. Vérifie tes identifiants.");
       } else {
-        window.location.href = "/auth/redirect";
+        fetch("/api/user/profile")
+          .then(r => r.ok ? r.json() : null)
+          .then(data => {
+            const flag = data?.pays ? ` ${flagEmoji(data.pays)}` : "";
+            setPopup({ title: `Welcome Back Mentee !${flag}` });
+          })
+          .catch(() => setPopup({ title: "Welcome Back Mentee !" }));
       }
     } catch {
       setLoading(false);
@@ -105,7 +120,7 @@ export default function ConnexionPage() {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setRegError("");
-    if (!regName.trim() || !regEmail.trim() || !regPwd) { setRegError("Remplis tous les champs."); return; }
+    if (!regName.trim() || !regEmail.trim() || !regPwd || !regPays) { setRegError("Remplis tous les champs."); return; }
     if (nameError) { setRegError(nameError); return; }
     if (!regEmailValid) { setRegError("L'adresse email n'est pas valide."); return; }
     if (!hasLength) { setRegError("Le mot de passe doit faire au moins 8 caractères."); return; }
@@ -116,14 +131,19 @@ export default function ConnexionPage() {
       const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: regName.trim(), email: regEmail.trim(), password: regPwd }),
+        body: JSON.stringify({ name: regName.trim(), email: regEmail.trim(), password: regPwd, pays: regPays, whatsapp: regWhatsapp.trim() || null }),
       });
       const data = await res.json();
       if (!res.ok) { setLoading(false); setRegError(data.error); return; }
       const login = await signIn("credentials", { email: regEmail.trim(), password: regPwd, redirect: false });
       setLoading(false);
       if (login?.error) { setRegError("Compte créé mais connexion échouée. Connecte-toi manuellement."); setTab("login"); }
-      else window.location.href = "/auth/redirect";
+      else {
+        setPopup({
+          title: "Félicitations ! Tu as débloqué ton badge Mentee !",
+          description: "Bienvenue dans la communauté GrowthMentor.",
+        });
+      }
     } catch {
       setLoading(false);
       setRegError("Erreur réseau. Vérifie ta connexion et réessaie.");
@@ -315,6 +335,31 @@ export default function ConnexionPage() {
                   </p>
                 )}
               </div>
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "rgba(255,255,255,0.35)" }}>Pays *</label>
+                <select
+                  value={regPays}
+                  onChange={(e) => setRegPays(e.target.value)}
+                  className="w-full rounded-xl px-4 py-3 text-sm outline-none"
+                  style={!regPays ? INPUT_ERROR : INPUT}>
+                  <option value="">Sélectionne ton pays</option>
+                  {COUNTRIES.map(c => (
+                    <option key={c.code} value={c.code}>{flagEmoji(c.code)} {c.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: "rgba(255,255,255,0.35)" }}>WhatsApp <span style={{ color: "rgba(255,255,255,0.2)" }}>(optionnel)</span></label>
+                <input
+                  type="tel"
+                  value={regWhatsapp}
+                  onChange={(e) => setRegWhatsapp(e.target.value)}
+                  className="w-full rounded-xl px-4 py-3 text-sm outline-none placeholder:text-white/20"
+                  style={INPUT}
+                  placeholder="+33 6 00 00 00 00"
+                  autoComplete="tel"
+                />
+              </div>
               {regError && <p className="text-sm flex items-start gap-1.5" style={{ color: "#F87171" }}><X />{regError}</p>}
               <button type="submit" disabled={loading}
                 className="w-full rounded-xl py-3 text-sm font-bold text-white transition-transform hover:scale-[1.01] disabled:opacity-60"
@@ -329,6 +374,31 @@ export default function ConnexionPage() {
           <Link href="/" className="hover:text-white transition-colors">← Retour au site</Link>
         </p>
       </div>
+
+      {/* Popup modal */}
+      {popup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center px-4" style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(6px)" }}>
+          <div className="relative w-full max-w-sm rounded-3xl p-8 text-center"
+            style={{ background: "rgba(6,11,46,0.97)", border: "1px solid rgba(245,194,0,0.3)", boxShadow: "0 0 60px rgba(245,194,0,0.15)" }}>
+            <div className="flex justify-center mb-4">
+              <span className="inline-flex h-14 w-14 items-center justify-center rounded-full text-3xl"
+                style={{ background: "rgba(245,194,0,0.12)", border: "1px solid rgba(245,194,0,0.3)" }}>
+                🏅
+              </span>
+            </div>
+            <h2 className="text-lg font-bold text-white mb-2">{popup.title}</h2>
+            {popup.description && (
+              <p className="text-sm mb-6" style={{ color: "rgba(255,255,255,0.5)" }}>{popup.description}</p>
+            )}
+            <button
+              onClick={() => { setPopup(null); window.location.href = "/auth/redirect"; }}
+              className="w-full rounded-xl py-3 text-sm font-bold text-white transition-transform hover:scale-[1.01]"
+              style={{ background: "linear-gradient(135deg, #1A3FD8, #3B82F6)" }}>
+              Accéder à mon espace →
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

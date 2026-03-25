@@ -73,6 +73,14 @@ const BADGES = [
 
 export default function BadgesPage() {
   const [results, setResults] = useState<DiagResult[]>([]);
+  const [menteeAccepted, setMenteeAccepted] = useState(false);
+
+  useEffect(() => {
+    try {
+      const app = JSON.parse(localStorage.getItem("gm_mentee_application") ?? "null");
+      if (app?.status === "accepted") setMenteeAccepted(true);
+    } catch {}
+  }, []);
 
   useEffect(() => {
     fetch("/api/user/results")
@@ -108,6 +116,84 @@ export default function BadgesPage() {
         <p className="text-sm mt-1" style={{ color: "rgba(255,255,255,0.4)" }}>
           5 niveaux de maîtrise — de l'apprenti à l'élite. Chaque badge correspond à un score obtenu lors du test de progression.
         </p>
+      </div>
+
+      {/* Badges de membre */}
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "rgba(255,255,255,0.3)" }}>Badges de membre</p>
+        <div className="flex flex-col sm:flex-row gap-3">
+
+          {/* Mentee — argent */}
+          <div className="flex items-center gap-4 rounded-2xl p-5 flex-1"
+            style={{ background: "linear-gradient(135deg, rgba(148,163,184,0.1) 0%, rgba(148,163,184,0.04) 100%)", border: "1px solid rgba(148,163,184,0.25)" }}>
+            <div className="h-14 w-14 shrink-0 rounded-2xl flex items-center justify-center"
+              style={{ background: "linear-gradient(135deg, #94A3B8, #CBD5E1)", boxShadow: "0 4px 16px rgba(148,163,184,0.25)" }}>
+              <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="white" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <p className="text-base font-bold" style={{ color: "#CBD5E1" }}>Mentee</p>
+                <span className="text-[10px] font-bold rounded-full px-2 py-0.5"
+                  style={{ background: "rgba(148,163,184,0.15)", color: "#94A3B8", border: "1px solid rgba(148,163,184,0.2)" }}>
+                  ARGENT
+                </span>
+              </div>
+              <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>Membre actif Growth Mentor</p>
+              <div className="flex items-center gap-1.5 mt-2">
+                <svg className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="#94A3B8" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                <span className="text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>Obtenu automatiquement à l'inscription</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Mentee Premium — or */}
+          <div className="flex items-center gap-4 rounded-2xl p-5 flex-1"
+            style={{
+              background: menteeAccepted
+                ? "linear-gradient(135deg, rgba(245,194,0,0.12) 0%, rgba(249,115,22,0.06) 100%)"
+                : "rgba(245,194,0,0.03)",
+              border: menteeAccepted ? "1px solid rgba(245,194,0,0.3)" : "1px dashed rgba(245,194,0,0.15)",
+              opacity: menteeAccepted ? 1 : 0.55,
+            }}>
+            <div className="h-14 w-14 shrink-0 rounded-2xl flex items-center justify-center"
+              style={{
+                background: menteeAccepted ? "linear-gradient(135deg, #F5C200, #F97316)" : "rgba(245,194,0,0.08)",
+                boxShadow: menteeAccepted ? "0 4px 16px rgba(245,194,0,0.3)" : "none",
+              }}>
+              <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke={menteeAccepted ? "white" : "#F5C200"} strokeWidth={1.8}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <p className="text-base font-bold" style={{ color: menteeAccepted ? "#F5C200" : "rgba(245,194,0,0.5)" }}>Mentee Premium</p>
+                <span className="text-[10px] font-bold rounded-full px-2 py-0.5"
+                  style={{ background: "rgba(245,194,0,0.12)", color: menteeAccepted ? "#F5C200" : "rgba(245,194,0,0.4)", border: "1px solid rgba(245,194,0,0.2)" }}>
+                  OR
+                </span>
+              </div>
+              <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>
+                {menteeAccepted ? "Programme sélection privée" : "Réservé aux membres du programme"}
+              </p>
+              <div className="flex items-center gap-1.5 mt-2">
+                {menteeAccepted ? (
+                  <>
+                    <svg className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="#F5C200" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+                    <span className="text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>Badge débloqué — candidature acceptée</span>
+                  </>
+                ) : (
+                  <>
+                    <svg className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="rgba(245,194,0,0.4)" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+                    <Link href="/espace-membre/mentee" className="text-xs hover:underline" style={{ color: "rgba(245,194,0,0.5)" }}>Candidater au programme</Link>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
 
       {/* Score actuel */}

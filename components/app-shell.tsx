@@ -1,14 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-
-const OnboardingModal = dynamic(() => import("@/components/onboarding-modal"), {
-  ssr: false
-});
 
 const navLinks = [
   ["Accueil", "/"],
@@ -26,7 +21,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const { data: authSession } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(false);
+
 
   const memberName = authSession?.user?.name?.split(" ")[0] ?? null;
   const isAdmin = (authSession?.user as { role?: string })?.role === "admin";
@@ -43,12 +38,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   const handleDiagnosticClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    const hasProfile = typeof window !== "undefined" && !!localStorage.getItem("gm_profile");
-    if (!hasProfile) {
-      setShowOnboarding(true);
-    } else {
-      router.push("/diagnostic");
-    }
+    router.push("/diagnostic");
   };
 
   if (pathname.startsWith("/admin")) return <>{children}</>;
@@ -211,11 +201,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </footer>
 
-      <OnboardingModal
-        open={showOnboarding}
-        onClose={() => setShowOnboarding(false)}
-        onSaved={() => { setShowOnboarding(false); router.push("/diagnostic"); }}
-      />
     </>
   );
 }
