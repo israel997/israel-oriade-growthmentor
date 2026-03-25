@@ -94,7 +94,7 @@ export default function ConnexionPage() {
       if (res?.error) {
         setLoginError("Email ou mot de passe incorrect. Vérifie tes identifiants.");
       } else {
-        router.push("/auth/redirect");
+        window.location.href = "/auth/redirect";
       }
     } catch {
       setLoading(false);
@@ -123,7 +123,7 @@ export default function ConnexionPage() {
       const login = await signIn("credentials", { email: regEmail.trim(), password: regPwd, redirect: false });
       setLoading(false);
       if (login?.error) { setRegError("Compte créé mais connexion échouée. Connecte-toi manuellement."); setTab("login"); }
-      else router.push("/auth/redirect");
+      else window.location.href = "/auth/redirect";
     } catch {
       setLoading(false);
       setRegError("Erreur réseau. Vérifie ta connexion et réessaie.");
