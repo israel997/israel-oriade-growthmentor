@@ -33,7 +33,7 @@ export default function AdminBlogPage() {
 
       <div className="space-y-3">
         {items.map((post) => (
-          <div key={post.slug} className="flex items-center gap-4 rounded-2xl px-5 py-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+          <div key={post.slug} className="flex items-center gap-4 rounded-2xl px-5 py-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-white/15" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-white truncate">{post.title}</p>
               <p className="text-xs mt-0.5 truncate" style={{ color: "rgba(255,255,255,0.4)" }}>{post.date} · {post.excerpt}</p>

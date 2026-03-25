@@ -120,7 +120,7 @@ export default function AdminDashboard() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {formations.map((f) => (
-              <div key={f.id} className="flex items-center gap-3 rounded-xl p-3" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+              <div key={f.id} className="flex items-center gap-3 rounded-xl p-3 transition-all duration-200 hover:scale-[1.02] hover:border-white/12" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
                 <div className="h-9 w-9 rounded-lg shrink-0" style={{ background: f.coverGradient }} />
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-semibold text-white truncate">{f.title}</p>

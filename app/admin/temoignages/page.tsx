@@ -78,7 +78,7 @@ export default function AdminTemoignagesPage() {
 
       <div className="space-y-3">
         {items.map((t) => (
-          <div key={t.id} className="flex items-start gap-4 rounded-2xl px-5 py-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+          <div key={t.id} className="flex items-start gap-4 rounded-2xl px-5 py-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-white/15" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
             {t.imageUrl ? (
               <img src={t.imageUrl} alt={t.name} className="h-9 w-9 shrink-0 rounded-full object-cover" />
             ) : (

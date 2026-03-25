@@ -60,7 +60,7 @@ export default function AdminFormationsPage() {
           {items.map((f) => (
             <div
               key={f.id}
-              className="flex items-center gap-4 rounded-2xl px-5 py-4"
+              className="flex items-center gap-4 rounded-2xl px-5 py-4 transition-all duration-200 hover:-translate-y-0.5 hover:border-white/15"
               style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}
             >
               <div className="h-12 w-12 shrink-0 rounded-xl" style={{ background: f.coverGradient }} />
