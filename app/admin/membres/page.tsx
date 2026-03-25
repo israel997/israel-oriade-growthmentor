@@ -10,6 +10,7 @@ type Member = {
   method: string;
   joinedAt: string;
   revoked: boolean;
+  role: string;
 };
 
 export default function AdminMembresPage() {
@@ -46,6 +47,15 @@ export default function AdminMembresPage() {
     setMembers((prev) => prev.map((x) => x.id === m.id ? { ...x, revoked: false } : x));
   };
 
+  const changeRole = async (m: Member, role: string) => {
+    await fetch(`/api/admin/members/${m.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role }),
+    });
+    setMembers((prev) => prev.map((x) => x.id === m.id ? { ...x, role } : x));
+  };
+
   const activeCount = members.filter((m) => !m.revoked).length;
   const revokedCount = members.filter((m) => m.revoked).length;
 
@@ -65,7 +75,7 @@ export default function AdminMembresPage() {
         <table className="w-full text-sm">
           <thead>
             <tr style={{ background: "rgba(255,255,255,0.04)", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-              {["Membre", "Email", "Méthode", "Inscrit le", "Statut", "Action"].map((h) => (
+              {["Membre", "Email", "Méthode", "Inscrit le", "Rôle", "Statut", "Action"].map((h) => (
                 <th key={h} className="px-5 py-3 text-left text-xs font-semibold" style={{ color: "rgba(255,255,255,0.45)" }}>{h}</th>
               ))}
             </tr>
@@ -73,13 +83,13 @@ export default function AdminMembresPage() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={6} className="px-5 py-8 text-center text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>
+                <td colSpan={7} className="px-5 py-8 text-center text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>
                   Chargement…
                 </td>
               </tr>
             ) : members.length === 0 ? (
               <tr>
-                <td colSpan={6} className="px-5 py-8 text-center text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>
+                <td colSpan={7} className="px-5 py-8 text-center text-sm" style={{ color: "rgba(255,255,255,0.35)" }}>
                   Aucun membre inscrit.
                 </td>
               </tr>
@@ -100,6 +110,22 @@ export default function AdminMembresPage() {
                   </span>
                 </td>
                 <td className="px-5 py-3 text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>{m.joinedAt}</td>
+                <td className="px-5 py-3">
+                  <select
+                    value={m.role}
+                    onChange={(e) => changeRole(m, e.target.value)}
+                    className="rounded-lg px-2 py-1 text-xs font-medium outline-none cursor-pointer"
+                    style={{
+                      background: m.role === "admin" ? "rgba(245,194,0,0.12)" : m.role === "assist" ? "rgba(167,139,250,0.12)" : "rgba(96,165,250,0.08)",
+                      color: m.role === "admin" ? "#F5C200" : m.role === "assist" ? "#A78BFA" : "#93C5FD",
+                      border: m.role === "admin" ? "1px solid rgba(245,194,0,0.25)" : m.role === "assist" ? "1px solid rgba(167,139,250,0.25)" : "1px solid rgba(96,165,250,0.2)",
+                    }}
+                  >
+                    <option value="user">user</option>
+                    <option value="admin">admin</option>
+                    <option value="assist">assist</option>
+                  </select>
+                </td>
                 <td className="px-5 py-3">
                   {m.revoked ? (
                     <span className="rounded-full px-2 py-0.5 text-[10px] font-semibold" style={{ background: "rgba(239,68,68,0.15)", color: "#F87171" }}>Révoqué</span>

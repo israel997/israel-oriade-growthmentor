@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 
 const navItems = [
   {
@@ -112,6 +113,12 @@ export default function AdminSidebar() {
         </div>
       </div>
 
+      <style>{`
+        .admin-nav-item:not(.admin-nav-active):hover {
+          background: rgba(59,130,246,0.12) !important;
+        }
+      `}</style>
+
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
         {navItems.map((item) => {
@@ -120,7 +127,7 @@ export default function AdminSidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all"
+              className={`admin-nav-item${active ? " admin-nav-active" : ""} flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all`}
               style={{
                 background: active ? "rgba(59,130,246,0.15)" : "transparent",
                 color: active ? "#60A5FA" : "rgba(255,255,255,0.5)",
@@ -132,21 +139,34 @@ export default function AdminSidebar() {
             </Link>
           );
         })}
-      </nav>
 
-      {/* Footer */}
-      <div className="px-3 py-4 border-t" style={{ borderColor: "rgba(255,255,255,0.07)" }}>
-        <Link
-          href="/"
-          className="flex items-center gap-2 rounded-lg px-3 py-2 text-xs transition-colors"
-          style={{ color: "rgba(255,255,255,0.35)" }}
-        >
-          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
-          </svg>
-          Voir le site public
-        </Link>
-      </div>
+        <div className="pt-1" style={{ borderTop: "1px solid rgba(255,255,255,0.06)", marginTop: "4px" }}>
+          <Link
+            href="/"
+            className="admin-nav-item flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all"
+            style={{ color: "rgba(255,255,255,0.45)" }}
+          >
+            <span style={{ color: "rgba(255,255,255,0.3)" }}>
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+              </svg>
+            </span>
+            Voir le site public
+          </Link>
+          <button
+            onClick={() => signOut({ callbackUrl: "/connexion" })}
+            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all hover:bg-red-500/10"
+            style={{ color: "rgba(248,113,113,0.6)" }}
+          >
+            <span style={{ color: "rgba(248,113,113,0.5)" }}>
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
+              </svg>
+            </span>
+            Déconnexion
+          </button>
+        </div>
+      </nav>
     </aside>
   );
 }

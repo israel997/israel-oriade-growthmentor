@@ -11,12 +11,15 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const { id } = await params;
   try {
-    const { revoked } = await req.json();
+    const body = await req.json();
+    const update: Record<string, unknown> = {};
+    if (typeof body.revoked === "boolean") update.revoked = body.revoked;
+    if (body.role && ["user", "admin", "assist"].includes(body.role)) update.role = body.role;
     const client = await clientPromise;
     await client
       .db()
       .collection("users")
-      .updateOne({ _id: new ObjectId(id) }, { $set: { revoked: !!revoked } });
+      .updateOne({ _id: new ObjectId(id) }, { $set: update });
     return NextResponse.json({ ok: true });
   } catch (e) {
     console.error(e);

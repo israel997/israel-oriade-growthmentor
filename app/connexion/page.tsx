@@ -70,7 +70,7 @@ export default function ConnexionPage() {
 
   const handleGoogleLogin = async () => {
     setGoogleLoading(true);
-    await signIn("google", { callbackUrl: "/espace-membre" });
+    await signIn("google", { callbackUrl: "/auth/redirect" });
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -85,7 +85,7 @@ export default function ConnexionPage() {
       if (res?.error) {
         setLoginError("Email ou mot de passe incorrect. Vérifie tes identifiants.");
       } else {
-        router.push("/espace-membre");
+        router.push("/auth/redirect");
       }
     } catch {
       setLoading(false);
@@ -114,7 +114,7 @@ export default function ConnexionPage() {
       const login = await signIn("credentials", { email: regEmail.trim(), password: regPwd, redirect: false });
       setLoading(false);
       if (login?.error) { setRegError("Compte créé mais connexion échouée. Connecte-toi manuellement."); setTab("login"); }
-      else router.push("/espace-membre");
+      else router.push("/auth/redirect");
     } catch {
       setLoading(false);
       setRegError("Erreur réseau. Vérifie ta connexion et réessaie.");

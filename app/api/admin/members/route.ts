@@ -28,6 +28,7 @@ export async function GET() {
           ? new Date(u.createdAt).toISOString().split("T")[0]
           : new Date(_id.getTimestamp?.() ?? Date.now()).toISOString().split("T")[0],
         revoked: u.revoked ?? false,
+        role: u.role ?? "user",
       }))
     );
   } catch (e) {

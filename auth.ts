@@ -56,7 +56,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           );
           token.role = "admin";
         } else {
-          token.role = "member";
+          token.role = "user";
         }
       }
 

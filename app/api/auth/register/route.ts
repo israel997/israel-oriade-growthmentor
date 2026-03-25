@@ -31,6 +31,7 @@ export async function POST(req: NextRequest) {
       password: hashed,
       emailVerified: null,
       image: null,
+      role: "user",
       createdAt: new Date(),
     });
 
