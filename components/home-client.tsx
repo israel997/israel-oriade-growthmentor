@@ -2,6 +2,7 @@
 
 import CinematicHero from "@/components/landing/CinematicHero";
 import HeroCarousel from "@/components/landing/HeroCarousel";
+import Image from "next/image";
 import ResultsSection from "@/components/landing/ResultsSection";
 import BenefitsSection from "@/components/landing/BenefitsSection";
 import FeaturesCarousel from "@/components/landing/FeaturesCarousel";
@@ -15,6 +16,10 @@ export default function HomeClient() {
     <div>
       <SectionSidebar />
       <CinematicHero />
+      {/* Photo P2 — mobile only, avant le carousel */}
+      <div className="md:hidden relative w-full overflow-hidden" style={{ background: "#060B2E", aspectRatio: "3/4" }}>
+        <Image src="/images/P2.webp" alt="" fill sizes="100vw" className="object-cover object-top" />
+      </div>
       <div id="section-carousel"><HeroCarousel /></div>
       <div id="section-results"><ResultsSection /></div>
       <div id="section-story"><CertificationsSection /></div>

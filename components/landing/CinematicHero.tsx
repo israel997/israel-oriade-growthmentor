@@ -113,21 +113,21 @@ export default function CinematicHero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.45 }}
-            className="mt-10 flex flex-wrap items-center gap-4"
+            className="mt-10 flex items-center gap-3"
           >
             <Link
               href="/diagnostic"
-              className="group inline-flex items-center gap-2 rounded-xl px-6 py-3.5 text-sm font-semibold text-black transition-transform hover:scale-[1.02] active:scale-[0.98]"
+              className="group inline-flex items-center gap-2 rounded-xl px-6 py-3.5 text-sm font-semibold text-black transition-transform hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap"
               style={{ background: "#F5C200" }}
             >
               Évaluer mon niveau
-              <svg className="h-4 w-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <svg className="h-4 w-4 shrink-0 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
               </svg>
             </Link>
             <Link
               href="/formations"
-              className="inline-flex items-center gap-2 rounded-xl border border-white/20 px-6 py-3.5 text-sm font-semibold text-white transition-all hover:border-white/40 hover:bg-white/5"
+              className="inline-flex items-center gap-2 rounded-xl border border-white/20 px-6 py-3.5 text-sm font-semibold text-white transition-all hover:border-white/40 hover:bg-white/5 whitespace-nowrap"
             >
               Voir les formations
             </Link>

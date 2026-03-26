@@ -170,15 +170,17 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                 </Link>
               ))}
             </nav>
-            <div className="mt-3 grid gap-2">
-              <button onClick={handleDiagnosticClick} className="rounded-lg border border-white/20 px-3 py-2.5 text-center text-sm font-semibold text-white">
-                Évaluer mon niveau
-              </button>
-              <Link href="/espace-membre" className="rounded-lg px-3 py-2.5 text-center text-sm font-semibold text-white" style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}>
-                {memberName ?? "Mon espace"}
-              </Link>
+            <div className="mt-3 space-y-2">
+              <div className="flex gap-2">
+                <button onClick={handleDiagnosticClick} className="flex-1 rounded-lg border border-white/20 px-3 py-2.5 text-center text-sm font-semibold text-white whitespace-nowrap">
+                  Évaluer mon niveau
+                </button>
+                <Link href="/espace-membre" className="flex-1 rounded-lg px-3 py-2.5 text-center text-sm font-semibold text-white whitespace-nowrap" style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}>
+                  {memberName ?? "Mon espace"}
+                </Link>
+              </div>
               {isAdmin && (
-                <Link href="/admin" className="rounded-lg px-3 py-2.5 text-center text-sm font-semibold" style={{ background: "rgba(245,194,0,0.1)", border: "1px solid rgba(245,194,0,0.2)", color: "#F5C200" }}>
+                <Link href="/admin" className="block rounded-lg px-3 py-2.5 text-center text-sm font-semibold" style={{ background: "rgba(245,194,0,0.1)", border: "1px solid rgba(245,194,0,0.2)", color: "#F5C200" }}>
                   ← Revenir au Backoffice
                 </Link>
               )}

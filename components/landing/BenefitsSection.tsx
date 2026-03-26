@@ -83,7 +83,7 @@ function BenefitCard({ b, i }: { b: typeof benefits[0]; i: number }) {
       <motion.div
         whileHover={{ y: -5, boxShadow: "0 20px 40px rgba(0,0,0,0.5)" }}
         transition={{ duration: 0.22 }}
-        className="flex h-full flex-col gap-4 rounded-2xl p-6"
+        className="flex h-full flex-col gap-3 rounded-2xl p-6"
         style={{
           background: "rgba(255,255,255,0.04)",
           backdropFilter: "blur(16px)",
@@ -92,16 +92,16 @@ function BenefitCard({ b, i }: { b: typeof benefits[0]; i: number }) {
           boxShadow: "0 4px 24px rgba(0,0,0,0.2)",
         }}
       >
-        <div
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white"
-          style={{ background: b.iconBg }}
-        >
-          {b.icon}
+        <div className="flex items-center gap-3">
+          <div
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-white"
+            style={{ background: b.iconBg }}
+          >
+            {b.icon}
+          </div>
+          <h3 className="text-base font-bold text-white leading-tight">{b.title}</h3>
         </div>
-        <div>
-          <h3 className="text-base font-bold text-white">{b.title}</h3>
-          <p className="mt-1.5 text-sm text-white/55 leading-relaxed">{b.desc}</p>
-        </div>
+        <p className="text-sm text-white/55 leading-relaxed">{b.desc}</p>
       </motion.div>
     </motion.div>
   );
