@@ -318,25 +318,25 @@ export default function EspaceMembreDashboard() {
       </div>
 
       {/* Header profil */}
-      <div className="flex items-center gap-5 rounded-2xl p-6"
+      <div className="flex items-center gap-3 rounded-2xl p-4 sm:p-6"
         style={{ background: "rgba(255,255,255,0.04)", backdropFilter: "blur(16px)", border: "1px solid rgba(96,165,250,0.13)", boxShadow: "0 4px 24px rgba(0,0,0,0.2)" }}>
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-xl font-black text-white"
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-lg font-black text-white"
           style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}>
           {firstName[0].toUpperCase()}
         </div>
-        <div className="flex-1">
-          <p className="text-lg font-bold text-white">Bonjour, {firstName}</p>
-          <p className="text-sm mt-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>{authSession?.user?.email}</p>
+        <div className="flex-1 min-w-0">
+          <p className="text-base font-bold text-white truncate">Bonjour, {firstName}</p>
+          <p className="text-xs mt-0.5 truncate" style={{ color: "rgba(255,255,255,0.4)" }}>{authSession?.user?.email}</p>
         </div>
-        <div className="flex flex-col items-end gap-2">
-          <span className="flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-bold"
+        <div className="flex flex-col items-end gap-1.5 shrink-0">
+          <span className="flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-bold whitespace-nowrap"
             style={{ background: badgeStyle.bg, color: badgeStyle.color, border: `1px solid ${badgeStyle.color}40` }}>
             {badge}
             <Crowns badge={badge} color={badgeStyle.color} />
           </span>
           {lastResult && (
             <span className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
-              Dernier test : {lastResult.score}/100
+              {lastResult.score}/100
             </span>
           )}
         </div>

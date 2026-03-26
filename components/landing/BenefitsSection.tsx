@@ -71,12 +71,13 @@ const benefits = [
 function BenefitCard({ b, i }: { b: typeof benefits[0]; i: number }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
+  const fromLeft = i % 2 === 0;
 
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 24 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
+      initial={{ opacity: 0, x: fromLeft ? -48 : 48 }}
+      animate={inView ? { opacity: 1, x: 0 } : {}}
       transition={{ duration: 0.55, delay: i * 0.08, ease: "easeOut" }}
       className="h-full"
     >

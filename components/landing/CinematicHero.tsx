@@ -62,7 +62,7 @@ export default function CinematicHero() {
         />
       </motion.div>
 
-      <div className="relative mx-auto w-full max-w-6xl px-6 py-24 lg:px-8">
+      <div className="relative mx-auto w-full max-w-6xl px-6 pt-10 pb-24 sm:py-24 lg:px-8">
         <div className="max-w-3xl">
           {/* Badge */}
           <motion.div
@@ -113,11 +113,11 @@ export default function CinematicHero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.45 }}
-            className="mt-10 flex items-center gap-3"
+            className="mt-10 flex flex-wrap items-center gap-3"
           >
             <Link
               href="/diagnostic"
-              className="group inline-flex items-center gap-2 rounded-xl px-6 py-3.5 text-sm font-semibold text-black transition-transform hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap"
+              className="group inline-flex items-center gap-2 rounded-xl px-4 py-3 sm:px-6 sm:py-3.5 text-sm font-semibold text-black transition-transform hover:scale-[1.02] active:scale-[0.98] whitespace-nowrap"
               style={{ background: "#F5C200" }}
             >
               Évaluer mon niveau
@@ -127,7 +127,7 @@ export default function CinematicHero() {
             </Link>
             <Link
               href="/formations"
-              className="inline-flex items-center gap-2 rounded-xl border border-white/20 px-6 py-3.5 text-sm font-semibold text-white transition-all hover:border-white/40 hover:bg-white/5 whitespace-nowrap"
+              className="inline-flex items-center gap-2 rounded-xl border border-white/20 px-4 py-3 sm:px-6 sm:py-3.5 text-sm font-semibold text-white transition-all hover:border-white/40 hover:bg-white/5 whitespace-nowrap"
             >
               Voir les formations
             </Link>

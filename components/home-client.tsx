@@ -18,7 +18,9 @@ export default function HomeClient() {
       <CinematicHero />
       {/* Photo P2 — mobile only, avant le carousel */}
       <div className="md:hidden relative w-full overflow-hidden" style={{ background: "#060B2E", aspectRatio: "3/4" }}>
-        <Image src="/images/P2.webp" alt="" fill sizes="100vw" className="object-cover object-top" />
+        {/* Overlay sombre progressif */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 z-10" style={{ background: "linear-gradient(to bottom, rgba(6,11,46,0.25) 0%, rgba(6,11,46,0.1) 40%, rgba(6,11,46,0.55) 100%)" }} />
+        <Image src="/images/P2.webp" alt="" fill sizes="100vw" className="object-cover" style={{ objectPosition: "center 15%" }} />
       </div>
       <div id="section-carousel"><HeroCarousel /></div>
       <div id="section-results"><ResultsSection /></div>

@@ -6,14 +6,14 @@ import { useRef } from "react";
 const BG = "#05092A";
 
 const milestones = [
-  { year: "2017", title: "La découverte", desc: "Je découvre la rédaction web : mon tout premier business digital." },
-  { year: "2018", title: "Le saut", desc: "Je perds mon boulot. Je me lance en tant que freelance, sans filet." },
-  { year: "2019", title: "Les premiers revenus", desc: "Je génère entre 200 000 et 400 000 XOF par mois grâce à la rédaction web. Je lance mon entreprise." },
-  { year: "2020", title: "Le 1er Million", desc: "Je fais mon premier million. Je forme +30 personnes en rédaction web — 50% sont réinsérées en entreprise." },
-  { year: "2022", title: "L'impact TPE", desc: "+50 TPE accompagnées dans la croissance de leur business. La méthode fait ses preuves." },
-  { year: "2024", title: "Le sommet", desc: "J'organise le TLIGUI DIGITAL SUMMIT avec +300 participants. Lancement des formations structurées à grande échelle." },
-  { year: "2025", title: "Tech & IA", desc: "Je suis un parcours fullstack avec l'université EPITECH. Je forme des entrepreneurs à l'intelligence artificielle." },
-  { year: "2026", title: "Aujourd'hui", desc: "Mentor de +180 jeunes entrepreneurs africains. La mission continue.", accent: true },
+  { year: "2017", title: "La découverte", desc: "Rédaction web — mon premier business digital." },
+  { year: "2018", title: "Le saut", desc: "Je perds mon emploi et me lance en freelance." },
+  { year: "2019", title: "Premiers revenus", desc: "200–400k XOF/mois. Je lance mon entreprise." },
+  { year: "2020", title: "Le 1er Million", desc: "Premier million. +30 personnes formées en rédaction." },
+  { year: "2022", title: "Impact TPE", desc: "+50 TPE accompagnées. La méthode fait ses preuves." },
+  { year: "2024", title: "Le sommet", desc: "TLIGUI DIGITAL SUMMIT — +300 participants." },
+  { year: "2025", title: "Tech & IA", desc: "Parcours fullstack EPITECH. Formation à l'IA." },
+  { year: "2026", title: "Aujourd'hui", desc: "+180 entrepreneurs africains accompagnés.", accent: true },
 ];
 
 function MilestoneCard({ m, i }: { m: typeof milestones[0]; i: number }) {
@@ -24,7 +24,7 @@ function MilestoneCard({ m, i }: { m: typeof milestones[0]; i: number }) {
   return (
     <div className="relative flex items-center">
       {/* Carte gauche */}
-      <div className={`w-[calc(50%-2rem)] ${isLeft ? "pr-6" : "ml-auto pl-6"}`}>
+      <div className={`w-[calc(50%-0.75rem)] sm:w-[calc(50%-2rem)] ${isLeft ? "pr-2 sm:pr-6" : "ml-auto pl-2 sm:pl-6"}`}>
         <motion.div
           ref={ref}
           initial={{ opacity: 0, x: isLeft ? -30 : 30 }}
@@ -34,7 +34,7 @@ function MilestoneCard({ m, i }: { m: typeof milestones[0]; i: number }) {
           <motion.div
             animate={{ y: [0, -7, 0] }}
             transition={{ duration: 3.5 + i * 0.25, repeat: Infinity, ease: "easeInOut", delay: i * 0.35 }}
-            className="rounded-2xl p-5"
+            className="rounded-2xl p-4"
             style={{
               background: "rgba(255,255,255,0.04)",
               backdropFilter: "blur(12px)",
@@ -53,23 +53,12 @@ function MilestoneCard({ m, i }: { m: typeof milestones[0]; i: number }) {
             >
               {m.year}
             </span>
-            <h3 className="mt-3 text-sm font-bold text-white">{m.title}</h3>
-            <p className="mt-1.5 text-sm text-white/55 leading-relaxed">{m.desc}</p>
+            <h3 className="mt-2 text-sm font-bold text-white">{m.title}</h3>
+            <p className="mt-1 text-xs text-white/55 leading-relaxed">{m.desc}</p>
           </motion.div>
         </motion.div>
       </div>
 
-      {/* Point sur la ligne */}
-      <div className="absolute left-1/2 -translate-x-1/2 z-10">
-        <div
-          className="h-4 w-4 rounded-full border-2"
-          style={{
-            background: m.accent ? "#F5C200" : "#060B2E",
-            borderColor: m.accent ? "#F5C200" : "#F5C200",
-            boxShadow: m.accent ? "0 0 12px rgba(245,194,0,0.5)" : "0 0 8px rgba(245,194,0,0.3)",
-          }}
-        />
-      </div>
     </div>
   );
 }
@@ -96,7 +85,7 @@ export default function StorySection() {
       <div aria-hidden className="pointer-events-none absolute rounded-full" style={{ width: 320, height: 320, bottom: "-100px", left: "15%", background: "transparent", border: "1px solid rgba(255,255,255,0.04)" }} />
       {/* Petit carré bas centre */}
       <div aria-hidden className="pointer-events-none absolute" style={{ width: 60, height: 60, bottom: "18%", right: "30%", background: "transparent", border: "1px solid rgba(255,255,255,0.06)", transform: "rotate(30deg)", borderRadius: "6px" }} />
-      <div className="relative mx-auto max-w-5xl px-6 lg:px-8">
+      <div className="relative mx-auto max-w-5xl px-3 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}

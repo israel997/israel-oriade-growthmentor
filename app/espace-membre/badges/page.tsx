@@ -300,8 +300,8 @@ export default function BadgesPage() {
                 </div>
               </div>
 
-              {/* Traits + conseil */}
-              <div className="px-6 pb-5 space-y-3"
+              {/* Traits */}
+              <div className="px-6 pb-5"
                 style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}>
                 <div className="pt-4 grid grid-cols-1 gap-1.5">
                   {b.traits.map((t) => (
@@ -310,10 +310,6 @@ export default function BadgesPage() {
                       <span className="text-sm" style={{ color: "rgba(255,255,255,0.6)" }}>{t}</span>
                     </div>
                   ))}
-                </div>
-                <div className="rounded-xl px-4 py-3" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                  <p className="text-xs font-semibold uppercase tracking-widest mb-1" style={{ color: "rgba(255,255,255,0.3)" }}>Conseil</p>
-                  <p className="text-sm" style={{ color: "rgba(255,255,255,0.65)" }}>{b.advice}</p>
                 </div>
               </div>
             </div>
