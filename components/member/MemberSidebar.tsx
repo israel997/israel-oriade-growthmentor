@@ -113,14 +113,14 @@ export default function MemberSidebar({ unreadCount = 0 }: { unreadCount?: numbe
       </aside>
 
       {/* Mobile top bar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-3 border-b"
+      <div className="md:hidden fixed top-0 left-0 right-0 z-30 flex items-center gap-3 px-4 py-3 border-b"
         style={{ background: "rgba(4,8,32,0.97)", borderColor: "rgba(96,165,250,0.13)", backdropFilter: "blur(20px)" }}>
-        <Link href="/" className="text-sm font-black tracking-tight text-white">
-          Growth<span style={{ color: "#F5C200" }}>Mentor</span>
-        </Link>
         <button onClick={() => setMobileOpen(true)} className="p-2 rounded-lg border" style={{ borderColor: "rgba(96,165,250,0.2)", color: "rgba(255,255,255,0.7)" }}>
           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
         </button>
+        <Link href="/" className="text-sm font-black tracking-tight text-white">
+          Growth<span style={{ color: "#F5C200" }}>Mentor</span>
+        </Link>
       </div>
 
       {/* Mobile sidebar overlay */}

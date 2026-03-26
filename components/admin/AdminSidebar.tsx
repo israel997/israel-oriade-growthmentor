@@ -180,16 +180,16 @@ export default function AdminSidebar() {
       </aside>
 
       {/* Mobile top bar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-3 border-b"
+      <div className="md:hidden fixed top-0 left-0 right-0 z-30 flex items-center gap-3 px-4 py-3 border-b"
         style={{ background: "#050A1E", borderColor: "rgba(255,255,255,0.07)" }}>
+        <button onClick={() => setMobileOpen(true)} className="p-2 rounded-lg border" style={{ borderColor: "rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.7)" }}>
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
+        </button>
         <div className="flex items-center gap-2">
           <span className="flex h-6 w-6 items-center justify-center rounded-md text-xs font-bold text-white"
             style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}>I</span>
           <span className="text-xs font-bold text-white">Backoffice</span>
         </div>
-        <button onClick={() => setMobileOpen(true)} className="p-2 rounded-lg border" style={{ borderColor: "rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.7)" }}>
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
-        </button>
       </div>
 
       {/* Mobile sidebar overlay */}
