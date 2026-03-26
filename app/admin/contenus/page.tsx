@@ -40,7 +40,7 @@ function PostForm({ post, onSave, onCancel }: { post?: Partial<Post>; onSave: (p
   const fc = "rounded-lg px-3 py-2 text-sm text-white outline-none w-full";
   return (
     <div className="rounded-2xl p-5 space-y-3 mb-4" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(59,130,246,0.2)" }}>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(255,255,255,0.5)" }}>Plateforme</label>
           <select className={fc} style={s} value={form.platform} onChange={(e) => setForm({ ...form, platform: e.target.value })}>
@@ -88,7 +88,7 @@ function ProfileForm({ profile, onSave, onCancel }: { profile?: Partial<Profile>
   const fc = "rounded-lg px-3 py-2 text-sm text-white outline-none w-full";
   return (
     <div className="rounded-2xl p-5 space-y-3 mb-4" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(59,130,246,0.2)" }}>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className="block text-xs font-semibold mb-1" style={{ color: "rgba(255,255,255,0.5)" }}>Nom complet</label>
           <input className={fc} style={s} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
@@ -164,7 +164,7 @@ export default function AdminContenusPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <AdminHeader title="Contenus" subtitle="Posts & Profils Business" />
         <button
           onClick={() => tab === "posts" ? setAddingPost(true) : setAddingProfile(true)}

@@ -41,7 +41,7 @@ export default function SectionSidebar() {
 
   return (
     <div
-      className="fixed right-0 top-1/2 z-50 flex flex-col items-end"
+      className="fixed right-0 top-1/2 z-50 hidden lg:flex flex-col items-end"
       style={{ transform: "translate(0, -50%)" }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}

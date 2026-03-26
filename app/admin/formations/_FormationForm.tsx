@@ -83,7 +83,7 @@ export default function FormationForm({ initial, title }: { initial?: Partial<Fo
         {/* Infos de base */}
         <section className="rounded-2xl p-6 space-y-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
           <h2 className="text-sm font-bold text-white mb-2">Informations générales</h2>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Field label="Titre *">
               <input className={FIELD} style={FIELD_STYLE} value={form.title} onChange={(e) => setField("title", e.target.value)} />
             </Field>

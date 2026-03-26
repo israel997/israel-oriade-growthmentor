@@ -33,7 +33,7 @@ export default function AdminRessourcesPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <AdminHeader title="Ressources" subtitle={loading ? "…" : `${items.length} ressource${items.length > 1 ? "s" : ""}`} />
         <Link
           href="/admin/ressources/nouvelle"

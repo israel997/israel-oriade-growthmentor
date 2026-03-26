@@ -72,7 +72,7 @@ export default function RessourceForm({ initial, title }: { initial?: RessourceD
             <label className={LABEL} style={LSTYLE}>Description longue</label>
             <textarea className={FIELD} style={STYLE} rows={4} value={form.fullDesc} onChange={(e) => set("fullDesc", e.target.value)} />
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label className={LABEL} style={LSTYLE}>Catégorie</label>
               <select className={FIELD} style={STYLE} value={form.category} onChange={(e) => set("category", e.target.value)}>

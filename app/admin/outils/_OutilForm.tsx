@@ -59,7 +59,7 @@ export default function OutilForm({ initial, title }: { initial?: Partial<Tool>;
         {/* Infos */}
         <section className="rounded-2xl p-6 space-y-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
           <h2 className="text-sm font-bold text-white">Informations générales</h2>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div><label className={L} style={LS}>Nom *</label><input className={FIELD} style={S} value={form.name} onChange={(e) => set("name", e.target.value)} /></div>
             <div><label className={L} style={LS}>Slug *</label><input className={FIELD} style={S} value={form.slug} onChange={(e) => set("slug", e.target.value)} /></div>
             <div>

@@ -37,7 +37,7 @@ export default function AdminFormationsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <AdminHeader title="Formations" subtitle={loading ? "…" : `${items.length} programme${items.length > 1 ? "s" : ""}`} />
         <Link
           href="/admin/formations/nouvelle"

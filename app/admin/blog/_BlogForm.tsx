@@ -42,7 +42,7 @@ export default function BlogForm({ initial, title }: { initial?: Partial<BlogPos
       </div>
 
       <section className="rounded-2xl p-6 space-y-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div><label className={L} style={LS}>Titre *</label><input className={FC} style={S} value={form.title} onChange={(e) => set("title", e.target.value)} /></div>
           <div><label className={L} style={LS}>Slug *</label><input className={FC} style={S} value={form.slug} onChange={(e) => set("slug", e.target.value)} placeholder="ex: mon-article" /></div>
           <div><label className={L} style={LS}>Date (YYYY-MM-DD)</label><input className={FC} style={S} value={form.date} onChange={(e) => set("date", e.target.value)} /></div>

@@ -71,8 +71,8 @@ export default function AdminMembresPage() {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-2xl" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
-        <table className="w-full text-sm">
+      <div className="overflow-x-auto overflow-hidden rounded-2xl" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+        <table className="w-full min-w-[700px] text-sm">
           <thead>
             <tr style={{ background: "rgba(255,255,255,0.04)", borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
               {["Membre", "Email", "Méthode", "Inscrit le", "Rôle", "Statut", "Action"].map((h) => (

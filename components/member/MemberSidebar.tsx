@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
+import { useState } from "react";
 
 
 const nav = [
@@ -32,10 +33,9 @@ function LogoutButton() {
   );
 }
 
-export default function MemberSidebar({ unreadCount = 0 }: { unreadCount?: number }) {
-  const pathname = usePathname();
+function SidebarContent({ pathname, unreadCount, onClose }: { pathname: string; unreadCount: number; onClose?: () => void }) {
   return (
-    <aside className="flex h-screen w-72 shrink-0 flex-col" style={{ background: "rgba(4,8,32,0.92)", borderRight: "1px solid rgba(96,165,250,0.13)", backdropFilter: "blur(20px)" }}>
+    <>
       <style>{`
         .nav-item {
           transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
@@ -51,11 +51,18 @@ export default function MemberSidebar({ unreadCount = 0 }: { unreadCount?: numbe
         }
       `}</style>
       {/* Logo */}
-      <div className="px-5 py-5 border-b" style={{ borderColor: "rgba(96,165,250,0.1)" }}>
-        <Link href="/" className="text-sm font-black tracking-tight text-white">
-          Growth<span style={{ color: "#F5C200" }}>Mentor</span>
-        </Link>
-        <p className="text-xs mt-0.5 uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.3)" }}>Espace Membre</p>
+      <div className="flex items-center justify-between px-5 py-5 border-b" style={{ borderColor: "rgba(96,165,250,0.1)" }}>
+        <div>
+          <Link href="/" className="text-sm font-black tracking-tight text-white">
+            Growth<span style={{ color: "#F5C200" }}>Mentor</span>
+          </Link>
+          <p className="text-xs mt-0.5 uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.3)" }}>Espace Membre</p>
+        </div>
+        {onClose && (
+          <button onClick={onClose} className="md:hidden p-1.5 rounded-lg" style={{ color: "rgba(255,255,255,0.4)" }}>
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+          </button>
+        )}
       </div>
 
       {/* Nav */}
@@ -63,7 +70,7 @@ export default function MemberSidebar({ unreadCount = 0 }: { unreadCount?: numbe
         {nav.map((item) => {
           const active = item.href === "/espace-membre" ? pathname === item.href : pathname.startsWith(item.href);
           return (
-            <Link key={item.href} href={item.href}
+            <Link key={item.href} href={item.href} onClick={onClose}
               className={`nav-item${active ? " nav-active" : ""} flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium relative`}
               style={{
                 background: active ? "rgba(26,63,216,0.18)" : "transparent",
@@ -90,6 +97,41 @@ export default function MemberSidebar({ unreadCount = 0 }: { unreadCount?: numbe
         </Link>
         <LogoutButton />
       </div>
-    </aside>
+    </>
+  );
+}
+
+export default function MemberSidebar({ unreadCount = 0 }: { unreadCount?: number }) {
+  const pathname = usePathname();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  return (
+    <>
+      {/* Desktop sidebar */}
+      <aside className="hidden md:flex h-screen w-64 shrink-0 flex-col" style={{ background: "rgba(4,8,32,0.92)", borderRight: "1px solid rgba(96,165,250,0.13)", backdropFilter: "blur(20px)" }}>
+        <SidebarContent pathname={pathname} unreadCount={unreadCount} />
+      </aside>
+
+      {/* Mobile top bar */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-3 border-b"
+        style={{ background: "rgba(4,8,32,0.97)", borderColor: "rgba(96,165,250,0.13)", backdropFilter: "blur(20px)" }}>
+        <Link href="/" className="text-sm font-black tracking-tight text-white">
+          Growth<span style={{ color: "#F5C200" }}>Mentor</span>
+        </Link>
+        <button onClick={() => setMobileOpen(true)} className="p-2 rounded-lg border" style={{ borderColor: "rgba(96,165,250,0.2)", color: "rgba(255,255,255,0.7)" }}>
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
+        </button>
+      </div>
+
+      {/* Mobile sidebar overlay */}
+      {mobileOpen && (
+        <div className="md:hidden fixed inset-0 z-40 flex">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+          <aside className="relative flex h-full w-72 shrink-0 flex-col" style={{ background: "rgba(4,8,32,0.97)", borderRight: "1px solid rgba(96,165,250,0.13)" }}>
+            <SidebarContent pathname={pathname} unreadCount={unreadCount} onClose={() => setMobileOpen(false)} />
+          </aside>
+        </div>
+      )}
+    </>
   );
 }

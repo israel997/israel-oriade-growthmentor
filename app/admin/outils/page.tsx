@@ -31,7 +31,7 @@ export default function AdminOutilsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <AdminHeader title="Outils Testés" subtitle={loading ? "…" : `${items.length} outil${items.length > 1 ? "s" : ""}`} />
         <Link href="/admin/outils/nouvel" className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white" style={{ background: "linear-gradient(135deg, #059669 0%, #34D399 100%)" }}>
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>

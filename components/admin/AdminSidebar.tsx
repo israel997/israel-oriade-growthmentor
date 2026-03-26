@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
+import { useState } from "react";
 
 const navItems = [
   {
@@ -97,29 +98,27 @@ const navItems = [
   },
 ];
 
-export default function AdminSidebar() {
-  const pathname = usePathname();
-
+function AdminSidebarContent({ pathname, onClose }: { pathname: string; onClose?: () => void }) {
   const isActive = (href: string) =>
     href === "/admin" ? pathname === "/admin" : pathname.startsWith(href);
 
   return (
-    <aside
-      className="flex h-screen w-56 shrink-0 flex-col"
-      style={{ background: "#050A1E", borderRight: "1px solid rgba(255,255,255,0.07)" }}
-    >
+    <>
       {/* Logo */}
-      <div className="flex items-center gap-2.5 px-5 py-5 border-b" style={{ borderColor: "rgba(255,255,255,0.07)" }}>
-        <span
-          className="flex h-7 w-7 items-center justify-center rounded-lg text-xs font-bold text-white"
-          style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}
-        >
-          I
-        </span>
-        <div>
-          <p className="text-xs font-bold text-white">Backoffice</p>
-          <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.35)" }}>Israël Oriadé</p>
+      <div className="flex items-center justify-between px-5 py-5 border-b" style={{ borderColor: "rgba(255,255,255,0.07)" }}>
+        <div className="flex items-center gap-2.5">
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg text-xs font-bold text-white"
+            style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}>I</span>
+          <div>
+            <p className="text-xs font-bold text-white">Backoffice</p>
+            <p className="text-[10px]" style={{ color: "rgba(255,255,255,0.35)" }}>Israël Oriadé</p>
+          </div>
         </div>
+        {onClose && (
+          <button onClick={onClose} className="md:hidden p-1.5 rounded-lg" style={{ color: "rgba(255,255,255,0.4)" }}>
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+          </button>
+        )}
       </div>
 
       {/* Nav */}
@@ -127,9 +126,7 @@ export default function AdminSidebar() {
         {navItems.map((item) => {
           const active = isActive(item.href);
           return (
-            <Link
-              key={item.href}
-              href={item.href}
+            <Link key={item.href} href={item.href} onClick={onClose}
               className={`admin-nav-item${active ? " admin-nav-active" : ""} flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all`}
               style={{
                 background: active ? "rgba(59,130,246,0.15)" : "transparent",
@@ -144,11 +141,9 @@ export default function AdminSidebar() {
         })}
 
         <div className="pt-1" style={{ borderTop: "1px solid rgba(255,255,255,0.06)", marginTop: "4px" }}>
-          <Link
-            href="/"
+          <Link href="/" onClick={onClose}
             className="admin-nav-item flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all"
-            style={{ color: "rgba(255,255,255,0.45)" }}
-          >
+            style={{ color: "rgba(255,255,255,0.45)" }}>
             <span style={{ color: "rgba(255,255,255,0.3)" }}>
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
@@ -156,11 +151,9 @@ export default function AdminSidebar() {
             </span>
             Voir le site public
           </Link>
-          <button
-            onClick={() => signOut({ callbackUrl: "/connexion" })}
+          <button onClick={() => signOut({ callbackUrl: "/connexion" })}
             className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all hover:bg-red-500/10"
-            style={{ color: "rgba(248,113,113,0.6)" }}
-          >
+            style={{ color: "rgba(248,113,113,0.6)" }}>
             <span style={{ color: "rgba(248,113,113,0.5)" }}>
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9" />
@@ -170,6 +163,45 @@ export default function AdminSidebar() {
           </button>
         </div>
       </nav>
-    </aside>
+    </>
+  );
+}
+
+export default function AdminSidebar() {
+  const pathname = usePathname();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  return (
+    <>
+      {/* Desktop sidebar */}
+      <aside className="hidden md:flex h-screen w-56 shrink-0 flex-col"
+        style={{ background: "#050A1E", borderRight: "1px solid rgba(255,255,255,0.07)" }}>
+        <AdminSidebarContent pathname={pathname} />
+      </aside>
+
+      {/* Mobile top bar */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-3 border-b"
+        style={{ background: "#050A1E", borderColor: "rgba(255,255,255,0.07)" }}>
+        <div className="flex items-center gap-2">
+          <span className="flex h-6 w-6 items-center justify-center rounded-md text-xs font-bold text-white"
+            style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}>I</span>
+          <span className="text-xs font-bold text-white">Backoffice</span>
+        </div>
+        <button onClick={() => setMobileOpen(true)} className="p-2 rounded-lg border" style={{ borderColor: "rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.7)" }}>
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
+        </button>
+      </div>
+
+      {/* Mobile sidebar overlay */}
+      {mobileOpen && (
+        <div className="md:hidden fixed inset-0 z-40 flex">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
+          <aside className="relative flex h-full w-56 shrink-0 flex-col"
+            style={{ background: "#050A1E", borderRight: "1px solid rgba(255,255,255,0.07)" }}>
+            <AdminSidebarContent pathname={pathname} onClose={() => setMobileOpen(false)} />
+          </aside>
+        </div>
+      )}
+    </>
   );
 }

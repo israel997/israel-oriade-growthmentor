@@ -13,7 +13,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div aria-hidden className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse 120% 100% at 50% 0%, transparent 40%, rgba(4,8,22,0.75) 100%)", zIndex: 0 }} />
 
       <AdminSidebar />
-      <main className="relative z-10 flex-1 overflow-y-auto px-8 py-8">
+      <main className="relative z-10 flex-1 overflow-y-auto px-4 py-4 pt-16 md:px-8 md:py-8 md:pt-8">
         {children}
       </main>
     </div>

@@ -245,7 +245,7 @@ export default function EspaceMembreLayout({ children }: { children: React.React
       <ConstellationCanvas />
       <div className="relative z-10 flex w-full h-full">
         <MemberSidebar unreadCount={unread} />
-        <main className="flex-1 overflow-y-auto px-8 py-8">
+        <main className="flex-1 overflow-y-auto px-4 py-4 pt-16 md:px-8 md:py-8 md:pt-8">
           {children}
         </main>
       </div>

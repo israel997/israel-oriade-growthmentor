@@ -23,7 +23,7 @@ export default function AdminBlogPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <AdminHeader title="Blog" subtitle={`${items.length} article${items.length > 1 ? "s" : ""}`} />
         <Link href="/admin/blog/nouvel" className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white" style={{ background: "linear-gradient(135deg, #B45309 0%, #F5C200 100%)", color: "#000" }}>
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>

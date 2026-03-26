@@ -136,8 +136,8 @@ export default function AccompagnementAdminPage() {
       </div>
 
       {/* Table */}
-      <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
-        <table className="w-full text-sm">
+      <div className="overflow-x-auto rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
+        <table className="w-full min-w-[700px] text-sm">
           <thead>
             <tr style={{ background: "rgba(255,255,255,0.04)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
               {["Membre", "Programme", "Début", "Fin", "Statut", "Action"].map((h) => (
@@ -205,7 +205,7 @@ export default function AccompagnementAdminPage() {
                           <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "rgba(96,165,250,0.7)" }}>
                             Définir l'accompagnement — {m.name}
                           </p>
-                          <div className="grid grid-cols-3 gap-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div>
                               <label className="block text-xs font-medium mb-1.5" style={{ color: "rgba(255,255,255,0.45)" }}>Nom du programme</label>
                               <input
