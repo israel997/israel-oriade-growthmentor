@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import clientPromise from "@/lib/mongodb";
 import { createNotification } from "@/lib/createNotification";
+import { checkAndAwardGrowthMenteeBadge } from "@/lib/checkGrowthMenteeBadge";
 
 export async function GET() {
   const session = await auth();
@@ -54,5 +55,17 @@ export async function POST(req: NextRequest) {
     });
   }
 
-  return NextResponse.json({ ok: true });
+  // Check if Growth Mentee badge should be awarded
+  const db = client.db();
+  const justAwarded = await checkAndAwardGrowthMenteeBadge(db, session.user.id);
+  if (justAwarded) {
+    await createNotification({
+      title: "Badge Growth Mentee débloqué ! 🎉",
+      message: "Tu as démontré une progression régulière. Tu as maintenant accès aux événements exclusifs, à plus de requêtes Izzy et à la section Outils.",
+      type: "badge",
+      link: "/espace-membre",
+    });
+  }
+
+  return NextResponse.json({ ok: true, growthMenteeAwarded: justAwarded });
 }

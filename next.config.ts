@@ -1,10 +1,19 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
+import withSerwistInit from "@serwist/next";
+
+const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
+
+const withSerwist = withSerwistInit({
+  swSrc: "app/sw.ts",
+  swDest: "public/sw.js",
+  disable: process.env.NODE_ENV === "development",
+});
 
 const nextConfig: NextConfig = {
   experimental: {
-    // Tree-shake large packages — only import what's actually used
     optimizePackageImports: ["framer-motion", "lucide-react"],
   },
 };
 
-export default nextConfig;
+export default withNextIntl(withSerwist(nextConfig));

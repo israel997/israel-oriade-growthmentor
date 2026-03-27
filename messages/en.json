@@ -1,0 +1,118 @@
+{
+  "nav": {
+    "home": "Home",
+    "mentor": "Mentor",
+    "formations": "Courses",
+    "ressources": "Resources",
+    "outils": "Tested Tools",
+    "contenus": "Content",
+    "communaute": "Community",
+    "diagnostic": "Assess my level",
+    "espace": "My space",
+    "backoffice": "Backoffice",
+    "menu": "Menu"
+  },
+  "footer": {
+    "copyright": "© 2026 GrowthMentor · Personalized coaching platform",
+    "blog": "Blog",
+    "formations": "Courses",
+    "contact": "Contact"
+  },
+  "hero": {
+    "badge": "The Growth Mentor",
+    "title": "Build your",
+    "titleHighlight": "digital business.",
+    "subtitle": "Courses, resources and personalized coaching to launch, structure and scale your business without wasting 6 months fumbling.",
+    "ctaPrimary": "Assess my level",
+    "ctaSecondary": "See the courses"
+  },
+  "cta": {
+    "badge": "Assess your level",
+    "title": "Where are you really at?",
+    "titleHighlight": "1 minute to find out.",
+    "description": "My smart quiz analyzes your profile and recommends the exact path tailored to your level and goals.",
+    "ctaPrimary": "Take the quiz now",
+    "ctaSecondary": "Join the member space",
+    "note": "Free · 3 minutes · Instant result"
+  },
+  "blog": {
+    "title": "News",
+    "description": "Articles to attract organic traffic.",
+    "readMore": "Read article"
+  },
+  "formations": {
+    "title": "Courses",
+    "description": "Complete programs to grow your digital business.",
+    "discover": "Discover",
+    "enroll": "Enroll"
+  },
+  "ressources": {
+    "title": "Resources",
+    "description": "Templates, guides and tools to accelerate your growth."
+  },
+  "mentor": {
+    "title": "Mentor",
+    "description": "Discover my background and vision for coaching."
+  },
+  "diagnostic": {
+    "title": "Assessment",
+    "description": "Evaluate your level and find the path that suits you."
+  },
+  "connexion": {
+    "title": "Sign In",
+    "email": "Email",
+    "password": "Password",
+    "submit": "Sign in",
+    "forgotPassword": "Forgot password?",
+    "noAccount": "No account yet?",
+    "signUp": "Sign up",
+    "or": "or"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Try again",
+    "back": "Back",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "search": "Search",
+    "noResults": "No results",
+    "learnMore": "Learn more",
+    "seeAll": "See all",
+    "free": "Free"
+  },
+  "metadata": {
+    "home": {
+      "title": "Israël Oriadé | Digital Business Mentor",
+      "description": "Personalized coaching to launch, structure and scale your digital business. Courses, resources and tailored mentoring."
+    },
+    "blog": {
+      "title": "Blog",
+      "description": "Articles and advice to grow your digital business. Strategies, tools and concrete experience."
+    },
+    "formations": {
+      "title": "Courses",
+      "description": "Complete programs to launch and scale your digital business. Access Israël Oriadé's courses."
+    },
+    "ressources": {
+      "title": "Resources",
+      "description": "Free templates, guides and tools to accelerate your digital growth."
+    },
+    "mentor": {
+      "title": "Mentor",
+      "description": "Discover Israël Oriadé's background, digital business mentor and founder of GrowthMentor."
+    },
+    "diagnostic": {
+      "title": "Assessment",
+      "description": "Evaluate your digital business level in 3 minutes and get a personalized path."
+    },
+    "communaute": {
+      "title": "Community",
+      "description": "Join a community of ambitious digital entrepreneurs and grow together."
+    }
+  }
+}

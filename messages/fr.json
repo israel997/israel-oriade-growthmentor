@@ -1,0 +1,118 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "mentor": "Mentor",
+    "formations": "Formations",
+    "ressources": "Ressources",
+    "outils": "Outils Testés",
+    "contenus": "Contenus",
+    "communaute": "Communauté",
+    "diagnostic": "Évaluer mon niveau",
+    "espace": "Mon espace",
+    "backoffice": "Backoffice",
+    "menu": "Menu"
+  },
+  "footer": {
+    "copyright": "© 2026 GrowthMentor · Plateforme d'accompagnement personnalisée",
+    "blog": "Blog",
+    "formations": "Formations",
+    "contact": "Contact"
+  },
+  "hero": {
+    "badge": "The Growth Mentor",
+    "title": "Construis ton",
+    "titleHighlight": "business digital.",
+    "subtitle": "Formations, ressources et accompagnement personnalisé pour lancer, structurer et scaler ton activité sans perdre 6 mois à tâtonner.",
+    "ctaPrimary": "Évaluer mon niveau",
+    "ctaSecondary": "Voir les formations"
+  },
+  "cta": {
+    "badge": "Évalue ton niveau",
+    "title": "Où en es-tu vraiment ?",
+    "titleHighlight": "1 minute pour le savoir.",
+    "description": "Mon quiz intelligent analyse ton profil et te recommande le parcours exact adapté à ton niveau et tes objectifs.",
+    "ctaPrimary": "Faire le quiz maintenant",
+    "ctaSecondary": "Rejoindre l'espace membre",
+    "note": "Gratuit · 3 minutes · Résultat immédiat"
+  },
+  "blog": {
+    "title": "Actualité",
+    "description": "Articles SEO pour attirer du trafic organique.",
+    "readMore": "Lire l'article"
+  },
+  "formations": {
+    "title": "Formations",
+    "description": "Programmes complets pour développer ton activité digitale.",
+    "discover": "Découvrir",
+    "enroll": "S'inscrire"
+  },
+  "ressources": {
+    "title": "Ressources",
+    "description": "Templates, guides et outils pour accélérer ta croissance."
+  },
+  "mentor": {
+    "title": "Mentor",
+    "description": "Découvrez mon parcours et ma vision de l'accompagnement."
+  },
+  "diagnostic": {
+    "title": "Diagnostic",
+    "description": "Évalue ton niveau et trouve le parcours qui te correspond."
+  },
+  "connexion": {
+    "title": "Connexion",
+    "email": "Email",
+    "password": "Mot de passe",
+    "submit": "Se connecter",
+    "forgotPassword": "Mot de passe oublié ?",
+    "noAccount": "Pas encore de compte ?",
+    "signUp": "S'inscrire",
+    "or": "ou"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "error": "Une erreur est survenue",
+    "retry": "Réessayer",
+    "back": "Retour",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "close": "Fermer",
+    "search": "Rechercher",
+    "noResults": "Aucun résultat",
+    "learnMore": "En savoir plus",
+    "seeAll": "Tout voir",
+    "free": "Gratuit"
+  },
+  "metadata": {
+    "home": {
+      "title": "Israël Oriadé | Mentor Business Digital",
+      "description": "Accompagnement personnalisé pour lancer, structurer et scaler ton activité digitale. Formations, ressources et coaching sur mesure."
+    },
+    "blog": {
+      "title": "Blog",
+      "description": "Articles et conseils pour développer ton business digital. Stratégies, outils et retours d'expérience concrets."
+    },
+    "formations": {
+      "title": "Formations",
+      "description": "Des programmes complets pour lancer et scaler ton activité digitale. Accède aux formations d'Israël Oriadé."
+    },
+    "ressources": {
+      "title": "Ressources",
+      "description": "Templates, guides et outils gratuits pour accélérer ta croissance digitale."
+    },
+    "mentor": {
+      "title": "Mentor",
+      "description": "Découvrez le parcours d'Israël Oriadé, mentor business digital et fondateur de GrowthMentor."
+    },
+    "diagnostic": {
+      "title": "Diagnostic",
+      "description": "Évalue ton niveau en business digital en 3 minutes et obtiens un parcours personnalisé."
+    },
+    "communaute": {
+      "title": "Communauté",
+      "description": "Rejoins une communauté d'entrepreneurs digitaux ambitieux et progresse ensemble."
+    }
+  }
+}
