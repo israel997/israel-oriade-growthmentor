@@ -9,7 +9,7 @@ export async function createNotification({
 }: {
   title: string;
   message: string;
-  type: "diagnostic" | "test" | "formation" | "blog";
+  type: "diagnostic" | "test" | "formation" | "blog" | "badge";
   link?: string;
 }) {
   try {
