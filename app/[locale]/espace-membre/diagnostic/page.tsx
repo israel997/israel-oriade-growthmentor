@@ -1,11 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { saveUserData } from "@/lib/sync-user-data";
 import { saveResult } from "@/lib/saveResult";
 import { toast } from "sonner";
+import { matchScenarios } from "@/lib/match-scenarios";
+import { BadgeLabel } from "@/lib/diagnostic-scenarios";
+import DiagnosticRecommendations from "@/components/member/DiagnosticRecommendations";
 
 const QUESTIONS = [
   { q: "Tu as une offre clairement définie avec un prix et une cible précise ?",        opts: ["Pas encore", "En cours", "Oui mais à affiner", "Oui, clairement définie"] },
@@ -149,6 +152,10 @@ export default function DiagnosticPage() {
   };
 
   const badge = getBadge(score);
+  const matchedScenarios = useMemo(
+    () => phase === "result" ? matchScenarios(badge.label as BadgeLabel, answers) : [],
+    [phase, badge.label, answers]
+  );
 
   // ── Cooldown screen ─────────────────────────────────────────────────────
   if (cooldown) return (
@@ -472,6 +479,7 @@ export default function DiagnosticPage() {
 
             <h1 className="text-xl font-bold text-white">Résultat</h1>
 
+            {/* Score card */}
             <div className="rounded-2xl p-8 text-center space-y-5"
               style={{ background: "rgba(255,255,255,0.04)", backdropFilter: "blur(16px)", border: `1px solid ${badge.color}30` }}>
               <div className="text-5xl font-black" style={{ color: badge.color }}>
@@ -507,6 +515,10 @@ export default function DiagnosticPage() {
                 </button>
               </div>
             </div>
+
+            {/* Recommandations contextuelles */}
+            <DiagnosticRecommendations matched={matchedScenarios} />
+
           </motion.div>
         )}
 
