@@ -579,8 +579,8 @@ export default function FormationsPage() {
         </motion.div>
 
         {/* Filter bar */}
-        <div className="mb-10 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-1">
+        <div className="mb-10 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-1 overflow-x-auto scrollbar-none">
             {filters.map((f) => (
               <button
                 key={f}

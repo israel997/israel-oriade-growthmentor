@@ -20,7 +20,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { data: authSession } = useSession();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
 
 
   const memberName = authSession?.user?.name?.split(" ")[0] ?? null;
@@ -30,21 +29,14 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     setMobileOpen(false);
   }, [pathname]);
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   const handleDiagnosticClick = (e: React.MouseEvent) => {
     e.preventDefault();
     router.push("/diagnostic");
   };
 
-  if (pathname.startsWith("/admin")) return <>{children}</>;
-  if (pathname.startsWith("/espace-membre")) return <>{children}</>;
-
-  const isHome = pathname === "/";
+  const bare = pathname.replace(/^\/[a-z]{2}(?=\/)/, "");
+  if (bare.startsWith("/admin")) return <>{children}</>;
+  if (bare.startsWith("/espace-membre")) return <>{children}</>;
 
   return (
     <>
@@ -152,42 +144,73 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
-        {/* Mobile menu */}
-        {mobileOpen && (
-          <div className="border-t border-white/10 px-4 pb-4 pt-3 md:hidden" style={{ background: "rgba(6,11,46,0.97)", backdropFilter: "blur(18px)" }}>
-            <nav className="space-y-1">
-              {navLinks.map(([label, href]) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className="block rounded-lg px-3 py-2 text-sm font-medium"
-                  style={{
-                    color: pathname === href ? "#F5C200" : "rgba(255,255,255,0.85)",
-                    background: pathname === href ? "rgba(201,168,76,0.10)" : "transparent",
-                  }}
-                >
-                  {label}
-                </Link>
-              ))}
-            </nav>
-            <div className="mt-3 space-y-2">
-              <div className="flex gap-2">
-                <button onClick={handleDiagnosticClick} className="flex-1 rounded-lg border border-white/20 px-3 py-2.5 text-center text-sm font-semibold text-white whitespace-nowrap">
-                  Évaluer mon niveau
-                </button>
-                <Link href="/espace-membre" className="flex-1 rounded-lg px-3 py-2.5 text-center text-sm font-semibold text-white whitespace-nowrap" style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}>
-                  {memberName ?? "Mon espace"}
-                </Link>
-              </div>
-              {isAdmin && (
-                <Link href="/admin" className="block rounded-lg px-3 py-2.5 text-center text-sm font-semibold" style={{ background: "rgba(245,194,0,0.1)", border: "1px solid rgba(245,194,0,0.2)", color: "#F5C200" }}>
-                  ← Revenir au Backoffice
-                </Link>
-              )}
-            </div>
-          </div>
-        )}
       </header>
+
+      {/* Mobile menu — full screen overlay */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-40 md:hidden flex flex-col" style={{ background: "rgba(6,11,46,0.85)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)" }}>
+          {/* Top bar with logo + close */}
+          <div className="flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
+            <Link href="/" className="flex items-center gap-2 text-lg font-bold text-white">
+              <span className="inline-flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold" style={{ background: "#070F3C" }}>I</span>
+              Israël Oriadé
+            </Link>
+            <button
+              onClick={() => setMobileOpen(false)}
+              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border"
+              style={{ borderColor: "rgba(255,255,255,0.2)", color: "#fff" }}
+              aria-label="Fermer le menu"
+            >
+              <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" stroke="currentColor" strokeWidth={2}>
+                <path d="M6 6l12 12M18 6l-12 12" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Nav links */}
+          <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
+            {navLinks.map(([label, href]) => (
+              <Link
+                key={href}
+                href={href}
+                className="flex items-center rounded-xl px-4 py-3 text-base font-medium transition-all"
+                style={{
+                  color: pathname === href ? "#F5C200" : "rgba(255,255,255,0.85)",
+                  background: pathname === href ? "rgba(245,194,0,0.08)" : "transparent",
+                  borderLeft: pathname === href ? "3px solid #F5C200" : "3px solid transparent",
+                }}
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
+
+          {/* CTA buttons */}
+          <div className="px-4 pb-8 pt-2 space-y-2 border-t" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
+            <div className="flex gap-2">
+              <button
+                onClick={(e) => { setMobileOpen(false); handleDiagnosticClick(e); }}
+                className="flex-1 rounded-xl border px-3 py-3 text-center text-sm font-semibold text-white"
+                style={{ borderColor: "rgba(255,255,255,0.25)" }}
+              >
+                Évaluer mon niveau
+              </button>
+              <Link
+                href="/espace-membre"
+                className="flex-1 rounded-xl px-3 py-3 text-center text-sm font-semibold text-white"
+                style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}
+              >
+                {memberName ?? "Mon espace"}
+              </Link>
+            </div>
+            {isAdmin && (
+              <Link href="/admin" className="block rounded-xl px-3 py-3 text-center text-sm font-semibold" style={{ background: "rgba(245,194,0,0.1)", border: "1px solid rgba(245,194,0,0.2)", color: "#F5C200" }}>
+                ← Backoffice
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
 
       <main className="w-full">{children}</main>
 

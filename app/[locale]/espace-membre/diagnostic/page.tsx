@@ -280,10 +280,10 @@ export default function DiagnosticPage() {
                 { val: "1 min", label: "pour finir" },
                 { val: "5", label: "niveaux de badge" },
               ].map((s) => (
-                <div key={s.label} className="rounded-2xl p-4 text-center"
+                <div key={s.label} className="rounded-xl p-3 text-center"
                   style={{ background: "rgba(255,255,255,0.04)", backdropFilter: "blur(16px)", border: "1px solid rgba(96,165,250,0.13)" }}>
-                  <p className="text-2xl font-black text-white">{s.val}</p>
-                  <p className="text-xs mt-1 uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.35)" }}>{s.label}</p>
+                  <p className="text-xl font-black text-white">{s.val}</p>
+                  <p className="text-[10px] mt-0.5 uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.35)" }}>{s.label}</p>
                 </div>
               ))}
             </div>

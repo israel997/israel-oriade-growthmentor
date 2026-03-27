@@ -11,6 +11,7 @@ const BADGE_DEFS = {
     label: "Mentee",
     tier: "Argent",
     color: "#94A3B8",
+    colorMuted: "rgba(148,163,184,0.55)",
     colorBg: "rgba(148,163,184,0.12)",
     colorBorder: "rgba(148,163,184,0.3)",
     gradientUnlocked: "linear-gradient(135deg, #94A3B8, #CBD5E1)",
@@ -34,6 +35,7 @@ const BADGE_DEFS = {
     label: "Growth Mentee",
     tier: "Progression",
     color: "#EF4444",
+    colorMuted: "rgba(239,68,68,0.6)",
     colorBg: "rgba(239,68,68,0.12)",
     colorBorder: "rgba(239,68,68,0.3)",
     gradientUnlocked: "linear-gradient(135deg, #EF4444, #F87171)",
@@ -58,6 +60,7 @@ const BADGE_DEFS = {
     label: "Mentee Premium",
     tier: "Or",
     color: "#F5C200",
+    colorMuted: "rgba(245,194,0,0.6)",
     colorBg: "rgba(245,194,0,0.12)",
     colorBorder: "rgba(245,194,0,0.3)",
     gradientUnlocked: "linear-gradient(135deg, #F5C200, #F97316)",
@@ -139,9 +142,23 @@ function BadgeDetailPopup({
             </div>
             <div className="text-center">
               <p className="text-lg font-bold text-white">{def.label}</p>
-              <span className="inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold mt-1"
+              <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold mt-1"
                 style={{ background: def.colorBg, color: def.color, border: `1px solid ${def.colorBorder}` }}>
-                {unlocked ? `✓ ${def.tier}` : `🔒 Verrouillé`}
+                {unlocked ? (
+                  <>
+                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                    {def.tier}
+                  </>
+                ) : (
+                  <>
+                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                    </svg>
+                    Verrouillé
+                  </>
+                )}
               </span>
             </div>
           </div>
@@ -165,8 +182,12 @@ function BadgeDetailPopup({
             <ul className="space-y-2">
               {def.perks.map((perk, i) => (
                 <li key={i} className="flex items-start gap-2.5 text-sm text-white/70">
-                  <span className="shrink-0 mt-0.5 h-4 w-4 flex items-center justify-center rounded-full text-[10px]"
-                    style={{ background: def.colorBg, color: def.color }}>✓</span>
+                  <span className="shrink-0 mt-0.5 h-4 w-4 flex items-center justify-center rounded-full"
+                    style={{ background: def.colorBg }}>
+                    <svg className="h-2.5 w-2.5" fill="none" viewBox="0 0 24 24" stroke={def.color} strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                    </svg>
+                  </span>
                   {perk}
                 </li>
               ))}
@@ -221,39 +242,51 @@ export default function MemberBadgesSection() {
               onClick={() => setSelectedBadge(badgeId)}
               className="group relative flex items-center gap-3 rounded-2xl px-4 py-4 text-left transition-all hover:scale-[1.02]"
               style={{
-                background: unlocked ? `linear-gradient(135deg, ${def.colorBg}, transparent)` : "rgba(255,255,255,0.02)",
-                border: unlocked ? `1px solid ${def.colorBorder}` : "1px dashed rgba(255,255,255,0.1)",
-                filter: unlocked ? "none" : "grayscale(0.3)",
-                opacity: unlocked ? 1 : 0.65,
+                background: `linear-gradient(135deg, ${def.colorBg}, transparent)`,
+                border: unlocked
+                  ? `1px solid ${def.colorBorder}`
+                  : `1px dashed ${def.colorBorder.replace("0.3", "0.15")}`,
+                opacity: unlocked ? 1 : 0.7,
               }}
             >
+              {/* Badge icon — colored gradient if unlocked, muted tint if locked */}
               <div className="h-10 w-10 shrink-0 rounded-xl flex items-center justify-center"
-                style={{ background: unlocked ? def.gradientUnlocked : "rgba(255,255,255,0.06)" }}>
-                {unlocked ? def.icon : (
-                  <svg className="h-4 w-4 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
-                  </svg>
-                )}
+                style={{
+                  background: unlocked
+                    ? def.gradientUnlocked
+                    : def.colorBg.replace("0.12", "0.18"),
+                }}>
+                {def.icon}
               </div>
+
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold leading-tight truncate"
-                  style={{ color: unlocked ? def.color : "rgba(255,255,255,0.3)" }}>
+                  style={{ color: unlocked ? def.color : def.colorMuted }}>
                   {def.label}
                 </p>
                 <p className="text-[11px] mt-0.5" style={{ color: "rgba(255,255,255,0.3)" }}>
                   {unlocked ? def.tier : "Verrouillé"}
                 </p>
               </div>
-              {unlocked && (
-                <span className="shrink-0 text-[10px] font-semibold rounded-full px-2 py-0.5"
-                  style={{ background: def.colorBg, color: def.color, border: `1px solid ${def.colorBorder}` }}>
-                  ✓
+
+              {/* Right indicator — ✓ if unlocked, 🔒 if locked */}
+              {unlocked ? (
+                <span className="shrink-0 rounded-full w-6 h-6 flex items-center justify-center"
+                  style={{ background: def.colorBg, border: `1px solid ${def.colorBorder}` }}>
+                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke={def.color} strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                  </svg>
+                </span>
+              ) : (
+                <span className="shrink-0 w-6 h-6 flex items-center justify-center rounded-full"
+                  style={{ background: def.colorBg.replace("0.12", "0.08"), border: `1px solid ${def.colorBorder.replace("0.3", "0.2")}` }}>
+                  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2}
+                    stroke={def.color}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
+                  </svg>
                 </span>
               )}
-              {/* Info hint */}
-              <span className="absolute bottom-2 right-2 text-[10px] text-white/20 group-hover:text-white/40 transition-colors">
-                ⓘ
-              </span>
+
             </button>
           );
         })}
