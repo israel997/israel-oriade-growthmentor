@@ -12,8 +12,8 @@ const BADGE_DEFS = {
     tier: "Argent",
     color: "#94A3B8",
     colorMuted: "rgba(148,163,184,0.55)",
-    colorBg: "rgba(148,163,184,0.12)",
-    colorBorder: "rgba(148,163,184,0.3)",
+    colorBg: "rgba(148,163,184,0.38)",
+    colorBorder: "rgba(148,163,184,0.65)",
     gradientUnlocked: "linear-gradient(135deg, #94A3B8, #CBD5E1)",
     gradientLocked: "rgba(148,163,184,0.08)",
     icon: (
@@ -242,11 +242,11 @@ export default function MemberBadgesSection() {
               onClick={() => setSelectedBadge(badgeId)}
               className="group relative flex items-center gap-3 rounded-2xl px-4 py-4 text-left transition-all hover:scale-[1.02]"
               style={{
-                background: `linear-gradient(135deg, ${def.colorBg}, transparent)`,
+                background: `linear-gradient(135deg, ${def.colorBg.replace("0.12", "0.22")}, rgba(255,255,255,0.03))`,
                 border: unlocked
-                  ? `1px solid ${def.colorBorder}`
-                  : `1px dashed ${def.colorBorder.replace("0.3", "0.15")}`,
-                opacity: unlocked ? 1 : 0.7,
+                  ? `1px solid ${def.colorBorder.replace("0.3", "0.55")}`
+                  : `1px dashed ${def.colorBorder.replace("0.3", "0.35")}`,
+                opacity: unlocked ? 1 : 0.88,
               }}
             >
               {/* Badge icon — colored gradient if unlocked, muted tint if locked */}
