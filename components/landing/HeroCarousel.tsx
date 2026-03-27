@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
-const BG = "linear-gradient(135deg, #0D1B5E 0%, #1A3FD8 50%, #0A1240 100%)";
+const BG = "#060B2E";
 
 const slides = [
   {
@@ -49,6 +49,8 @@ export default function HeroCarousel() {
 
   return (
     <section id="next-section" className="relative overflow-hidden py-20" style={{ background: BG }}>
+      {/* Grain — identique CinematicHero */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.35]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E\")", backgroundRepeat: "repeat", backgroundSize: "300px 300px" }} />
       <div className="relative mx-auto max-w-6xl px-6 lg:px-8">
         <div
           className="overflow-hidden rounded-3xl p-8 sm:p-12"
