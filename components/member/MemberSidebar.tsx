@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { useState } from "react";
+import { useHandedness } from "@/hooks/useHandedness";
 
 
 const nav = [
@@ -105,6 +106,8 @@ function SidebarContent({ pathname, unreadCount, onClose }: { pathname: string; 
 export default function MemberSidebar({ unreadCount = 0 }: { unreadCount?: number }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { handedness } = useHandedness();
+  const burgerRight = handedness !== "left";
 
   return (
     <>
@@ -114,7 +117,7 @@ export default function MemberSidebar({ unreadCount = 0 }: { unreadCount?: numbe
       </aside>
 
       {/* Mobile top bar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-30 flex items-center gap-3 px-4 py-3 border-b"
+      <div className={`md:hidden fixed top-0 left-0 right-0 z-30 flex items-center justify-between gap-3 px-4 py-3 border-b ${!burgerRight ? "flex-row-reverse" : ""}`}
         style={{ background: "rgba(4,8,32,0.97)", borderColor: "rgba(96,165,250,0.13)", backdropFilter: "blur(20px)" }}>
         <button onClick={() => setMobileOpen(true)} className="p-2 rounded-lg border" style={{ borderColor: "rgba(96,165,250,0.2)", color: "rgba(255,255,255,0.7)" }}>
           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import MemberSidebar from "@/components/member/MemberSidebar";
 import WelcomeBadgePopup from "@/components/member/WelcomeBadgePopup";
+import HandednessModal from "@/components/HandednessModal";
 import { hydrateFromAPI } from "@/lib/sync-user-data";
 
 function ConstellationCanvas() {
@@ -250,6 +251,7 @@ export default function EspaceMembreLayout({ children }: { children: React.React
           {children}
         </main>
         <WelcomeBadgePopup />
+        <HandednessModal />
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { useHandedness } from "@/hooks/useHandedness";
 
 const navLinks = [
   ["Accueil", "/"],
@@ -24,6 +25,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
   const memberName = authSession?.user?.name?.split(" ")[0] ?? null;
   const isAdmin = (authSession?.user as { role?: string })?.role === "admin";
+  const { handedness } = useHandedness();
+  const burgerRight = handedness !== "left";
 
   useEffect(() => {
     setMobileOpen(false);
@@ -50,7 +53,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           boxShadow: "0 4px 24px rgba(0,0,0,0.3)",
         }}
       >
-        <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
+        <div className={`mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4 ${!burgerRight ? "flex-row-reverse md:flex-row" : ""}`}>
           <Link
             href="/"
             className="flex items-center gap-2 text-lg font-bold tracking-tight sm:text-xl"
