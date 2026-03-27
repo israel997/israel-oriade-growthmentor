@@ -260,6 +260,18 @@ function FormationModal({ f, onClose }: { f: FormationCard; onClose: () => void 
         </div>
 
         <div className="p-6">
+          {/* Bouton retour — mobile uniquement */}
+          <button
+            onClick={onClose}
+            className="mb-4 flex items-center gap-1.5 text-sm font-medium sm:hidden"
+            style={{ color: "rgba(255,255,255,0.5)" }}
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+            Retour
+          </button>
+
           {/* Type + title */}
           <div className="flex items-center gap-2">
             <span
@@ -316,11 +328,11 @@ function FormationModal({ f, onClose }: { f: FormationCard; onClose: () => void 
           {/* Aperçu des modules */}
           <button
             onClick={(e) => { e.stopPropagation(); setShowModules(true); }}
-            className="mt-5 flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition-colors"
+            className="mt-5 flex w-full items-center justify-between rounded-xl px-4 py-3.5 text-sm font-semibold transition-all hover:brightness-110 active:scale-[0.98]"
             style={{
-              background: "rgba(96,165,250,0.07)",
-              border: "1px solid rgba(96,165,250,0.15)",
-              color: "#93C5FD",
+              background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)",
+              color: "#fff",
+              boxShadow: "0 0 16px rgba(59,130,246,0.35)",
             }}
           >
             <span className="flex items-center gap-2">
