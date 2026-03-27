@@ -381,9 +381,12 @@ export default function ConnexionPage() {
           <div className="relative w-full max-w-sm rounded-3xl p-8 text-center"
             style={{ background: "rgba(6,11,46,0.97)", border: "1px solid rgba(245,194,0,0.3)", boxShadow: "0 0 60px rgba(245,194,0,0.15)" }}>
             <div className="flex justify-center mb-4">
-              <span className="inline-flex h-14 w-14 items-center justify-center rounded-full text-3xl"
+              <span className="inline-flex h-14 w-14 items-center justify-center rounded-full"
                 style={{ background: "rgba(245,194,0,0.12)", border: "1px solid rgba(245,194,0,0.3)" }}>
-                🏅
+                <svg className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="#F5C200" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 15a6 6 0 1 0 0-12 6 6 0 0 0 0 12Z" />
+                  <path d="M8.21 13.89 7 23l5-3 5 3-1.21-9.12" />
+                </svg>
               </span>
             </div>
             <h2 className="text-lg font-bold text-white mb-2">{popup.title}</h2>

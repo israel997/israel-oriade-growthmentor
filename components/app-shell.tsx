@@ -26,7 +26,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const memberName = authSession?.user?.name?.split(" ")[0] ?? null;
   const isAdmin = (authSession?.user as { role?: string })?.role === "admin";
   const { handedness } = useHandedness();
-  const burgerRight = handedness !== "left";
+  const burgerRight = handedness === "right";
 
   useEffect(() => {
     setMobileOpen(false);
@@ -53,7 +53,22 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           boxShadow: "0 4px 24px rgba(0,0,0,0.3)",
         }}
       >
-        <div className={`mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4 ${!burgerRight ? "flex-row-reverse md:flex-row" : ""}`}>
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
+          {/* Burger mobile — gaucher : à gauche */}
+          {!burgerRight && (
+            <button
+              type="button"
+              aria-label="Menu"
+              className="inline-flex rounded-lg border p-2 md:hidden"
+              style={{ borderColor: "rgba(255,255,255,0.2)", color: "#fff" }}
+              onClick={() => setMobileOpen((v) => !v)}
+            >
+              <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" stroke="currentColor" strokeWidth={2}>
+                {mobileOpen ? <path d="M6 6l12 12M18 6l-12 12" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
+              </svg>
+            </button>
+          )}
+
           <Link
             href="/"
             className="flex items-center gap-2 text-lg font-bold tracking-tight sm:text-xl"
@@ -130,87 +145,105 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               </Link>
             )}
 
-            {/* Burger mobile */}
-            <button
-              type="button"
-              aria-label="Menu"
-              className="inline-flex rounded-lg border p-2 md:hidden"
-              style={
-                { borderColor: "rgba(255,255,255,0.2)", color: "#fff" }
-              }
-              onClick={() => setMobileOpen((v) => !v)}
-            >
-              <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" stroke="currentColor" strokeWidth={2}>
-                {mobileOpen ? <path d="M6 6l12 12M18 6l-12 12" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
-              </svg>
-            </button>
+            {/* Burger mobile — droitier : à droite (par défaut) */}
+            {burgerRight && (
+              <button
+                type="button"
+                aria-label="Menu"
+                className="inline-flex rounded-lg border p-2 md:hidden"
+                style={{ borderColor: "rgba(255,255,255,0.2)", color: "#fff" }}
+                onClick={() => setMobileOpen((v) => !v)}
+              >
+                <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" stroke="currentColor" strokeWidth={2}>
+                  {mobileOpen ? <path d="M6 6l12 12M18 6l-12 12" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
+                </svg>
+              </button>
+            )}
           </div>
         </div>
 
       </header>
 
-      {/* Mobile menu — full screen overlay */}
+      {/* Mobile menu — panneau latéral */}
       {mobileOpen && (
-        <div className="fixed inset-0 z-40 md:hidden flex flex-col" style={{ background: "rgba(6,11,46,0.85)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)" }}>
-          {/* Top bar with logo + close */}
-          <div className="flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
-            <Link href="/" className="flex items-center gap-2 text-lg font-bold text-white">
-              <span className="inline-flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold" style={{ background: "#070F3C" }}>I</span>
-              Israël Oriadé
-            </Link>
-            <button
-              onClick={() => setMobileOpen(false)}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-lg border"
-              style={{ borderColor: "rgba(255,255,255,0.2)", color: "#fff" }}
-              aria-label="Fermer le menu"
-            >
-              <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" stroke="currentColor" strokeWidth={2}>
-                <path d="M6 6l12 12M18 6l-12 12" />
-              </svg>
-            </button>
-          </div>
+        <div
+          className="fixed inset-0 z-40 md:hidden flex"
+          style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)", justifyContent: burgerRight ? "flex-end" : "flex-start" }}
+        >
+          {/* Overlay clic pour fermer */}
+          <div className="absolute inset-0" onClick={() => setMobileOpen(false)} />
 
-          {/* Nav links */}
-          <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
-            {navLinks.map(([label, href]) => (
-              <Link
-                key={href}
-                href={href}
-                className="flex items-center rounded-xl px-4 py-3 text-base font-medium transition-all"
-                style={{
-                  color: pathname === href ? "#F5C200" : "rgba(255,255,255,0.85)",
-                  background: pathname === href ? "rgba(245,194,0,0.08)" : "transparent",
-                  borderLeft: pathname === href ? "3px solid #F5C200" : "3px solid transparent",
-                }}
-              >
-                {label}
+          {/* Panneau — gauche ou droite selon préférence */}
+          <div
+            className="relative z-10 flex flex-col h-full w-72 max-w-[85vw]"
+            style={{
+              background: "rgba(6,11,46,0.97)",
+              backdropFilter: "blur(24px)",
+              WebkitBackdropFilter: "blur(24px)",
+              borderLeft: burgerRight ? "1px solid rgba(255,255,255,0.08)" : "none",
+              borderRight: !burgerRight ? "1px solid rgba(255,255,255,0.08)" : "none",
+            }}
+          >
+            {/* Top bar avec logo + close */}
+            <div className={`flex items-center justify-between px-4 py-3 border-b`} style={{ borderColor: "rgba(255,255,255,0.08)" }}>
+              <Link href="/" className="flex items-center gap-2 text-base font-bold text-white">
+                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full text-xs font-bold" style={{ background: "#070F3C" }}>I</span>
+                Israël Oriadé
               </Link>
-            ))}
-          </nav>
-
-          {/* CTA buttons */}
-          <div className="px-4 pb-8 pt-2 space-y-2 border-t" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
-            <div className="flex gap-2">
               <button
-                onClick={(e) => { setMobileOpen(false); handleDiagnosticClick(e); }}
-                className="flex-1 rounded-xl border px-3 py-3 text-center text-sm font-semibold text-white"
-                style={{ borderColor: "rgba(255,255,255,0.25)" }}
+                onClick={() => setMobileOpen(false)}
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border"
+                style={{ borderColor: "rgba(255,255,255,0.2)", color: "#fff" }}
+                aria-label="Fermer le menu"
               >
-                Évaluer mon niveau
+                <svg viewBox="0 0 24 24" fill="none" className="h-5 w-5" stroke="currentColor" strokeWidth={2}>
+                  <path d="M6 6l12 12M18 6l-12 12" />
+                </svg>
               </button>
-              <Link
-                href="/espace-membre"
-                className="flex-1 rounded-xl px-3 py-3 text-center text-sm font-semibold text-white"
-                style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}
-              >
-                {memberName ?? "Mon espace"}
-              </Link>
             </div>
-            {isAdmin && (
-              <Link href="/admin" className="block rounded-xl px-3 py-3 text-center text-sm font-semibold" style={{ background: "rgba(245,194,0,0.1)", border: "1px solid rgba(245,194,0,0.2)", color: "#F5C200" }}>
-                ← Backoffice
-              </Link>
-            )}
+
+            {/* Nav links */}
+            <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
+              {navLinks.map(([label, href]) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="flex items-center rounded-xl px-4 py-3 text-base font-medium transition-all"
+                  style={{
+                    color: pathname === href ? "#F5C200" : "rgba(255,255,255,0.85)",
+                    background: pathname === href ? "rgba(245,194,0,0.08)" : "transparent",
+                    borderLeft: pathname === href ? "3px solid #F5C200" : "3px solid transparent",
+                  }}
+                >
+                  {label}
+                </Link>
+              ))}
+            </nav>
+
+            {/* CTA buttons */}
+            <div className="px-4 pb-8 pt-2 space-y-2 border-t" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={(e) => { setMobileOpen(false); handleDiagnosticClick(e); }}
+                  className="w-full rounded-xl border px-3 py-3 text-center text-sm font-semibold text-white"
+                  style={{ borderColor: "rgba(255,255,255,0.25)" }}
+                >
+                  Évaluer mon niveau
+                </button>
+                <Link
+                  href="/espace-membre"
+                  className="w-full rounded-xl px-3 py-3 text-center text-sm font-semibold text-white"
+                  style={{ background: "linear-gradient(135deg, #1A3FD8 0%, #3B82F6 100%)" }}
+                >
+                  {memberName ?? "Mon espace"}
+                </Link>
+              </div>
+              {isAdmin && (
+                <Link href="/admin" className="block rounded-xl px-3 py-3 text-center text-sm font-semibold" style={{ background: "rgba(245,194,0,0.1)", border: "1px solid rgba(245,194,0,0.2)", color: "#F5C200" }}>
+                  ← Backoffice
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       )}

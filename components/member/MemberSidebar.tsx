@@ -107,7 +107,7 @@ export default function MemberSidebar({ unreadCount = 0 }: { unreadCount?: numbe
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { handedness } = useHandedness();
-  const burgerRight = handedness !== "left";
+  const burgerRight = handedness === "right";
 
   return (
     <>
@@ -117,21 +117,40 @@ export default function MemberSidebar({ unreadCount = 0 }: { unreadCount?: numbe
       </aside>
 
       {/* Mobile top bar */}
-      <div className={`md:hidden fixed top-0 left-0 right-0 z-30 flex items-center justify-between gap-3 px-4 py-3 border-b ${!burgerRight ? "flex-row-reverse" : ""}`}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-30 flex items-center justify-between px-4 py-3 border-b"
         style={{ background: "rgba(4,8,32,0.97)", borderColor: "rgba(96,165,250,0.13)", backdropFilter: "blur(20px)" }}>
-        <button onClick={() => setMobileOpen(true)} className="p-2 rounded-lg border" style={{ borderColor: "rgba(96,165,250,0.2)", color: "rgba(255,255,255,0.7)" }}>
-          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
-        </button>
+        {/* Gaucher : burger à gauche */}
+        {!burgerRight && (
+          <button onClick={() => setMobileOpen(true)} className="p-2 rounded-lg border" style={{ borderColor: "rgba(96,165,250,0.2)", color: "rgba(255,255,255,0.7)" }}>
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
+          </button>
+        )}
         <Link href="/" className="text-sm font-black tracking-tight text-white">
           Growth<span style={{ color: "#F5C200" }}>Mentor</span>
         </Link>
+        {/* Droitier : burger à droite */}
+        {burgerRight && (
+          <button onClick={() => setMobileOpen(true)} className="p-2 rounded-lg border" style={{ borderColor: "rgba(96,165,250,0.2)", color: "rgba(255,255,255,0.7)" }}>
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
+          </button>
+        )}
       </div>
 
       {/* Mobile sidebar overlay */}
       {mobileOpen && (
-        <div className="md:hidden fixed inset-0 z-40 flex">
+        <div
+          className="md:hidden fixed inset-0 z-40 flex"
+          style={{ justifyContent: burgerRight ? "flex-end" : "flex-start" }}
+        >
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setMobileOpen(false)} />
-          <aside className="relative flex h-full w-72 shrink-0 flex-col" style={{ background: "rgba(4,8,32,0.97)", borderRight: "1px solid rgba(96,165,250,0.13)" }}>
+          <aside
+            className="relative z-10 flex h-full w-72 flex-col"
+            style={{
+              background: "rgba(4,8,32,0.97)",
+              borderLeft: burgerRight ? "1px solid rgba(96,165,250,0.13)" : "none",
+              borderRight: !burgerRight ? "1px solid rgba(96,165,250,0.13)" : "none",
+            }}
+          >
             <SidebarContent pathname={pathname} unreadCount={unreadCount} onClose={() => setMobileOpen(false)} />
           </aside>
         </div>
