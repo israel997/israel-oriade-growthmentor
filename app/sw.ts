@@ -8,7 +8,8 @@ declare global {
   }
 }
 
-declare const self: ServiceWorkerGlobalScope;
+// eslint-disable-next-line no-restricted-globals
+const self = globalThis as unknown as WorkerGlobalScope & { __SW_MANIFEST: (PrecacheEntry | string)[] | undefined };
 
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
