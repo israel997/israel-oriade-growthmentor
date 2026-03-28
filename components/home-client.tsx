@@ -22,7 +22,7 @@ export default function HomeClient() {
         {/* Grille or */}
         <div aria-hidden className="pointer-events-none absolute inset-0 z-10" style={{ backgroundImage: "linear-gradient(rgba(212,175,55,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(212,175,55,0.15) 1px, transparent 1px)", backgroundSize: "140px 140px" }} />
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/images/PP2.PNG" alt="" className="w-full block" style={{ height: "80vh", objectFit: "cover", objectPosition: "top" }} />
+        <img src="/images/PP2.webp" alt="" className="w-full block" style={{ height: "80vh", objectFit: "cover", objectPosition: "top" }} />
         {/* Overlay vignette */}
         <div aria-hidden className="pointer-events-none absolute inset-0 z-10" style={{ background: "radial-gradient(ellipse 90% 80% at 50% 50%, transparent 25%, rgba(4,8,22,0.70) 100%)" }} />
       </div>

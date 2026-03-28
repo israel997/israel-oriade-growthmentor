@@ -247,6 +247,8 @@ export default function MemberBadgesSection() {
                   ? `1px solid ${def.colorBorder.replace("0.3", "0.55")}`
                   : `1px dashed ${def.colorBorder.replace("0.3", "0.35")}`,
                 opacity: unlocked ? 1 : 0.88,
+                backdropFilter: badgeId === "mentee" ? "blur(20px)" : "blur(8px)",
+                WebkitBackdropFilter: badgeId === "mentee" ? "blur(20px)" : "blur(8px)",
               }}
             >
               {/* Badge icon — colored gradient if unlocked, muted tint if locked */}

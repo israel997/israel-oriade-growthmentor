@@ -7,7 +7,7 @@ type Params = { params: Promise<{ userId: string }> };
 export async function PATCH(req: NextRequest, { params }: Params) {
   const { userId } = await params;
 
-  let body: { startDate?: string | null; endDate?: string | null; label?: string | null };
+  let body: { startDate?: string | null; endDate?: string | null; label?: string | null; planning?: { jour: string; heure: string }[] | null };
   try {
     body = await req.json();
   } catch {
@@ -31,6 +31,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
                 startDate: body.startDate ?? null,
                 endDate: body.endDate ?? null,
                 label: body.label ?? "Accompagnement",
+                planning: body.planning ?? [],
               },
             },
           };

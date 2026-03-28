@@ -504,12 +504,12 @@ export default function DiagnosticPage() {
               </p>
               <div className="flex gap-3 justify-center pt-2">
                 <button onClick={() => router.push("/espace-membre/progression")}
-                  className="rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02]"
+                  className="rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition-transform hover:scale-[1.02] whitespace-nowrap"
                   style={{ background: "linear-gradient(135deg, #1A3FD8, #3B82F6)" }}>
                   Voir ma progression
                 </button>
                 <button onClick={() => router.push("/espace-membre")}
-                  className="rounded-xl px-5 py-2.5 text-sm font-semibold transition-colors"
+                  className="rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors whitespace-nowrap"
                   style={{ background: "rgba(96,165,250,0.08)", color: "#93C5FD", border: "1px solid rgba(96,165,250,0.15)" }}>
                   Tableau de bord
                 </button>

@@ -340,7 +340,7 @@ function FormationModal({ f, onClose }: { f: FormationCard; onClose: () => void 
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z" />
               </svg>
               Aperçu des modules
-              <span className="rounded-full px-1.5 py-0.5 text-xs" style={{ background: "rgba(96,165,250,0.15)", color: "#60A5FA" }}>
+              <span className="rounded-full px-1.5 py-0.5 text-xs font-bold" style={{ background: "#EF4444", color: "#fff" }}>
                 {f.modules.length}
               </span>
             </span>

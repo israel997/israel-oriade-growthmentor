@@ -11,7 +11,21 @@ const NIVEAU_COLORS: Record<string, { color: string; bg: string; label: string }
   avance:       { color: "#A78BFA", bg: "rgba(167,139,250,0.12)", label: "Avancé" },
 };
 
-const PRIORITY_ICONS = ["🎯", "⚡", "🔑"];
+const PRIORITY_SVGS = [
+  // Cible
+  <svg key="0" className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="#60A5FA" strokeWidth={1.8}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm0 0v-4m0-5a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm0-8v3" />
+    <circle cx="12" cy="12" r="3" stroke="#60A5FA" strokeWidth={1.8} fill="none" />
+  </svg>,
+  // Éclair
+  <svg key="1" className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="#A78BFA" strokeWidth={1.8}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z" />
+  </svg>,
+  // Clé
+  <svg key="2" className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="#34D399" strokeWidth={1.8}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 0 1 21.75 8.25Z" />
+  </svg>,
+];
 
 function FormationCard({ formation }: { formation: Formation }) {
   const niveau = NIVEAU_COLORS[formation.niveau] ?? NIVEAU_COLORS.apprenti;
@@ -19,7 +33,7 @@ function FormationCard({ formation }: { formation: Formation }) {
 
   return (
     <div className="rounded-2xl overflow-hidden"
-      style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
+      style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.14)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
       <div className="p-4 space-y-2">
         <div className="flex items-start justify-between gap-3">
           <p className="text-sm font-bold text-white leading-snug flex-1">{formation.label}</p>
@@ -83,7 +97,7 @@ function ResourceCard({ resource }: { resource: Resource }) {
   return (
     <Link href={resource.lien}
       className="flex items-center gap-3 rounded-xl px-4 py-3 transition-all hover:scale-[1.01]"
-      style={{ background: "rgba(96,165,250,0.05)", border: "1px solid rgba(96,165,250,0.15)" }}>
+      style={{ background: "rgba(96,165,250,0.09)", border: "1px solid rgba(96,165,250,0.25)", backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)" }}>
       <div className="shrink-0 h-8 w-8 rounded-lg flex items-center justify-center"
         style={{ background: "rgba(96,165,250,0.1)" }}>
         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="#60A5FA" strokeWidth={1.8}>
@@ -125,13 +139,18 @@ export default function DiagnosticRecommendations({ matched }: Props) {
             <div key={scenario.id} className="rounded-2xl p-4 flex gap-3"
               style={{
                 background: i === 0
-                  ? "rgba(26,63,216,0.1)"
-                  : "rgba(255,255,255,0.03)",
+                  ? "rgba(26,63,216,0.14)"
+                  : "rgba(255,255,255,0.05)",
                 border: i === 0
-                  ? "1px solid rgba(96,165,250,0.25)"
-                  : "1px solid rgba(255,255,255,0.07)",
+                  ? "1px solid rgba(96,165,250,0.35)"
+                  : "1px solid rgba(255,255,255,0.12)",
+                backdropFilter: "blur(12px)",
+                WebkitBackdropFilter: "blur(12px)",
               }}>
-              <span className="text-xl shrink-0 mt-0.5">{PRIORITY_ICONS[i]}</span>
+              <span className="shrink-0 mt-0.5 h-8 w-8 flex items-center justify-center rounded-xl"
+                style={{ background: i === 0 ? "rgba(96,165,250,0.12)" : i === 1 ? "rgba(167,139,250,0.12)" : "rgba(52,211,153,0.12)" }}>
+                {PRIORITY_SVGS[i]}
+              </span>
               <div className="space-y-1.5">
                 <p className="text-sm font-bold text-white">{scenario.lacune}</p>
                 <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.6)" }}>
