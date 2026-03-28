@@ -19,11 +19,12 @@ type Accompagnement = {
 type SortMode = "none" | "days_asc" | "days_desc";
 
 function computeEndDate(startDate: string, periodeValue: number, periodeUnit: PeriodeUnit): string {
-  const d = new Date(startDate);
+  const [y, m, day] = startDate.split("-").map(Number);
+  const d = new Date(y, m - 1, day); // local time — évite le décalage UTC
   if (periodeUnit === "jours") d.setDate(d.getDate() + periodeValue);
   else if (periodeUnit === "semaines") d.setDate(d.getDate() + periodeValue * 7);
   else if (periodeUnit === "mois") d.setMonth(d.getMonth() + periodeValue);
-  return d.toISOString().slice(0, 10);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
 function daysLeft(endDate: string): number {
@@ -42,6 +43,54 @@ function StatusBadge({ endDate }: { endDate: string }) {
 }
 
 const emptyForm = { nom: "", programme: "", startDate: "", periodeValue: 30, periodeUnit: "jours" as PeriodeUnit };
+
+type FormState = typeof emptyForm;
+
+function FormFields({ form, setForm }: { form: FormState; setForm: (f: FormState) => void }) {
+  const inputStyle = { background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white" };
+  const labelStyle = { color: "rgba(255,255,255,0.45)" };
+  return (
+    <div className="space-y-4">
+      <div>
+        <label className="block text-xs font-medium mb-1.5" style={labelStyle}>Nom</label>
+        <input type="text" value={form.nom} onChange={(e) => setForm({ ...form, nom: e.target.value })}
+          placeholder="Prénom Nom" className="w-full rounded-lg px-3 py-2 text-sm outline-none" style={inputStyle} />
+      </div>
+      <div>
+        <label className="block text-xs font-medium mb-1.5" style={labelStyle}>Programme</label>
+        <input type="text" value={form.programme} onChange={(e) => setForm({ ...form, programme: e.target.value })}
+          placeholder="Ex: Mentorat Elite" className="w-full rounded-lg px-3 py-2 text-sm outline-none" style={inputStyle} />
+      </div>
+      <div>
+        <label className="block text-xs font-medium mb-1.5" style={labelStyle}>Date de début</label>
+        <input type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })}
+          className="w-full rounded-lg px-3 py-2 text-sm outline-none" style={{ ...inputStyle, colorScheme: "dark" }} />
+      </div>
+      <div>
+        <label className="block text-xs font-medium mb-1.5" style={labelStyle}>Période</label>
+        <div className="flex gap-2">
+          <input type="number" min={1} value={form.periodeValue}
+            onChange={(e) => setForm({ ...form, periodeValue: Math.max(1, Number(e.target.value) || 1) })}
+            className="w-24 rounded-lg px-3 py-2 text-sm outline-none" style={inputStyle} />
+          <select value={form.periodeUnit} onChange={(e) => setForm({ ...form, periodeUnit: e.target.value as PeriodeUnit })}
+            className="flex-1 rounded-lg px-2 py-2 text-sm outline-none" style={{ ...inputStyle, colorScheme: "dark" }}>
+            <option value="jours">Jours</option>
+            <option value="semaines">Semaines</option>
+            <option value="mois">Mois</option>
+          </select>
+        </div>
+      </div>
+      {form.startDate && (
+        <p className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
+          Date de fin calculée :{" "}
+          <span style={{ color: "#60A5FA" }}>
+            {new Date(...(computeEndDate(form.startDate, form.periodeValue, form.periodeUnit).split("-").map(Number) as [number, number, number])).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit", year: "numeric" })}
+          </span>
+        </p>
+      )}
+    </div>
+  );
+}
 
 export default function AccompagnementAdminPage() {
   const [items, setItems] = useState<Accompagnement[]>([]);
@@ -128,52 +177,6 @@ export default function AccompagnementAdminPage() {
     if (res.ok) { setItems((prev) => prev.map((a) => a.id === planningId ? { ...a, planning: planningList } : a)); setPlanningId(null); }
     setSavingPlanning(false);
   };
-
-  // Formulaire partagé (ajouter + modifier)
-  const FormFields = () => (
-    <div className="space-y-4">
-      <div>
-        <label className="block text-xs font-medium mb-1.5" style={{ color: "rgba(255,255,255,0.45)" }}>Nom</label>
-        <input type="text" value={form.nom} onChange={(e) => setForm({ ...form, nom: e.target.value })}
-          placeholder="Prénom Nom" className="w-full rounded-lg px-3 py-2 text-sm outline-none"
-          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white" }} />
-      </div>
-      <div>
-        <label className="block text-xs font-medium mb-1.5" style={{ color: "rgba(255,255,255,0.45)" }}>Programme</label>
-        <input type="text" value={form.programme} onChange={(e) => setForm({ ...form, programme: e.target.value })}
-          placeholder="Ex: Mentorat Elite" className="w-full rounded-lg px-3 py-2 text-sm outline-none"
-          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white" }} />
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="block text-xs font-medium mb-1.5" style={{ color: "rgba(255,255,255,0.45)" }}>Date de début</label>
-          <input type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })}
-            className="w-full rounded-lg px-3 py-2 text-sm outline-none"
-            style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white", colorScheme: "dark" }} />
-        </div>
-        <div>
-          <label className="block text-xs font-medium mb-1.5" style={{ color: "rgba(255,255,255,0.45)" }}>Période</label>
-          <div className="flex gap-2">
-            <input type="number" min={1} value={form.periodeValue} onChange={(e) => setForm({ ...form, periodeValue: Number(e.target.value) })}
-              className="w-20 rounded-lg px-3 py-2 text-sm outline-none"
-              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white" }} />
-            <select value={form.periodeUnit} onChange={(e) => setForm({ ...form, periodeUnit: e.target.value as PeriodeUnit })}
-              className="flex-1 rounded-lg px-2 py-2 text-sm outline-none"
-              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white", colorScheme: "dark" }}>
-              <option value="jours">Jours</option>
-              <option value="semaines">Semaines</option>
-              <option value="mois">Mois</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      {form.startDate && (
-        <p className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
-          Date de fin calculée : <span style={{ color: "#60A5FA" }}>{new Date(computeEndDate(form.startDate, form.periodeValue, form.periodeUnit)).toLocaleDateString("fr-FR")}</span>
-        </p>
-      )}
-    </div>
-  );
 
   return (
     <div className="space-y-6">
@@ -286,7 +289,7 @@ export default function AccompagnementAdminPage() {
                     <td colSpan={8} className="px-4 pb-4">
                       <div className="rounded-xl p-4 space-y-4 mt-1" style={{ background: "rgba(96,165,250,0.06)", border: "1px solid rgba(96,165,250,0.15)" }}>
                         <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "rgba(96,165,250,0.7)" }}>Modifier — {a.nom}</p>
-                        <FormFields />
+                        <FormFields form={form} setForm={setForm} />
                         <div className="flex gap-2">
                           <button onClick={() => updateAccompagnement(a.id)} disabled={saving || !form.nom || !form.programme || !form.startDate}
                             className="rounded-lg px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
@@ -320,7 +323,7 @@ export default function AccompagnementAdminPage() {
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4"><path d="M6 6l12 12M18 6l-12 12" /></svg>
               </button>
             </div>
-            <FormFields />
+            <FormFields form={form} setForm={setForm} />
             <button onClick={createAccompagnement} disabled={saving || !form.nom || !form.programme || !form.startDate}
               className="w-full rounded-xl py-2.5 text-sm font-semibold text-white transition-all disabled:opacity-40"
               style={{ background: "linear-gradient(135deg, #1A3FD8, #3B82F6)" }}>
