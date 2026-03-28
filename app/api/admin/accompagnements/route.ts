@@ -15,14 +15,14 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { nom, programme, startDate, endDate } = body;
+    const { nom, programme, startDate, endDate, periodeValue, periodeUnit } = body;
     if (!nom || !programme || !startDate || !endDate)
       return NextResponse.json({ error: "Champs manquants" }, { status: 400 });
 
     const client = await clientPromise;
     const db = client.db();
     const result = await db.collection("accompagnements").insertOne({
-      nom, programme, startDate, endDate, planning: [], createdAt: new Date().toISOString(),
+      nom, programme, startDate, endDate, periodeValue: periodeValue ?? null, periodeUnit: periodeUnit ?? null, planning: [], createdAt: new Date().toISOString(),
     });
     return NextResponse.json({ id: result.insertedId.toString() });
   } catch {

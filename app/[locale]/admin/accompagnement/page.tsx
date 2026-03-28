@@ -284,25 +284,6 @@ export default function AccompagnementAdminPage() {
                   </td>
                 </tr>
 
-                {editingId === a.id && (
-                  <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                    <td colSpan={8} className="px-4 pb-4">
-                      <div className="rounded-xl p-4 space-y-4 mt-1" style={{ background: "rgba(96,165,250,0.06)", border: "1px solid rgba(96,165,250,0.15)" }}>
-                        <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "rgba(96,165,250,0.7)" }}>Modifier — {a.nom}</p>
-                        <FormFields form={form} setForm={setForm} />
-                        <div className="flex gap-2">
-                          <button onClick={() => updateAccompagnement(a.id)} disabled={saving || !form.nom || !form.programme || !form.startDate}
-                            className="rounded-lg px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
-                            style={{ background: "linear-gradient(135deg, #1A3FD8, #3B82F6)" }}>
-                            {saving ? "Enregistrement..." : "Enregistrer"}
-                          </button>
-                          <button onClick={() => setEditingId(null)} className="rounded-lg px-4 py-2 text-sm font-medium"
-                            style={{ background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.5)" }}>Annuler</button>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                )}
               </Fragment>
             ))}
           </tbody>
@@ -329,6 +310,34 @@ export default function AccompagnementAdminPage() {
               style={{ background: "linear-gradient(135deg, #1A3FD8, #3B82F6)" }}>
               {saving ? "Enregistrement..." : "Créer l'accompagnement"}
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Modifier */}
+      {editingId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: "rgba(2,5,22,0.85)", backdropFilter: "blur(12px)" }}
+          onClick={() => setEditingId(null)}>
+          <div className="relative w-full max-w-md rounded-2xl p-6 space-y-5"
+            style={{ background: "#08123A", border: "1px solid rgba(96,165,250,0.2)", boxShadow: "0 24px 64px rgba(0,0,0,0.6)" }}
+            onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between">
+              <p className="text-base font-bold text-white">Modifier l'accompagnement</p>
+              <button onClick={() => setEditingId(null)} className="h-8 w-8 flex items-center justify-center rounded-full" style={{ color: "rgba(255,255,255,0.4)" }}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4"><path d="M6 6l12 12M18 6l-12 12" /></svg>
+              </button>
+            </div>
+            <FormFields form={form} setForm={setForm} />
+            <div className="flex gap-2">
+              <button onClick={() => updateAccompagnement(editingId)} disabled={saving || !form.nom || !form.programme || !form.startDate}
+                className="flex-1 rounded-xl py-2.5 text-sm font-semibold text-white transition-all disabled:opacity-40"
+                style={{ background: "linear-gradient(135deg, #1A3FD8, #3B82F6)" }}>
+                {saving ? "Enregistrement..." : "Enregistrer"}
+              </button>
+              <button onClick={() => setEditingId(null)} className="rounded-xl px-4 py-2.5 text-sm font-medium"
+                style={{ background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.5)" }}>Annuler</button>
+            </div>
           </div>
         </div>
       )}
