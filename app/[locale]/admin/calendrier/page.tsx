@@ -14,11 +14,29 @@ type RDV = {
   priorite: Priorite;
 };
 
+type AccompEvent = {
+  accompId: string;
+  nom: string;
+  programme: string;
+  heure: string;  // HH:MM
+};
+
+type Accompagnement = {
+  id: string;
+  nom: string;
+  programme: string;
+  startDate: string;
+  endDate: string;
+  planning: { jour: string; heure: string }[];
+};
+
 const P = {
   haute:   { bg: "rgba(239,68,68,0.15)",   border: "rgba(239,68,68,0.35)",   text: "#F87171", dot: "#EF4444",  label: "Haute" },
   normale: { bg: "rgba(96,165,250,0.15)",  border: "rgba(96,165,250,0.35)",  text: "#60A5FA", dot: "#3B82F6",  label: "Normale" },
   basse:   { bg: "rgba(52,211,153,0.15)",  border: "rgba(52,211,153,0.35)",  text: "#34D399", dot: "#10B981",  label: "Basse" },
 };
+
+const ACC = { bg: "rgba(139,92,246,0.15)", border: "rgba(139,92,246,0.35)", text: "#A78BFA", dot: "#8B5CF6", label: "Accompagnement" };
 
 const MONTHS = ["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"];
 const DAYS   = ["Lun","Mar","Mer","Jeu","Ven","Sam","Dim"];
@@ -39,6 +57,8 @@ const EMPTY: Omit<RDV, "id"> = { nom: "", date: "", heure: "09:00", note: "", pr
 export default function CalendrierPage() {
   const today = new Date();
   const [rdvs, setRdvs]               = useState<RDV[]>([]);
+  const [accompsByDay, setAccompsByDay] = useState<Record<string, AccompEvent[]>>({});
+  const [accompagnements, setAccompagnements] = useState<Accompagnement[]>([]);
   const [year, setYear]               = useState(today.getFullYear());
   const [month, setMonth]             = useState(today.getMonth());
   const [selectedDay, setSelectedDay] = useState<string>(toKey(today));
@@ -50,7 +70,34 @@ export default function CalendrierPage() {
 
   useEffect(() => {
     fetch("/api/rdv").then((r) => r.json()).then(setRdvs);
+    fetch("/api/admin/accompagnements")
+      .then((r) => r.json())
+      .then((data: Accompagnement[]) => {
+        const map: Record<string, AccompEvent[]> = {};
+        for (const acc of data) {
+          for (const creneau of acc.planning ?? []) {
+            if (!creneau.jour || !/^\d{4}-\d{2}-\d{2}$/.test(creneau.jour)) continue;
+            if (!map[creneau.jour]) map[creneau.jour] = [];
+            map[creneau.jour].push({
+              accompId: acc.id,
+              nom: acc.nom,
+              programme: acc.programme,
+              heure: creneau.heure,
+            });
+          }
+        }
+        for (const key of Object.keys(map)) {
+          map[key].sort((a, b) => a.heure.localeCompare(b.heure));
+        }
+        setAccompsByDay(map);
+        setAccompagnements(data.filter(a => a.startDate && a.endDate));
+      })
+      .catch(() => {});
   }, []);
+
+  // Accompagnements whose period covers a given YYYY-MM-DD key
+  const getActivePeriod = (key: string) =>
+    accompagnements.filter(a => a.startDate <= key && key <= a.endDate);
 
   // ── Calendar grid ────────────────────────────────────────────────────────────
   const firstDay = new Date(year, month, 1);
@@ -75,6 +122,8 @@ export default function CalendrierPage() {
   }
 
   const selectedRdvs = (rdvsByDay[selectedDay] ?? []).slice().sort((a, b) => a.heure.localeCompare(b.heure));
+  const selectedAccomps = (accompsByDay[selectedDay] ?? []).slice().sort((a, b) => a.heure.localeCompare(b.heure));
+  const selectedPeriod  = getActivePeriod(selectedDay);
 
   const prevMonth = () => { if (month === 0) { setMonth(11); setYear(y => y - 1); } else setMonth(m => m - 1); };
   const nextMonth = () => { if (month === 11) { setMonth(0); setYear(y => y + 1); } else setMonth(m => m + 1); };
@@ -165,7 +214,11 @@ export default function CalendrierPage() {
               const isToday = key === toKey(today);
               const isSelected = key === selectedDay;
               const dayRdvs = rdvsByDay[key] ?? [];
+              const dayAccomps = accompsByDay[key] ?? [];
+              const activePeriod = getActivePeriod(key);
               const hasRdv = dayRdvs.length > 0;
+              const hasAccomp = dayAccomps.length > 0;
+              const hasActivePeriod = current && activePeriod.length > 0;
 
               // Priority dots (up to 3)
               const topPriority = dayRdvs.find(r => r.priorite === "haute") ? "haute"
@@ -197,17 +250,26 @@ export default function CalendrierPage() {
                   >
                     {date.getDate()}
                   </span>
-                  {hasRdv && (
+                  {(hasRdv || hasAccomp) && (
                     <div className="flex gap-0.5 mt-1.5 flex-wrap justify-center">
-                      {dayRdvs.slice(0, 3).map((r, idx) => (
-                        <span key={idx} className="block h-1.5 w-1.5 rounded-full" style={{ background: P[r.priorite].dot }} />
+                      {dayRdvs.slice(0, 2).map((r, idx) => (
+                        <span key={`r${idx}`} className="block h-1.5 w-1.5 rounded-full" style={{ background: P[r.priorite].dot }} />
+                      ))}
+                      {dayAccomps.slice(0, 2).map((_, idx) => (
+                        <span key={`a${idx}`} className="block h-1.5 w-1.5 rounded-full" style={{ background: ACC.dot }} />
                       ))}
                     </div>
                   )}
-                  {hasRdv && (
-                    <span className="mt-1 text-[9px] font-medium" style={{ color: topPriority ? P[topPriority].text : "transparent" }}>
-                      {dayRdvs.length} rdv
+                  {(hasRdv || hasAccomp) && (
+                    <span className="mt-1 text-[9px] font-medium" style={{ color: topPriority ? P[topPriority].text : hasAccomp ? ACC.text : "transparent" }}>
+                      {dayRdvs.length + dayAccomps.length} evt
                     </span>
+                  )}
+                  {hasActivePeriod && (
+                    <span
+                      className="absolute bottom-0 left-1 right-1 h-[3px] rounded-full"
+                      style={{ background: ACC.dot, opacity: 0.7 }}
+                    />
                   )}
                 </button>
               );
@@ -215,13 +277,17 @@ export default function CalendrierPage() {
           </div>
 
           {/* Legend */}
-          <div className="flex items-center gap-4 mt-4 pt-4" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+          <div className="flex items-center gap-4 mt-4 pt-4 flex-wrap" style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}>
             {(["haute","normale","basse"] as Priorite[]).map(p => (
               <div key={p} className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full" style={{ background: P[p].dot }} />
                 <span className="text-[10px]" style={{ color: "rgba(255,255,255,0.4)" }}>{P[p].label}</span>
               </div>
             ))}
+            <div className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full" style={{ background: ACC.dot }} />
+              <span className="text-[10px]" style={{ color: "rgba(255,255,255,0.4)" }}>{ACC.label}</span>
+            </div>
           </div>
         </div>
 
@@ -231,7 +297,9 @@ export default function CalendrierPage() {
             <div>
               <p className="text-sm font-bold text-white">{selectedLabel}</p>
               <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.4)" }}>
-                {selectedRdvs.length === 0 ? "Aucun rendez-vous" : `${selectedRdvs.length} rendez-vous`}
+                {selectedRdvs.length + selectedAccomps.length + selectedPeriod.length === 0
+                  ? "Aucun événement"
+                  : `${selectedRdvs.length + selectedAccomps.length + selectedPeriod.length} événement${selectedRdvs.length + selectedAccomps.length + selectedPeriod.length > 1 ? "s" : ""}`}
               </p>
             </div>
             <button
@@ -244,15 +312,16 @@ export default function CalendrierPage() {
           </div>
 
           <div className="flex-1 space-y-2 overflow-y-auto max-h-[420px] pr-1">
-            {selectedRdvs.length === 0 ? (
+            {selectedRdvs.length === 0 && selectedAccomps.length === 0 && selectedPeriod.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-10 gap-3">
                 <svg className="h-8 w-8" style={{ color: "rgba(255,255,255,0.15)" }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
                 </svg>
-                <p className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>Aucun RDV ce jour</p>
+                <p className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>Aucun événement ce jour</p>
               </div>
             ) : (
-              selectedRdvs.map((r) => (
+              <>
+              {selectedRdvs.map((r) => (
                 <div
                   key={r.id}
                   className="rounded-xl p-3 space-y-1.5"
@@ -288,47 +357,131 @@ export default function CalendrierPage() {
                     <p className="text-[11px] leading-relaxed" style={{ color: "rgba(255,255,255,0.5)" }}>{r.note}</p>
                   )}
                 </div>
-              ))
+              ))}
+              {selectedAccomps.map((a, idx) => (
+                <div
+                  key={`acc-${a.accompId}-${idx}`}
+                  className="rounded-xl p-3 space-y-1.5"
+                  style={{ background: ACC.bg, border: `1px solid ${ACC.border}` }}
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-bold" style={{ background: ACC.dot + "30", color: ACC.text }}>
+                      Créneau
+                    </span>
+                    <p className="text-sm font-semibold text-white truncate">{a.nom}</p>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <svg className="h-3 w-3 shrink-0" style={{ color: ACC.text }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    <span className="text-xs font-semibold" style={{ color: ACC.text }}>{a.heure}</span>
+                    <span className="text-[11px]" style={{ color: "rgba(255,255,255,0.4)" }}>· {a.programme}</span>
+                  </div>
+                </div>
+              ))}
+              {selectedPeriod.map((a) => (
+                <div
+                  key={`period-${a.id}`}
+                  className="rounded-xl p-3 space-y-1"
+                  style={{ background: "rgba(139,92,246,0.08)", border: `1px solid rgba(139,92,246,0.22)` }}
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-bold" style={{ background: "rgba(139,92,246,0.2)", color: "#C4B5FD" }}>
+                      En cours
+                    </span>
+                    <p className="text-sm font-semibold text-white truncate">{a.nom}</p>
+                  </div>
+                  <p className="text-[11px]" style={{ color: "rgba(255,255,255,0.4)" }}>
+                    {a.programme} · {a.startDate} → {a.endDate}
+                  </p>
+                </div>
+              ))}
+              </>
             )}
           </div>
         </div>
       </div>
 
-      {/* ── Upcoming RDVs ─────────────────────────────────────────────────────── */}
+      {/* ── Upcoming events ───────────────────────────────────────────────────── */}
       {(() => {
         const todayKey = toKey(today);
-        const upcoming = rdvs
+        type UpcomingItem =
+          | { kind: "rdv"; r: RDV }
+          | { kind: "acc"; date: string; acc: AccompEvent };
+
+        const upcomingRdvs: UpcomingItem[] = rdvs
           .filter(r => r.date >= todayKey)
-          .sort((a, b) => a.date.localeCompare(b.date) || a.heure.localeCompare(b.heure))
+          .map(r => ({ kind: "rdv" as const, r }));
+
+        const upcomingAccomps: UpcomingItem[] = Object.entries(accompsByDay)
+          .filter(([date]) => date >= todayKey)
+          .flatMap(([date, evts]) => evts.map(acc => ({ kind: "acc" as const, date, acc })));
+
+        const upcoming = [...upcomingRdvs, ...upcomingAccomps]
+          .sort((a, b) => {
+            const dateA = a.kind === "rdv" ? a.r.date : a.date;
+            const dateB = b.kind === "rdv" ? b.r.date : b.date;
+            const heureA = a.kind === "rdv" ? a.r.heure : a.acc.heure;
+            const heureB = b.kind === "rdv" ? b.r.heure : b.acc.heure;
+            return dateA.localeCompare(dateB) || heureA.localeCompare(heureB);
+          })
           .slice(0, 5);
+
         if (upcoming.length === 0) return null;
         return (
           <div className="rounded-2xl p-5 space-y-3" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
-            <p className="text-sm font-bold text-white">Prochains rendez-vous</p>
+            <p className="text-sm font-bold text-white">Prochains événements</p>
             <div className="space-y-2">
-              {upcoming.map(r => {
-                const d = new Date(r.date + "T00:00:00");
-                const dayLabel = `${d.getDate()} ${MONTHS[d.getMonth()]}`;
-                return (
-                  <button
-                    key={r.id}
-                    onClick={() => { setSelectedDay(r.date); setMonth(d.getMonth()); setYear(d.getFullYear()); }}
-                    className="w-full flex items-center gap-3 rounded-xl px-4 py-3 text-left transition-colors hover:bg-white/5"
-                    style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}
-                  >
-                    <span className="flex h-9 w-9 shrink-0 flex-col items-center justify-center rounded-lg text-[10px] font-bold" style={{ background: P[r.priorite].bg, border: `1px solid ${P[r.priorite].border}`, color: P[r.priorite].text }}>
-                      <span className="text-xs">{d.getDate()}</span>
-                      <span style={{ fontSize: 8 }}>{MONTHS[d.getMonth()].slice(0,3).toUpperCase()}</span>
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-white truncate">{r.nom}</p>
-                      <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>{dayLabel} · {r.heure}</p>
-                    </div>
-                    <span className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold" style={{ background: P[r.priorite].bg, color: P[r.priorite].text }}>
-                      {P[r.priorite].label}
-                    </span>
-                  </button>
-                );
+              {upcoming.map((item, idx) => {
+                if (item.kind === "rdv") {
+                  const r = item.r;
+                  const d = new Date(r.date + "T00:00:00");
+                  const dayLabel = `${d.getDate()} ${MONTHS[d.getMonth()]}`;
+                  return (
+                    <button
+                      key={`rdv-${r.id}-${idx}`}
+                      onClick={() => { setSelectedDay(r.date); setMonth(d.getMonth()); setYear(d.getFullYear()); }}
+                      className="w-full flex items-center gap-3 rounded-xl px-4 py-3 text-left transition-colors hover:bg-white/5"
+                      style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}
+                    >
+                      <span className="flex h-9 w-9 shrink-0 flex-col items-center justify-center rounded-lg text-[10px] font-bold" style={{ background: P[r.priorite].bg, border: `1px solid ${P[r.priorite].border}`, color: P[r.priorite].text }}>
+                        <span className="text-xs">{d.getDate()}</span>
+                        <span style={{ fontSize: 8 }}>{MONTHS[d.getMonth()].slice(0,3).toUpperCase()}</span>
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-white truncate">{r.nom}</p>
+                        <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>{dayLabel} · {r.heure}</p>
+                      </div>
+                      <span className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold" style={{ background: P[r.priorite].bg, color: P[r.priorite].text }}>
+                        {P[r.priorite].label}
+                      </span>
+                    </button>
+                  );
+                } else {
+                  const { date, acc } = item;
+                  const d = new Date(date + "T00:00:00");
+                  const dayLabel = `${d.getDate()} ${MONTHS[d.getMonth()]}`;
+                  return (
+                    <button
+                      key={`acc-${acc.accompId}-${date}-${idx}`}
+                      onClick={() => { setSelectedDay(date); setMonth(d.getMonth()); setYear(d.getFullYear()); }}
+                      className="w-full flex items-center gap-3 rounded-xl px-4 py-3 text-left transition-colors hover:bg-white/5"
+                      style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)" }}
+                    >
+                      <span className="flex h-9 w-9 shrink-0 flex-col items-center justify-center rounded-lg text-[10px] font-bold" style={{ background: ACC.bg, border: `1px solid ${ACC.border}`, color: ACC.text }}>
+                        <span className="text-xs">{d.getDate()}</span>
+                        <span style={{ fontSize: 8 }}>{MONTHS[d.getMonth()].slice(0,3).toUpperCase()}</span>
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-white truncate">{acc.nom}</p>
+                        <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>{dayLabel} · {acc.heure} · {acc.programme}</p>
+                      </div>
+                      <span className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold" style={{ background: ACC.bg, color: ACC.text }}>
+                        Accomp.
+                      </span>
+                    </button>
+                  );
+                }
               })}
             </div>
           </div>

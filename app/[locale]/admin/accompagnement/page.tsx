@@ -369,16 +369,16 @@ export default function AccompagnementAdminPage() {
               <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.35)" }}>Ajouter un créneau</p>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs mb-1" style={{ color: "rgba(255,255,255,0.4)" }}>Jour</label>
-                  <input type="text" value={newCreneau.jour} onChange={(e) => setNewCreneau({ ...newCreneau, jour: e.target.value })}
-                    placeholder="Ex: Lundi 5 mai" className="w-full rounded-lg px-3 py-2 text-sm outline-none"
-                    style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white" }} />
+                  <label className="block text-xs mb-1" style={{ color: "rgba(255,255,255,0.4)" }}>Date</label>
+                  <input type="date" value={newCreneau.jour} onChange={(e) => setNewCreneau({ ...newCreneau, jour: e.target.value })}
+                    className="w-full rounded-lg px-3 py-2 text-sm outline-none"
+                    style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white", colorScheme: "dark" }} />
                 </div>
                 <div>
                   <label className="block text-xs mb-1" style={{ color: "rgba(255,255,255,0.4)" }}>Heure</label>
-                  <input type="text" value={newCreneau.heure} onChange={(e) => setNewCreneau({ ...newCreneau, heure: e.target.value })}
-                    placeholder="Ex: 10h00" className="w-full rounded-lg px-3 py-2 text-sm outline-none"
-                    style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white" }} />
+                  <input type="time" value={newCreneau.heure} onChange={(e) => setNewCreneau({ ...newCreneau, heure: e.target.value })}
+                    className="w-full rounded-lg px-3 py-2 text-sm outline-none"
+                    style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white", colorScheme: "dark" }} />
                 </div>
               </div>
               <button onClick={() => { if (!newCreneau.jour || !newCreneau.heure) return; setPlanningList((prev) => [...prev, newCreneau]); setNewCreneau({ jour: "", heure: "" }); }}
