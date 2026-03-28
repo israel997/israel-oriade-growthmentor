@@ -3,21 +3,31 @@
 import { Fragment, useEffect, useState } from "react";
 
 type Creneau = { jour: string; heure: string };
+type PeriodeUnit = "jours" | "semaines" | "mois";
 
 type Accompagnement = {
   id: string;
   nom: string;
   programme: string;
   startDate: string;
+  periodeValue: number;
+  periodeUnit: PeriodeUnit;
   endDate: string;
   planning: Creneau[];
 };
 
 type SortMode = "none" | "days_asc" | "days_desc";
 
+function computeEndDate(startDate: string, periodeValue: number, periodeUnit: PeriodeUnit): string {
+  const d = new Date(startDate);
+  if (periodeUnit === "jours") d.setDate(d.getDate() + periodeValue);
+  else if (periodeUnit === "semaines") d.setDate(d.getDate() + periodeValue * 7);
+  else if (periodeUnit === "mois") d.setMonth(d.getMonth() + periodeValue);
+  return d.toISOString().slice(0, 10);
+}
+
 function daysLeft(endDate: string): number {
-  const diff = new Date(endDate).getTime() - Date.now();
-  return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  return Math.ceil((new Date(endDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
 }
 
 function StatusBadge({ endDate }: { endDate: string }) {
@@ -31,7 +41,7 @@ function StatusBadge({ endDate }: { endDate: string }) {
   return <span className="text-xs px-2 py-0.5 rounded-full font-semibold" style={{ background: "rgba(52,211,153,0.1)", color: "#34D399", border: "1px solid rgba(52,211,153,0.2)" }}>{days}j restants</span>;
 }
 
-const emptyForm = { nom: "", programme: "", startDate: "", endDate: "" };
+const emptyForm = { nom: "", programme: "", startDate: "", periodeValue: 30, periodeUnit: "jours" as PeriodeUnit };
 
 export default function AccompagnementAdminPage() {
   const [items, setItems] = useState<Accompagnement[]>([]);
@@ -40,19 +50,16 @@ export default function AccompagnementAdminPage() {
   const [sortMode, setSortMode] = useState<SortMode>("none");
   const [filterProgramme, setFilterProgramme] = useState("all");
 
-  // Modal ajouter / modifier
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
 
-  // Modal planning
   const [planningId, setPlanningId] = useState<string | null>(null);
   const [planningList, setPlanningList] = useState<Creneau[]>([]);
   const [newCreneau, setNewCreneau] = useState<Creneau>({ jour: "", heure: "" });
   const [savingPlanning, setSavingPlanning] = useState(false);
 
-  // Confirm delete
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -61,7 +68,6 @@ export default function AccompagnementAdminPage() {
       .then((data) => { setItems(Array.isArray(data) ? data : []); setLoading(false); });
   }, []);
 
-  // ─── Filtres & tri ─────────────────────────────────────────────
   const programmes = ["all", ...Array.from(new Set(items.map((a) => a.programme).filter(Boolean)))];
 
   let filtered = items.filter((a) => {
@@ -75,67 +81,99 @@ export default function AccompagnementAdminPage() {
 
   const activeCount = items.filter((a) => daysLeft(a.endDate) >= 0).length;
 
-  // ─── Créer ─────────────────────────────────────────────────────
+  const buildPayload = (f: typeof form) => {
+    const endDate = f.startDate ? computeEndDate(f.startDate, f.periodeValue, f.periodeUnit) : "";
+    return { nom: f.nom, programme: f.programme, startDate: f.startDate, periodeValue: f.periodeValue, periodeUnit: f.periodeUnit, endDate };
+  };
+
   const createAccompagnement = async () => {
-    if (!form.nom || !form.programme || !form.startDate || !form.endDate) return;
+    if (!form.nom || !form.programme || !form.startDate) return;
     setSaving(true);
+    const payload = buildPayload(form);
     const res = await fetch("/api/admin/accompagnements", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload),
     });
     if (res.ok) {
       const { id } = await res.json();
-      setItems((prev) => [{ id, ...form, planning: [] }, ...prev]);
-      setShowAddModal(false);
-      setForm(emptyForm);
+      setItems((prev) => [{ id, ...payload, planning: [] }, ...prev]);
+      setShowAddModal(false); setForm(emptyForm);
     }
     setSaving(false);
   };
 
-  // ─── Modifier ──────────────────────────────────────────────────
   const updateAccompagnement = async (id: string) => {
-    if (!form.nom || !form.programme || !form.startDate || !form.endDate) return;
+    if (!form.nom || !form.programme || !form.startDate) return;
     setSaving(true);
+    const payload = buildPayload(form);
     const res = await fetch(`/api/admin/accompagnements/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nom: form.nom, programme: form.programme, startDate: form.startDate, endDate: form.endDate }),
+      method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload),
     });
-    if (res.ok) {
-      setItems((prev) => prev.map((a) => a.id === id ? { ...a, ...form } : a));
-      setEditingId(null);
-    }
+    if (res.ok) { setItems((prev) => prev.map((a) => a.id === id ? { ...a, ...payload } : a)); setEditingId(null); }
     setSaving(false);
   };
 
-  // ─── Supprimer ─────────────────────────────────────────────────
   const deleteAccompagnement = async (id: string) => {
     await fetch(`/api/admin/accompagnements/${id}`, { method: "DELETE" });
-    setItems((prev) => prev.filter((a) => a.id !== id));
-    setConfirmDeleteId(null);
+    setItems((prev) => prev.filter((a) => a.id !== id)); setConfirmDeleteId(null);
   };
 
-  // ─── Planning ─────────────────────────────────────────────────
-  const openPlanning = (a: Accompagnement) => {
-    setPlanningId(a.id);
-    setPlanningList(a.planning ?? []);
-  };
+  const openPlanning = (a: Accompagnement) => { setPlanningId(a.id); setPlanningList(a.planning ?? []); };
 
   const savePlanning = async () => {
     if (!planningId) return;
     setSavingPlanning(true);
     const res = await fetch(`/api/admin/accompagnements/${planningId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ planning: planningList }),
+      method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ planning: planningList }),
     });
-    if (res.ok) {
-      setItems((prev) => prev.map((a) => a.id === planningId ? { ...a, planning: planningList } : a));
-      setPlanningId(null);
-    }
+    if (res.ok) { setItems((prev) => prev.map((a) => a.id === planningId ? { ...a, planning: planningList } : a)); setPlanningId(null); }
     setSavingPlanning(false);
   };
+
+  // Formulaire partagé (ajouter + modifier)
+  const FormFields = () => (
+    <div className="space-y-4">
+      <div>
+        <label className="block text-xs font-medium mb-1.5" style={{ color: "rgba(255,255,255,0.45)" }}>Nom</label>
+        <input type="text" value={form.nom} onChange={(e) => setForm({ ...form, nom: e.target.value })}
+          placeholder="Prénom Nom" className="w-full rounded-lg px-3 py-2 text-sm outline-none"
+          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white" }} />
+      </div>
+      <div>
+        <label className="block text-xs font-medium mb-1.5" style={{ color: "rgba(255,255,255,0.45)" }}>Programme</label>
+        <input type="text" value={form.programme} onChange={(e) => setForm({ ...form, programme: e.target.value })}
+          placeholder="Ex: Mentorat Elite" className="w-full rounded-lg px-3 py-2 text-sm outline-none"
+          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white" }} />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-xs font-medium mb-1.5" style={{ color: "rgba(255,255,255,0.45)" }}>Date de début</label>
+          <input type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })}
+            className="w-full rounded-lg px-3 py-2 text-sm outline-none"
+            style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white", colorScheme: "dark" }} />
+        </div>
+        <div>
+          <label className="block text-xs font-medium mb-1.5" style={{ color: "rgba(255,255,255,0.45)" }}>Période</label>
+          <div className="flex gap-2">
+            <input type="number" min={1} value={form.periodeValue} onChange={(e) => setForm({ ...form, periodeValue: Number(e.target.value) })}
+              className="w-20 rounded-lg px-3 py-2 text-sm outline-none"
+              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white" }} />
+            <select value={form.periodeUnit} onChange={(e) => setForm({ ...form, periodeUnit: e.target.value as PeriodeUnit })}
+              className="flex-1 rounded-lg px-2 py-2 text-sm outline-none"
+              style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white", colorScheme: "dark" }}>
+              <option value="jours">Jours</option>
+              <option value="semaines">Semaines</option>
+              <option value="mois">Mois</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      {form.startDate && (
+        <p className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>
+          Date de fin calculée : <span style={{ color: "#60A5FA" }}>{new Date(computeEndDate(form.startDate, form.periodeValue, form.periodeUnit)).toLocaleDateString("fr-FR")}</span>
+        </p>
+      )}
+    </div>
+  );
 
   return (
     <div className="space-y-6">
@@ -183,19 +221,19 @@ export default function AccompagnementAdminPage() {
 
       {/* Tableau */}
       <div className="overflow-x-auto rounded-2xl" style={{ border: "1px solid rgba(255,255,255,0.08)" }}>
-        <table className="w-full min-w-[820px] text-sm">
+        <table className="w-full min-w-[900px] text-sm">
           <thead>
             <tr style={{ background: "rgba(255,255,255,0.04)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-              {["Nom", "Programme", "Début", "Fin", "Statut", "Planning", "Actions"].map((h) => (
+              {["Nom", "Programme", "Début", "Période", "Fin", "Statut", "Planning", "Actions"].map((h) => (
                 <th key={h} className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.35)" }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={7} className="px-4 py-8 text-center text-sm" style={{ color: "rgba(255,255,255,0.3)" }}>Chargement...</td></tr>
+              <tr><td colSpan={8} className="px-4 py-8 text-center text-sm" style={{ color: "rgba(255,255,255,0.3)" }}>Chargement...</td></tr>
             ) : filtered.length === 0 ? (
-              <tr><td colSpan={7} className="px-4 py-10 text-center">
+              <tr><td colSpan={8} className="px-4 py-10 text-center">
                 <p className="text-sm" style={{ color: "rgba(255,255,255,0.3)" }}>Aucun accompagnement</p>
                 <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.2)" }}>Cliquez sur + Ajouter pour commencer</p>
               </td></tr>
@@ -205,6 +243,11 @@ export default function AccompagnementAdminPage() {
                   <td className="px-4 py-3 font-medium text-white">{a.nom}</td>
                   <td className="px-4 py-3 text-sm" style={{ color: "rgba(255,255,255,0.65)" }}>{a.programme}</td>
                   <td className="px-4 py-3 text-sm" style={{ color: "rgba(255,255,255,0.55)" }}>{new Date(a.startDate).toLocaleDateString("fr-FR")}</td>
+                  <td className="px-4 py-3">
+                    <span className="text-xs font-semibold rounded-full px-2 py-0.5" style={{ background: "rgba(96,165,250,0.1)", color: "#60A5FA", border: "1px solid rgba(96,165,250,0.2)" }}>
+                      {a.periodeValue} {a.periodeUnit}
+                    </span>
+                  </td>
                   <td className="px-4 py-3 text-sm" style={{ color: "rgba(255,255,255,0.55)" }}>{new Date(a.endDate).toLocaleDateString("fr-FR")}</td>
                   <td className="px-4 py-3"><StatusBadge endDate={a.endDate} /></td>
                   <td className="px-4 py-3">
@@ -223,13 +266,13 @@ export default function AccompagnementAdminPage() {
                       </div>
                     ) : (
                       <div className="flex items-center gap-2">
-                        <button onClick={() => { setEditingId(a.id); setForm({ nom: a.nom, programme: a.programme, startDate: a.startDate.slice(0, 10), endDate: a.endDate.slice(0, 10) }); }}
-                          className="rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
+                        <button onClick={() => { setEditingId(a.id); setForm({ nom: a.nom, programme: a.programme, startDate: a.startDate.slice(0, 10), periodeValue: a.periodeValue, periodeUnit: a.periodeUnit }); }}
+                          className="rounded-lg px-3 py-1.5 text-xs font-medium"
                           style={{ background: "rgba(96,165,250,0.1)", color: "#60A5FA", border: "1px solid rgba(96,165,250,0.2)" }}>
                           Modifier
                         </button>
                         <button onClick={() => setConfirmDeleteId(a.id)}
-                          className="rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
+                          className="rounded-lg px-3 py-1.5 text-xs font-medium"
                           style={{ background: "rgba(248,113,113,0.08)", color: "#F87171", border: "1px solid rgba(248,113,113,0.15)" }}>
                           Supprimer
                         </button>
@@ -240,28 +283,12 @@ export default function AccompagnementAdminPage() {
 
                 {editingId === a.id && (
                   <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                    <td colSpan={7} className="px-4 pb-4">
+                    <td colSpan={8} className="px-4 pb-4">
                       <div className="rounded-xl p-4 space-y-4 mt-1" style={{ background: "rgba(96,165,250,0.06)", border: "1px solid rgba(96,165,250,0.15)" }}>
                         <p className="text-xs font-semibold uppercase tracking-widest" style={{ color: "rgba(96,165,250,0.7)" }}>Modifier — {a.nom}</p>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                          {[
-                            { key: "nom", label: "Nom", type: "text", placeholder: "Nom complet" },
-                            { key: "programme", label: "Programme", type: "text", placeholder: "Ex: Mentorat Elite" },
-                            { key: "startDate", label: "Date de début", type: "date", placeholder: "" },
-                            { key: "endDate", label: "Date de fin", type: "date", placeholder: "" },
-                          ].map(({ key, label, type, placeholder }) => (
-                            <div key={key}>
-                              <label className="block text-xs font-medium mb-1.5" style={{ color: "rgba(255,255,255,0.45)" }}>{label}</label>
-                              <input type={type} value={form[key as keyof typeof form]}
-                                onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                                placeholder={placeholder}
-                                className="w-full rounded-lg px-3 py-2 text-sm outline-none"
-                                style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white", colorScheme: "dark" }} />
-                            </div>
-                          ))}
-                        </div>
+                        <FormFields />
                         <div className="flex gap-2">
-                          <button onClick={() => updateAccompagnement(a.id)} disabled={saving || !form.nom || !form.startDate || !form.endDate || !form.programme}
+                          <button onClick={() => updateAccompagnement(a.id)} disabled={saving || !form.nom || !form.programme || !form.startDate}
                             className="rounded-lg px-4 py-2 text-sm font-semibold text-white disabled:opacity-40"
                             style={{ background: "linear-gradient(135deg, #1A3FD8, #3B82F6)" }}>
                             {saving ? "Enregistrement..." : "Enregistrer"}
@@ -279,7 +306,7 @@ export default function AccompagnementAdminPage() {
         </table>
       </div>
 
-      {/* ─── Modal Ajouter ────────────────────────────────────────── */}
+      {/* Modal Ajouter */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
           style={{ background: "rgba(2,5,22,0.85)", backdropFilter: "blur(12px)" }}
@@ -293,35 +320,8 @@ export default function AccompagnementAdminPage() {
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4"><path d="M6 6l12 12M18 6l-12 12" /></svg>
               </button>
             </div>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-medium mb-1.5" style={{ color: "rgba(255,255,255,0.45)" }}>Nom</label>
-                <input type="text" value={form.nom} onChange={(e) => setForm({ ...form, nom: e.target.value })}
-                  placeholder="Prénom Nom" className="w-full rounded-lg px-3 py-2 text-sm outline-none"
-                  style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white" }} />
-              </div>
-              <div>
-                <label className="block text-xs font-medium mb-1.5" style={{ color: "rgba(255,255,255,0.45)" }}>Programme</label>
-                <input type="text" value={form.programme} onChange={(e) => setForm({ ...form, programme: e.target.value })}
-                  placeholder="Ex: Mentorat Elite" className="w-full rounded-lg px-3 py-2 text-sm outline-none"
-                  style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white" }} />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-medium mb-1.5" style={{ color: "rgba(255,255,255,0.45)" }}>Date de début</label>
-                  <input type="date" value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })}
-                    className="w-full rounded-lg px-3 py-2 text-sm outline-none"
-                    style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white", colorScheme: "dark" }} />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium mb-1.5" style={{ color: "rgba(255,255,255,0.45)" }}>Date de fin</label>
-                  <input type="date" value={form.endDate} onChange={(e) => setForm({ ...form, endDate: e.target.value })}
-                    className="w-full rounded-lg px-3 py-2 text-sm outline-none"
-                    style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "white", colorScheme: "dark" }} />
-                </div>
-              </div>
-            </div>
-            <button onClick={createAccompagnement} disabled={saving || !form.nom || !form.programme || !form.startDate || !form.endDate}
+            <FormFields />
+            <button onClick={createAccompagnement} disabled={saving || !form.nom || !form.programme || !form.startDate}
               className="w-full rounded-xl py-2.5 text-sm font-semibold text-white transition-all disabled:opacity-40"
               style={{ background: "linear-gradient(135deg, #1A3FD8, #3B82F6)" }}>
               {saving ? "Enregistrement..." : "Créer l'accompagnement"}
@@ -330,7 +330,7 @@ export default function AccompagnementAdminPage() {
         </div>
       )}
 
-      {/* ─── Modal Planning ───────────────────────────────────────── */}
+      {/* Modal Planning */}
       {planningId && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4"
           style={{ background: "rgba(2,5,22,0.85)", backdropFilter: "blur(12px)" }}
@@ -386,7 +386,7 @@ export default function AccompagnementAdminPage() {
               </button>
             </div>
             <button onClick={savePlanning} disabled={savingPlanning}
-              className="w-full rounded-xl py-2.5 text-sm font-semibold text-white transition-all disabled:opacity-40"
+              className="w-full rounded-xl py-2.5 text-sm font-semibold text-white disabled:opacity-40"
               style={{ background: "linear-gradient(135deg, #1A3FD8, #3B82F6)" }}>
               {savingPlanning ? "Enregistrement..." : "Enregistrer le planning"}
             </button>
